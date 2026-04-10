@@ -14,7 +14,7 @@ class PagoSerializer(serializers.ModelSerializer):
         fields = ['id', 'cobro', 'evento_nombre', 'presupuesto_numero', 'cliente_nombre',
                   'monto', 'metodo_pago', 'metodo_pago_display', 'gestor_nombre',
                   'fecha_pago', 'comprobante', 'evidencia', 'observaciones', 'created_at']
-        read_only_fields = ['id', 'cobro', 'created_at']
+        read_only_fields = ['id', 'cobro', 'created_at', 'evidencia']
 
     def get_gestor_nombre(self, obj):
         if obj.created_by:
@@ -53,7 +53,7 @@ class SeguimientoSerializer(serializers.ModelSerializer):
         model = SeguimientoEvento
         fields = ['id', 'evento', 'estado_anterior', 'estado_nuevo', 'notas',
                   'usuario', 'usuario_nombre', 'fecha']
-        read_only_fields = ['id', 'fecha']
+        read_only_fields = ['id', 'evento', 'estado_anterior', 'usuario', 'fecha']
 
     def get_usuario_nombre(self, obj):
         if obj.usuario:
