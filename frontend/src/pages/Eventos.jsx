@@ -77,33 +77,33 @@ export default function Eventos() {
 
   return (
     <div>
-      <div className="page-header">
+      <div className="page-header responsive-stack">
         <div>
           <h1 className="page-title">Eventos</h1>
           <p className="page-subtitle">Gestión de eventos de banquetería</p>
         </div>
-        <div className="flex gap-8">
-          <button className="btn btn-outline" onClick={() => api.get('/exportar/eventos/', { responseType: 'blob' }).then(r => {
+        <div className="flex gap-8 responsive-stack w-full-mobile">
+          <button className="btn btn-outline w-full-mobile" onClick={() => api.get('/exportar/eventos/', { responseType: 'blob' }).then(r => {
             const url = URL.createObjectURL(new Blob([r.data])); const a = document.createElement('a'); a.href = url; a.download = 'eventos.xlsx'; a.click()
           })}><FiDownload /> Excel</button>
-          <button className="btn btn-primary" onClick={() => { setEditEvento(null); setForm({ nombre: '', cliente: '', fecha: '', tipo_evento: 'matrimonio', pax: 1, lugar: '', estado: 'presupuestado', menu: '', observaciones: '' }); setShowModal(true) }}>
+          <button className="btn btn-primary w-full-mobile" onClick={() => { setEditEvento(null); setForm({ nombre: '', cliente: '', fecha: '', tipo_evento: 'matrimonio', pax: 1, lugar: '', estado: 'presupuestado', menu: '', observaciones: '' }); setShowModal(true) }}>
             <FiPlus /> Nuevo Evento
           </button>
         </div>
       </div>
 
       <div className="table-wrapper">
-        <div className="table-toolbar">
-          <div className="table-toolbar-left">
+        <div className="table-toolbar responsive-toolbar">
+          <div className="table-toolbar-left responsive-stack">
             <div className="search-wrap">
               <FiSearch className="search-icon" />
               <input className="search-input" placeholder="Buscar eventos..." value={search} onChange={e => setSearch(e.target.value)} />
             </div>
-            <select className="form-control" style={{ width: 160 }} value={filtroEstado} onChange={e => setFiltroEstado(e.target.value)}>
+            <select className="form-control responsive-select" value={filtroEstado} onChange={e => setFiltroEstado(e.target.value)}>
               {ESTADOS.map(e => <option key={e.value} value={e.value}>{e.label}</option>)}
             </select>
           </div>
-          <span style={{ fontSize: 12, color: 'var(--txt3)' }}>{eventos.length} eventos</span>
+          <span className="mobile-hide" style={{ fontSize: 12, color: 'var(--txt3)' }}>{eventos.length} eventos</span>
         </div>
 
         {loading ? <div className="loading"><span className="spinner"></span>Cargando...</div> : (

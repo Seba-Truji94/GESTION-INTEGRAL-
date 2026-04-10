@@ -40,18 +40,18 @@ export default function Reportes() {
 
   return (
     <div className="reportes-page">
-      <div className="page-header">
-        <div>
+      <div className="page-header responsive-stack">
+        <div className="w-full-mobile">
           <h1 className="page-title">Reportería y Cruce de Datos</h1>
           <p className="page-subtitle">Análisis técnico-financiero con indexación de alto rendimiento</p>
         </div>
-        <div className="flex gap-12">
-            <div className="flex-center gap-8 card" style={{padding: '8px 16px', background: 'var(--wh)'}}>
+        <div className="flex gap-12 responsive-stack w-full-mobile">
+            <div className="flex-center gap-8 card w-full-mobile" style={{padding: '8px 16px', background: 'var(--wh)'}}>
                 <FiCalendar style={{color: 'var(--txt3)'}} />
-                <select className="form-control" style={{width: 100, border: 'none', background: 'none'}} value={anio} onChange={e => setAnio(e.target.value)}>
+                <select className="form-control responsive-select" style={{width: 100, border: 'none', background: 'none'}} value={anio} onChange={e => setAnio(e.target.value)}>
                     {[2024, 2025, 2026, 2027].map(y => <option key={y} value={y}>{y}</option>)}
                 </select>
-                <select className="form-control" style={{width: 130, border: 'none', background: 'none'}} value={mes} onChange={e => setMes(e.target.value)}>
+                <select className="form-control responsive-select" style={{width: 130, border: 'none', background: 'none'}} value={mes} onChange={e => setMes(e.target.value)}>
                     <option value="">Todo el año</option>
                     {['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'].map((m, i) => (
                         <option key={i+1} value={i+1}>{m}</option>

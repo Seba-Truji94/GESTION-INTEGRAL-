@@ -802,14 +802,6 @@ select.form-control { cursor: pointer; }
 }
 
 @media (max-width: 768px) {
-  .chart-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .form-grid-2, .form-grid-3, .form-grid-4 {
-    grid-template-columns: 1fr;
-  }
-  
   .kpi-grid {
     grid-template-columns: 1fr;
   }

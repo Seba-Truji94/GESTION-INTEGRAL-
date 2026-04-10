@@ -29,23 +29,23 @@ export default function Presupuestos() {
 
   return (
     <div>
-      <div className="page-header">
+      <div className="page-header responsive-stack">
         <div>
           <h1 className="page-title">Presupuestos</h1>
           <p className="page-subtitle">Todos los presupuestos generados</p>
         </div>
-        <div className="flex gap-8">
-          <button className="btn btn-outline" onClick={() => api.get('/exportar/presupuestos/', { responseType: 'blob' }).then(r => {
+        <div className="flex gap-8 responsive-stack w-full-mobile">
+          <button className="btn btn-outline w-full-mobile" onClick={() => api.get('/exportar/presupuestos/', { responseType: 'blob' }).then(r => {
             const url = URL.createObjectURL(new Blob([r.data])); const a = document.createElement('a'); a.href = url; a.download = 'presupuestos.xlsx'; a.click()
           })}><FiDownload /> Excel</button>
-          <button className="btn btn-primary" onClick={() => navigate('/presupuestos/nuevo')}>
+          <button className="btn btn-primary w-full-mobile" onClick={() => navigate('/presupuestos/nuevo')}>
             <FiPlus /> Nuevo Presupuesto
           </button>
         </div>
       </div>
 
       {/* Summary KPIs */}
-      <div className="kpi-grid" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
+      <div className="kpi-grid responsive-kpi">
         <div className="kpi-card"><div className="kpi-label">Total Presupuestos</div><div className="kpi-value">{presupuestos.length}</div></div>
         <div className="kpi-card blue"><div className="kpi-label">Total Presupuestado</div><div className="kpi-value blue">{fmt(totalPresupuestado)}</div></div>
         <div className="kpi-card amber"><div className="kpi-label">Total Costos</div><div className="kpi-value amber">{fmt(totalCosto)}</div></div>
@@ -53,13 +53,13 @@ export default function Presupuestos() {
       </div>
 
       <div className="table-wrapper">
-        <div className="table-toolbar">
-          <div className="table-toolbar-left">
+        <div className="table-toolbar responsive-toolbar">
+          <div className="table-toolbar-left responsive-stack">
             <div className="search-wrap">
               <FiSearch className="search-icon" />
               <input className="search-input" placeholder="Buscar presupuestos..." value={search} onChange={e => setSearch(e.target.value)} />
             </div>
-            <select className="form-control" style={{ width: 160 }} value={filtroEstado} onChange={e => setFiltroEstado(e.target.value)}>
+            <select className="form-control responsive-select" value={filtroEstado} onChange={e => setFiltroEstado(e.target.value)}>
               <option value="">Todos los estados</option>
               <option value="borrador">Borrador</option>
               <option value="enviado">Enviado</option>

@@ -73,7 +73,7 @@ export default function Inventario() {
         </div>
       </div>
 
-      <div className="kpi-grid" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
+      <div className="kpi-grid responsive-kpi">
         <div className="kpi-card"><div className="kpi-label">Total Productos</div><div className="kpi-value">{totalProductos}</div></div>
         <div className="kpi-card red"><div className="kpi-label">Stock Bajo</div><div className="kpi-value red">{stockBajo}</div></div>
         <div className="kpi-card blue"><div className="kpi-label">Valor Inventario</div><div className="kpi-value blue">{fmt(valorTotal)}</div></div>
@@ -88,11 +88,11 @@ export default function Inventario() {
 
       {tab === 'productos' ? (
         <div className="table-wrapper">
-          <div className="table-toolbar">
-            <div className="table-toolbar-left">
+          <div className="table-toolbar responsive-toolbar">
+            <div className="table-toolbar-left responsive-stack">
               <div className="search-wrap"><FiSearch className="search-icon" />
                 <input className="search-input" placeholder="Buscar productos..." value={search} onChange={e => setSearch(e.target.value)} /></div>
-              <select className="form-control" style={{width:160}} value={filtroCat} onChange={e => setFiltroCat(e.target.value)}>
+              <select className="form-control responsive-select" value={filtroCat} onChange={e => setFiltroCat(e.target.value)}>
                 <option value="">Todas las categorías</option>
                 <option value="ingrediente">Ingrediente</option><option value="insumo">Insumo</option>
                 <option value="descartable">Descartable</option><option value="bebida">Bebida</option>

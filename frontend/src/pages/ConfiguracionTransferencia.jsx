@@ -68,13 +68,13 @@ export default function ConfiguracionTransferencia() {
 
   return (
     <div className="page-container">
-      <div className="page-header">
+      <div className="page-header responsive-stack">
         <div>
           <h1 className="page-title">Configuración de Transferencias</h1>
           <p className="page-subtitle">Gestiona los datos bancarios que aparecen en los presupuestos</p>
         </div>
         {!isAdding && !editingId && (
-          <button className="btn btn-primary" onClick={() => { setIsAdding(true); setEditForm({ activo: true }) }}>
+          <button className="btn btn-primary w-full-mobile" onClick={() => { setIsAdding(true); setEditForm({ activo: true }) }}>
             <FiPlus /> Nueva Cuenta
           </button>
         )}
@@ -154,7 +154,7 @@ export default function ConfiguracionTransferencia() {
         </div>
       )}
 
-      <div className="grid">
+      <div className="grid responsive-kpi">
         {datos.map(item => (
           <div key={item.id} className={`card ${item.activo ? 'border-primary' : ''}`}>
             <div className="card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

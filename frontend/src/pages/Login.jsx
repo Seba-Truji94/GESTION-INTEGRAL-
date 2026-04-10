@@ -31,9 +31,9 @@ export default function Login({ onLogin }) {
   return (
     <div className="login-page">
       <div className="login-card">
-        <div className="login-logo">GI</div>
-        <h1 className="login-title">Gestión Integral</h1>
-        <p className="login-sub">Sistema ERP de Banquetería</p>
+        <div className="login-logo">KR</div>
+        <h1 className="login-title">Kruxel</h1>
+        <p className="login-sub">Tu Gestión Integral de Software</p>
 
         {error && <div className="login-error">{error}</div>}
 

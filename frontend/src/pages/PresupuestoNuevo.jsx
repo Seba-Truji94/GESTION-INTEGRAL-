@@ -140,15 +140,15 @@ export default function PresupuestoNuevo() {
 
   return (
     <div>
-      <div className="page-header">
-        <div className="flex-center gap-12">
-          <button className="btn-icon" onClick={() => navigate(-1)}><FiArrowLeft /></button>
-          <div>
+      <div className="page-header responsive-stack">
+        <div className="flex-center gap-12 responsive-stack w-full-mobile">
+          <button className="btn-icon mobile-hide" onClick={() => navigate(-1)}><FiArrowLeft /></button>
+          <div className="w-full-mobile">
             <h1 className="page-title">{id ? 'Editar Presupuesto' : 'Nuevo Presupuesto'}</h1>
             <p className="page-subtitle">Calculadora de costos y margen</p>
           </div>
         </div>
-        <button className="btn btn-primary" onClick={handleSave} disabled={saving}>
+        <button className="btn btn-primary w-full-mobile" onClick={handleSave} disabled={saving}>
           <FiSave /> {saving ? 'Guardando...' : 'Guardar Presupuesto'}
         </button>
       </div>

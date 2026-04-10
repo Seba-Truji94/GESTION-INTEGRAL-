@@ -30,7 +30,7 @@ export default function Layout({ children, user, setUser, onLogout }) {
         <button className="btn-menu" onClick={toggleSidebar}>
           {isSidebarOpen ? <FiX /> : <FiMenu />}
         </button>
-        <div className="mobile-brand">GESTIÓN INTEGRAL</div>
+        <div className="mobile-brand">KRUXEL</div>
         <div style={{ width: 40 }}></div>
       </header>
 
@@ -39,10 +39,10 @@ export default function Layout({ children, user, setUser, onLogout }) {
 
       <aside className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
         <div className="sidebar-brand">
-          <div className="sidebar-logo">GI</div>
+          <div className="sidebar-logo">KR</div>
           <div>
-            <div className="sidebar-title">GESTIÓN INTEGRAL</div>
-            <div className="sidebar-subtitle">Sistema ERP Banquetería</div>
+            <div className="sidebar-title">KRUXEL</div>
+            <div className="sidebar-subtitle">Tu Gestión Integral de Software</div>
           </div>
         </div>
 

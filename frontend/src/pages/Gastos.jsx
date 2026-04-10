@@ -145,7 +145,7 @@ export default function Gastos() {
         </div>
       </div>
 
-      <div className="kpi-grid">
+      <div className="kpi-grid responsive-kpi">
         <div className="kpi-card green">
           <div className="kpi-label">Total Pagado</div>
           <div className="kpi-value green">{fmt(totalPagado)}</div>
@@ -161,15 +161,15 @@ export default function Gastos() {
       </div>
 
       <div className="table-wrapper">
-        <div className="table-toolbar">
-          <div className="table-toolbar-left">
-            <select className="form-control" value={filtro.mes} onChange={e => setFiltro({...filtro, mes: e.target.value})}>
+        <div className="table-toolbar responsive-toolbar">
+          <div className="table-toolbar-left responsive-stack">
+            <select className="form-control responsive-select" value={filtro.mes} onChange={e => setFiltro({...filtro, mes: e.target.value})}>
               <option value="1">Enero</option><option value="2">Febrero</option><option value="3">Marzo</option>
               <option value="4">Abril</option><option value="5">Mayo</option><option value="6">Junio</option>
               <option value="7">Julio</option><option value="8">Agosto</option><option value="9">Septiembre</option>
               <option value="10">Octubre</option><option value="11">Noviembre</option><option value="12">Diciembre</option>
             </select>
-            <select className="form-control" value={filtro.anio} onChange={e => setFiltro({...filtro, anio: e.target.value})}>
+            <select className="form-control responsive-select" value={filtro.anio} onChange={e => setFiltro({...filtro, anio: e.target.value})}>
               {[2024, 2025, 2026].map(a => <option key={a} value={a}>{a}</option>)}
             </select>
           </div>

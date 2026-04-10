@@ -35,23 +35,23 @@ export default function Dashboard() {
 
   return (
     <div>
-      <div className="page-header">
-        <div>
+      <div className="page-header responsive-stack">
+        <div className="w-full-mobile">
           <h1 className="page-title">Dashboard</h1>
           <p className="page-subtitle">Resumen general de gestión — {anio}</p>
         </div>
-        <div className="flex gap-8">
-          <select className="form-control" style={{ width: 100 }} value={anio} onChange={e => setAnio(e.target.value)}>
+        <div className="flex gap-8 responsive-stack w-full-mobile">
+          <select className="form-control responsive-select" value={anio} onChange={e => setAnio(e.target.value)}>
             {[2024, 2025, 2026, 2027].map(y => <option key={y} value={y}>{y}</option>)}
           </select>
-          <button className="btn btn-outline" onClick={() => downloadFile(`/exportar/dashboard/?anio=${anio}`, `dashboard_${anio}.xlsx`)}>
+          <button className="btn btn-outline w-full-mobile" onClick={() => downloadFile(`/exportar/dashboard/?anio=${anio}`, `dashboard_${anio}.xlsx`)}>
             <FiDownload /> Excel
           </button>
         </div>
       </div>
 
       {/* KPIs */}
-      <div className="kpi-grid">
+      <div className="kpi-grid responsive-kpi">
         <div className="kpi-card blue">
           <div className="kpi-label">Ventas Totales</div>
           <div className="kpi-value blue">{fmt(data.ventas_totales)}</div>

@@ -6,7 +6,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from django.http import JsonResponse
 
 def api_root(request):
-    return JsonResponse({"status": "Online", "message": "Gestión Integral API — Banquetería Chuma-Ger"})
+    return JsonResponse({"status": "Online", "message": "Kruxel API — Tu Gestión Integral de Software"})
 
 urlpatterns = [
     path('admin/', admin.site.urls),
