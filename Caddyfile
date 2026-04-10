@@ -4,35 +4,35 @@
 }
 
 :80 {
-    # Backend Admin (Match /admin or /admin/*)
-    handle /admin* {
-        reverse_proxy backend:8000
+    # Usamos route para forzar el orden de ejecución exacto
+    route {
+        # 1. Rutas del Backend (Prioridad alta)
+        reverse_proxy /admin* backend:8000 {
+            header_up Host {host}
+            header_up X-Real-IP {remote_host}
+        }
+        reverse_proxy /api* backend:8000 {
+            header_up Host {host}
+            header_up X-Real-IP {remote_host}
+        }
+
+        # 2. Archivos estáticos del Backend (CSS de Django Admin, etc)
+        handle_path /static* {
+            root * /app/static
+            file_server
+        }
+        handle_path /media* {
+            root * /app/media
+            file_server
+        }
+
+        # 3. Frontend (Solo si lo anterior no coincide)
+        handle {
+            root * /usr/share/caddy
+            file_server
+            try_files {path} /index.html
+        }
     }
 
-    # Backend API
-    handle /api* {
-        reverse_proxy backend:8000
-    }
-
-    # Static files for Django Admin/API
-    handle /static/* {
-        root * /app/static
-        file_server
-    }
-
-    # Media files
-    handle /media/* {
-        root * /app/media
-        file_server
-    }
-
-    # Frontend Static Files (Fallback)
-    handle {
-        root * /usr/share/caddy
-        file_server
-        try_files {path} /index.html
-    }
-
-    # Optional: Gzip compression
     encode gzip
 }
