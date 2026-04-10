@@ -17,6 +17,7 @@ RUN apt-get update \
 COPY requirements.txt /app/
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
+RUN pip install gunicorn
 
 # Copiar el código del proyecto
 COPY . /app/
@@ -25,4 +26,5 @@ COPY . /app/
 EXPOSE 8000
 
 # Comando para correr migraciones y levantar el servidor
-CMD ["bash", "-c", "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"]
+# Comando para correr en producción
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "config.wsgi:application"]
