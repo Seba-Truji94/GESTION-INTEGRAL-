@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
-import { FiGrid, FiCalendar, FiFileText, FiDollarSign, FiPackage, FiLogOut, FiSettings, FiBarChart2 } from 'react-icons/fi'
+import { FiGrid, FiCalendar, FiFileText, FiDollarSign, FiPackage, FiLogOut, FiSettings, FiBarChart2, FiMenu, FiX } from 'react-icons/fi'
 import PerfilUsuarioModal from './PerfilUsuarioModal'
 
 
@@ -19,10 +19,25 @@ const navItems = [
 export default function Layout({ children, user, setUser, onLogout }) {
   const location = useLocation()
   const [showProfileModal, setShowProfileModal] = useState(false)
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+
+  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen)
 
   return (
-    <div className="app-layout">
-      <aside className="sidebar">
+    <div className={`app-layout ${isSidebarOpen ? 'sidebar-open' : ''}`}>
+      {/* Mobile Header */}
+      <header className="mobile-header">
+        <button className="btn-menu" onClick={toggleSidebar}>
+          {isSidebarOpen ? <FiX /> : <FiMenu />}
+        </button>
+        <div className="mobile-brand">GESTIÓN INTEGRAL</div>
+        <div style={{ width: 40 }}></div>
+      </header>
+
+      {/* Overlay for mobile */}
+      {isSidebarOpen && <div className="sidebar-overlay" onClick={() => setIsSidebarOpen(false)}></div>}
+
+      <aside className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
         <div className="sidebar-brand">
           <div className="sidebar-logo">GI</div>
           <div>
@@ -39,6 +54,7 @@ export default function Layout({ children, user, setUser, onLogout }) {
               to={item.to}
               end={item.exact}
               className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+              onClick={() => setIsSidebarOpen(false)}
             >
               <span className="nav-icon">{item.icon}</span>
               {item.label}
