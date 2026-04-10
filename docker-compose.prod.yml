@@ -34,37 +34,29 @@ services:
       - static_volume:/app/static
       - media_volume:/app/media
 
-  frontend:
+  caddy:
     build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    container_name: gestion_frontend_prod
-    restart: always
-    # This container builds the static files. 
-    # In production, we'll serve them via the main nginx container.
-    volumes:
-      - frontend_build:/usr/share/nginx/html
-
-  nginx:
-    image: nginx:alpine
-    container_name: gestion_nginx_prod
+      context: .
+      dockerfile: ./frontend/Dockerfile.prod
+    container_name: gestion_caddy_prod
     restart: always
     ports:
       - "80:80"
       - "443:443"
+    environment:
+      - DOMAIN=${DOMAIN:-localhost}
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - frontend_build:/usr/share/nginx/html:ro
+      - ./Caddyfile:/etc/caddy/Caddyfile
       - static_volume:/app/static:ro
       - media_volume:/app/media:ro
-      - ./certbot/conf:/etc/letsencrypt
-      - ./certbot/www:/var/www/certbot
+      - caddy_data:/data
+      - caddy_config:/config
     depends_on:
       - backend
-      - frontend
 
 volumes:
   pgdata_prod:
   static_volume:
   media_volume:
-  frontend_build:
+  caddy_data:
+  caddy_config:

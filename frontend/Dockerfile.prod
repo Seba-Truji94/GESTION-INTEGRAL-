@@ -1,0 +1,26 @@
+# Etapa 1: Construcción del Frontend
+FROM node:20-alpine AS build-stage
+
+WORKDIR /app
+
+# Instalar dependencias
+COPY package.json package-lock.json* ./
+RUN npm install
+
+# Construir la aplicación
+COPY . ./
+RUN npm run build
+
+# Etapa 2: Servidor Caddy con el Frontend incluido
+FROM caddy:2-alpine
+
+# Copiar el build del frontend a la carpeta que sirve Caddy
+COPY --from=build-stage /app/dist /usr/share/caddy
+
+# Copiar el Caddyfile (se asume que se pasa desde el contexto de build o se monta)
+# Para máxima portabilidad, el Caddyfile se suele montar por volumen, 
+# pero aquí lo preparamos para ser parte de la imagen si se desea.
+COPY ../Caddyfile /etc/caddy/Caddyfile
+
+EXPOSE 80
+EXPOSE 443

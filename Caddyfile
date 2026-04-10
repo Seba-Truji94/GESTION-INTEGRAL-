@@ -1,0 +1,38 @@
+{
+    # Global options
+    email your-email@example.com # Replace with your email for SSL alerts
+}
+
+:80 {
+    # Frontend Static Files
+    root * /usr/share/caddy
+    file_server
+    try_files {path} /index.html
+
+    # Backend API
+    handle /api/* {
+        reverse_proxy backend:8000
+    }
+
+    # Backend Admin
+    handle /admin/* {
+        reverse_proxy backend:8000
+    }
+
+    # Static files for Django Admin/API
+    handle /static/* {
+        file_server {
+            root /app/static
+        }
+    }
+
+    # Media files
+    handle /media/* {
+        file_server {
+            root /app/media
+        }
+    }
+
+    # Optional: Gzip compression
+    encode gzip
+}
