@@ -3,6 +3,10 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from django.http import JsonResponse
+
+def api_root(request):
+    return JsonResponse({"status": "Online", "message": "Gestión Integral API — Banquetería Chuma-Ger"})
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -18,6 +22,7 @@ urlpatterns = [
     path('api/', include('exportaciones.urls')),
     path('api/gastos/', include('gastos.urls')),
     path('api/catalogo/', include('catalogo.urls')),
+    path('', api_root),
 ]
 
 if settings.DEBUG:
