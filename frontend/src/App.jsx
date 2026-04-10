@@ -56,7 +56,7 @@ function App() {
         <Route path="/p/:id" element={<PresupuestoPublico />} />
         <Route path="/*" element={
           <PrivateRoute>
-            <Layout user={user} onLogout={handleLogout}>
+            <Layout user={user} setUser={setUser} onLogout={handleLogout}>
               <Routes>
                 <Route path="/" element={<Dashboard />} />
                 <Route path="/eventos" element={<Eventos />} />

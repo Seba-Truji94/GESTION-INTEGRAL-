@@ -10,6 +10,7 @@ class Usuario(AbstractUser):
     ]
     rol = models.CharField(max_length=20, choices=ROLES, default='operador')
     telefono = models.CharField(max_length=30, blank=True, default='')
+    avatar = models.ImageField(upload_to='avatars/', null=True, blank=True, help_text="Fotografía de perfil del usuario.")
 
     class Meta:
         verbose_name = 'Usuario'

@@ -71,9 +71,6 @@ export default function Login({ onLogin }) {
           </button>
         </form>
 
-        <div style={{ marginTop: 20, padding: '12px 14px', background: '#f1f5f9', borderRadius: 8, fontSize: 12, color: '#475569' }}>
-          <strong>Demo:</strong> admin / admin123 &nbsp;|&nbsp; operador / oper123
-        </div>
       </div>
     </div>
   )
