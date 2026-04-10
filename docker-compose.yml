@@ -45,6 +45,7 @@ services:
       dockerfile: Dockerfile
     container_name: gestion_frontend
     restart: always
+    command: npm run dev -- --host
     volumes:
       - ./frontend:/app
       - /app/node_modules
