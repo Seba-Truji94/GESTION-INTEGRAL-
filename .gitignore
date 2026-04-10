@@ -1,0 +1,38 @@
+# Entornos virtuales
+env/
+venv/
+env.bak/
+venv.bak/
+
+# Variables de entorno y secretos
+.env
+.env.*
+
+# Bases de datos y almacenamiento
+db.sqlite3
+*.sqlite3
+media/
+backend/media/
+
+# Node y Frontend
+node_modules/
+dist/
+build/
+.npm/
+.vite/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# IDE y OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.log
+
+# Docker
+.dockerignore
