@@ -170,7 +170,7 @@ export default function PresupuestoNuevo() {
       </div>
 
       {/* KPI Row */}
-      <div className="kpi-grid" style={{ gridTemplateColumns: 'repeat(5, 1fr)' }}>
+      <div className="responsive-kpi mb-24">
         <div className="kpi-card amber"><div className="kpi-label">Costo Total</div><div className="kpi-value amber">{fmt(totCosto)}</div></div>
         <div className="kpi-card blue"><div className="kpi-label">Precio Venta</div><div className="kpi-value blue">{fmt(totVenta)}</div></div>
         <div className="kpi-card green"><div className="kpi-label">Ganancia Bruta</div><div className="kpi-value" style={{color:margenColor}}>{fmt(ganancia)}</div></div>
@@ -181,7 +181,7 @@ export default function PresupuestoNuevo() {
       {/* Add Item */}
       <div className="card mb-24">
         <div className="card-title">Agregar Item al Detalle</div>
-        <div style={{ display: 'grid', gridTemplateColumns: '2.5fr 1.2fr 0.7fr 1fr 1fr auto', gap: 10, alignItems: 'start' }}>
+        <div className="budget-entry-grid">
           <div className="form-group" style={{ position: 'relative' }}><label>Descripción</label>
             <input className="form-control" value={newItem.descripcion} 
               onChange={e => { setNewItem({...newItem, descripcion: e.target.value}); setShowSugg(true); }}
@@ -294,7 +294,7 @@ export default function PresupuestoNuevo() {
       {/* Breakdown + Margin */}
       {items.length > 0 && (
         <>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 24 }}>
+          <div className="responsive-kpi mb-24">
             {[['I','Ingredientes / Insumos','var(--grn)'],['M','Mano de Obra','var(--amb)'],['O','Otros','var(--acc)']].map(([key,label,color]) => {
               const d = catTotals[key]; const g = d.v - d.c; const m = d.v > 0 ? (g/d.v*100) : 0
               return (

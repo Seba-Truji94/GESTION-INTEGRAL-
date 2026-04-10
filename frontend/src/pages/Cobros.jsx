@@ -105,7 +105,7 @@ export default function Cobros() {
         </div>
       </div>
 
-      <div className="kpi-grid" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
+      <div className="responsive-kpi mb-24">
         <div className="kpi-card"><div className="kpi-label">Proyección de Ingresos</div><div className="kpi-value">{fmt(totalCobrado)}</div></div>
         <div className="kpi-card green"><div className="kpi-label">Recaudación Efectiva</div><div className="kpi-value green">{fmt(totalPagado)}</div></div>
         <div className="kpi-card red"><div className="kpi-label">Por Recaudar (Morosidad)</div><div className="kpi-value red">{fmt(totalPendiente)}</div></div>
@@ -300,7 +300,7 @@ function FinanceTraceabilityModal({ cobro, onClose, onAddPayment }) {
                     <button className="btn-icon" onClick={onClose}><FiX/></button>
                 </div>
 
-                <div className="kpi-grid" style={{gridTemplateColumns:'repeat(4, 1fr)', marginBottom:32}}>
+                <div className="responsive-kpi mb-24">
                     <div className="kpi-card" style={{background:'var(--bg)', border:'none'}}><div className="kpi-label">Total Presupuestado</div><div className="kpi-value">{fmt(cobro.monto_total)}</div></div>
                     <div className="kpi-card" style={{background:'var(--bg)', border:'none'}}><div className="kpi-label">Pagado a la Fecha</div><div className="kpi-value green">{fmt(cobro.monto_pagado)}</div></div>
                     <div className="kpi-card" style={{background:'var(--bg)', border:'none'}}><div className="kpi-label">Saldo Pendiente</div><div className="kpi-value red">{fmt(cobro.saldo_pendiente)}</div></div>

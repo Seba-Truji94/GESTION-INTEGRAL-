@@ -61,8 +61,8 @@ export default function Reportes() {
         </div>
       </div>
 
-      <div className="card mb-24" style={{padding: 0, overflow: 'hidden'}}>
-        <div className="flex" style={{borderBottom: '1px solid var(--bd)', background: '#f8fafc'}}>
+      <div className="card mb-24" style={{padding: 0, overflow: 'visible'}}>
+        <div className="flex" style={{borderBottom: '1px solid var(--bd)', background: '#f8fafc', overflowX: 'auto', whiteSpace: 'nowrap'}}>
           {tabs.map(t => (
             <button 
               key={t.id}
@@ -231,16 +231,16 @@ function FinanzasTable({ data }) {
   
   return (
     <div className="table-wrapper" style={{boxShadow: 'none', border: 'none', background: 'transparent'}}>
-      <div className="flex gap-16 mb-24">
-         <div className="card flex-1" style={{background: 'var(--bg)', border: 'none'}}>
+      <div className="responsive-kpi mb-24">
+         <div className="kpi-card" style={{background: 'var(--bg)', border: 'none'}}>
             <div className="kpi-label">Ingresos Reales (Pagos Recibidos)</div>
             <div className="kpi-value green">{fmt(totIngresos)}</div>
          </div>
-         <div className="card flex-1" style={{background: 'var(--bg)', border: 'none'}}>
+         <div className="kpi-card" style={{background: 'var(--bg)', border: 'none'}}>
             <div className="kpi-label">Gastos Fijos Periodo</div>
             <div className="kpi-value red">{fmt(totGastos)}</div>
          </div>
-         <div className="card flex-1" style={{background: 'var(--bg)', border: 'none'}}>
+         <div className="kpi-card" style={{background: 'var(--bg)', border: 'none'}}>
             <div className="kpi-label">Flujo de Caja Neto</div>
             <div className="kpi-value blue">{fmt(totIngresos - totGastos)}</div>
          </div>

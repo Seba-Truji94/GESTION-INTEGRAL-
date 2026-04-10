@@ -145,6 +145,7 @@ export default function Dashboard() {
           {data.proximos_eventos.length === 0 ? (
             <div className="empty-state" style={{ padding: 24 }}><p>No hay eventos próximos</p></div>
           ) : (
+          <div className="table-wrapper">
             <table>
               <thead>
                 <tr>
@@ -165,6 +166,7 @@ export default function Dashboard() {
                 ))}
               </tbody>
             </table>
+          </div>
           )}
         </div>
 
@@ -173,6 +175,7 @@ export default function Dashboard() {
           {data.stock_bajo.length === 0 ? (
             <div className="empty-state" style={{ padding: 24 }}><p>Todo el inventario OK</p></div>
           ) : (
+          <div className="table-wrapper">
             <table>
               <thead>
                 <tr><th>Producto</th><th className="right">Stock</th><th className="right">Mínimo</th></tr>
@@ -187,6 +190,7 @@ export default function Dashboard() {
                 ))}
               </tbody>
             </table>
+          </div>
           )}
         </div>
       </div>
@@ -198,6 +202,7 @@ export default function Dashboard() {
           {data.cobros_pendientes?.length === 0 ? (
             <div className="empty-state" style={{ padding: 24 }}><p>No hay cobros pendientes</p></div>
           ) : (
+          <div className="table-wrapper">
             <table>
               <thead>
                 <tr>
@@ -218,6 +223,7 @@ export default function Dashboard() {
                 ))}
               </tbody>
             </table>
+          </div>
           )}
         </div>
 
@@ -226,6 +232,7 @@ export default function Dashboard() {
           {data.top_clientes?.length === 0 ? (
             <div className="empty-state" style={{ padding: 24 }}><p>No hay eventos registrados</p></div>
           ) : (
+          <div className="table-wrapper">
             <table>
               <thead>
                 <tr>
@@ -244,6 +251,7 @@ export default function Dashboard() {
                 ))}
               </tbody>
             </table>
+          </div>
           )}
         </div>
       </div>
@@ -253,6 +261,7 @@ export default function Dashboard() {
          {data.top_insumos?.length === 0 ? (
             <div className="empty-state" style={{ padding: 24 }}><p>No hay consumo registrado</p></div>
           ) : (
+          <div className="table-wrapper">
             <table>
               <thead>
                 <tr>
@@ -273,6 +282,7 @@ export default function Dashboard() {
                 ))}
               </tbody>
             </table>
+          </div>
           )}
       </div>
     </div>

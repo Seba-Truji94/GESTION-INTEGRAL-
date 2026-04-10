@@ -143,7 +143,7 @@ export default function Catalogo() {
       </div>
 
       {/* KPI Dashboard */}
-      <div className="kpi-grid" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
+      <div className="responsive-kpi mb-24">
         <div className="kpi-card blue">
           <div className="kpi-label">Productos Activos</div>
           <div className="kpi-value blue">{kpis.total}</div>
@@ -258,7 +258,7 @@ export default function Catalogo() {
 
       {showModal && (
         <div className="modal-overlay">
-          <div className="modal" style={{width: '900px', padding: 0, overflow: 'hidden'}}>
+        <div className="modal modal-lg" style={{padding: 0, overflow: 'hidden'}}>
             <div style={{background: 'linear-gradient(to right, var(--nav), var(--nav2))', color: '#fff', padding: '24px 32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
               <div>
                 <h2 style={{margin:0, fontSize: 20}}>{editing ? 'Editor de Producto Maestro' : 'Nuevo Producto en Catálogo'}</h2>
@@ -267,9 +267,9 @@ export default function Catalogo() {
               <button className="btn-icon" style={{background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff'}} onClick={() => setShowModal(false)}><FiX /></button>
             </div>
             
-            <div style={{display: 'grid', gridTemplateColumns: '1.2fr 1.8fr', height: 'calc(88vh - 120px)'}}>
+            <div className="form-grid form-grid-2" style={{ height: 'calc(88vh - 120px)', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', overflowY: 'auto' }}>
                 {/* General Info Side */}
-                <div style={{padding: 32, borderRight: '1px solid var(--bd)', overflowY: 'auto'}}>
+                <div style={{padding: 32, borderRight: '1px solid var(--bd)'}}>
                     <h3 style={{fontSize: 14, display: 'flex', alignItems: 'center', gap: 8, marginBottom: 24}}>
                         <FiInfo /> Datos Generales
                     </h3>
