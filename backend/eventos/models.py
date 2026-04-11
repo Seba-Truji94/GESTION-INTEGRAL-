@@ -161,8 +161,8 @@ class ItemPresupuesto(models.Model):
     descripcion = models.CharField(max_length=300)
     categoria = models.CharField(max_length=1, choices=CATEGORIAS, default='I')
     cantidad = models.DecimalField(max_digits=10, decimal_places=2, default=1)
-    costo_unitario = models.DecimalField(max_digits=10, decimal_places=0, default=0)
-    venta_unitario = models.DecimalField(max_digits=10, decimal_places=0, default=0)
+    costo_unitario = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    venta_unitario = models.DecimalField(max_digits=12, decimal_places=2, default=0)
 
     class Meta:
         verbose_name = 'Item de Presupuesto'
