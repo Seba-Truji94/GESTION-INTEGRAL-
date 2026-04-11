@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import api from '../services/api'
 import Balatro from '../components/Balatro/Balatro'
+import LineWaves from '../components/LineWaves/LineWaves'
+import Hyperspeed from '../components/Hyperspeed/Hyperspeed'
 
 export default function Login({ onLogin }) {
   const [username, setUsername] = useState('')
@@ -44,8 +46,8 @@ export default function Login({ onLogin }) {
 
   return (
     <div className="login-page">
-      {config && (
-        <Balatro 
+      {config && config.animation_type === 'balatro' && (
+        <Balatro
           color1={config.color1}
           color2={config.color2}
           color3={config.color3}
@@ -53,8 +55,29 @@ export default function Login({ onLogin }) {
           isRotate={config.is_rotate}
           mouseInteraction={config.mouse_interaction}
           spinSpeed={config.spin_speed}
+          spinRotation={config.spin_rotation}
+          spinAmount={config.spin_amount}
+          spinEase={config.spin_ease}
           contrast={config.contrast}
           lighting={config.lighting}
+        />
+      )}
+      {config && config.animation_type === 'linewaves' && (
+        <LineWaves
+          color1={config.color1}
+          color2={config.color2}
+          color3={config.color3}
+          mouseInteraction={config.mouse_interaction}
+          speed={config.spin_speed * 0.1}
+        />
+      )}
+      {config && config.animation_type === 'hyperspeed' && (
+        <Hyperspeed
+          color1={config.color1}
+          color2={config.color2}
+          color3={config.color3}
+          mouseInteraction={config.mouse_interaction}
+          speed={config.spin_speed * 0.7}
         />
       )}
       

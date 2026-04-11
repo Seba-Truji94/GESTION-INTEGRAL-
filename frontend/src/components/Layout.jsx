@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
-import { FiGrid, FiCalendar, FiFileText, FiDollarSign, FiPackage, FiLogOut, FiSettings, FiBarChart2, FiMenu, FiX } from 'react-icons/fi'
+import { FiGrid, FiCalendar, FiFileText, FiDollarSign, FiPackage, FiLogOut, FiSettings, FiBarChart2, FiMenu, FiX, FiSliders } from 'react-icons/fi'
 import PerfilUsuarioModal from './PerfilUsuarioModal'
 
 
@@ -14,6 +14,7 @@ const navItems = [
   { to: '/inventario', icon: <FiPackage />, label: 'Inventario' },
   { to: '/catalogo', icon: <FiFileText />, label: 'Catálogo' },
   { to: '/configuracion', icon: <FiSettings />, label: 'Configuración' },
+  { to: '/configuracion/login', icon: <FiSliders />, label: 'Visual Login' },
 ]
 
 export default function Layout({ children, user, setUser, onLogout }) {

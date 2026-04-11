@@ -11,6 +11,7 @@ import PresupuestoImpresion from './pages/PresupuestoImpresion'
 import Cobros from './pages/Cobros'
 import Inventario from './pages/Inventario'
 import ConfiguracionTransferencia from './pages/ConfiguracionTransferencia'
+import ConfiguracionLogin from './pages/ConfiguracionLogin'
 import PagoComprobante from './pages/PagoComprobante'
 import PresupuestoPublico from './pages/PresupuestoPublico'
 import Gastos from './pages/Gastos'
@@ -72,6 +73,7 @@ function App() {
                 <Route path="/catalogo" element={<Catalogo />} />
                 <Route path="/reportes" element={<Reportes />} />
                 <Route path="/configuracion" element={<ConfiguracionTransferencia />} />
+                <Route path="/configuracion/login" element={<ConfiguracionLogin />} />
               </Routes>
             </Layout>
           </PrivateRoute>

@@ -21,7 +21,13 @@ class Usuario(AbstractUser):
 
 
 class LoginConfiguracion(models.Model):
-    """Configuration for the Balatro animation on the login background."""
+    """Configuration for the login background animation."""
+    ANIMATION_TYPES = [
+        ('balatro', 'Balatro'),
+        ('linewaves', 'Line Waves'),
+        ('hyperspeed', 'Hyperspeed'),
+    ]
+    animation_type = models.CharField(max_length=20, choices=ANIMATION_TYPES, default='balatro')
     color1 = models.CharField(max_length=7, default='#DE443B', help_text="Hex code for Color 1")
     color2 = models.CharField(max_length=7, default='#006BB4', help_text="Hex code for Color 2")
     color3 = models.CharField(max_length=7, default='#162325', help_text="Hex code for Color 3")
@@ -29,6 +35,9 @@ class LoginConfiguracion(models.Model):
     is_rotate = models.BooleanField(default=False, help_text="Enable circular spin")
     mouse_interaction = models.BooleanField(default=True, help_text="Enable mouse interaction")
     spin_speed = models.FloatField(default=7.0)
+    spin_rotation = models.FloatField(default=-2.0)
+    spin_amount = models.FloatField(default=0.25)
+    spin_ease = models.FloatField(default=1.0)
     contrast = models.FloatField(default=3.5)
     lighting = models.FloatField(default=0.4)
 

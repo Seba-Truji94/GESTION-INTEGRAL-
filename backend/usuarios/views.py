@@ -47,13 +47,33 @@ class UsuarioDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class LoginConfigView(APIView):
-    """Returns the login animation configuration (Public)."""
-    permission_classes = [permissions.AllowAny]
+    """Returns and updates the login animation configuration."""
 
-    def get(self, request):
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            return [permissions.AllowAny()]
+        return [permissions.IsAuthenticated(), IsAdmin()]
+
+    def _get_or_create_config(self):
         config = LoginConfiguracion.objects.first()
         if not config:
-            # Create a default one if none exists
             config = LoginConfiguracion.objects.create()
-        serializer = LoginConfiguracionSerializer(config)
+        return config
+
+    def get(self, request):
+        serializer = LoginConfiguracionSerializer(self._get_or_create_config())
+        return Response(serializer.data)
+
+    def put(self, request):
+        config = self._get_or_create_config()
+        serializer = LoginConfiguracionSerializer(config, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+
+    def patch(self, request):
+        config = self._get_or_create_config()
+        serializer = LoginConfiguracionSerializer(config, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
         return Response(serializer.data)

@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx shadcn@latest add @react-bits/LineWaves-JS-CSS)",
+      "Bash(npx shadcn@latest add \"https://react-bits.dev/components/line-waves\")"
+    ]
+  }
+}
