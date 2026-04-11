@@ -653,30 +653,49 @@ const Hyperspeed = ({ effectOptions = DEFAULT_EFFECT_OPTIONS }) => {
       }
 
       initPasses() {
-        this.renderPass = new RenderPass(this.scene, this.camera);
-        this.bloomPass = new EffectPass(
-          this.camera,
-          new BloomEffect({
-            luminanceThreshold: 0.2,
-            luminanceSmoothing: 0,
-            resolutionScale: 1
-          })
-        );
+        // Guard: some browsers/platforms return null from getContextAttributes()
+        // which causes postprocessing's addPass to throw. Fall back to plain render.
+        try {
+          const ctx = this.renderer.getContext();
+          if (!ctx || !ctx.getContextAttributes || !ctx.getContextAttributes()) {
+            this.useComposer = false;
+            return;
+          }
+        } catch (e) {
+          this.useComposer = false;
+          return;
+        }
 
-        const smaaPass = new EffectPass(
-          this.camera,
-          new SMAAEffect({
-            preset: SMAAPreset.MEDIUM,
-            searchImage: SMAAEffect.searchImageDataURL,
-            areaImage: SMAAEffect.areaImageDataURL
-          })
-        );
-        this.renderPass.renderToScreen = false;
-        this.bloomPass.renderToScreen = false;
-        smaaPass.renderToScreen = true;
-        this.composer.addPass(this.renderPass);
-        this.composer.addPass(this.bloomPass);
-        this.composer.addPass(smaaPass);
+        try {
+          this.renderPass = new RenderPass(this.scene, this.camera);
+          this.bloomPass = new EffectPass(
+            this.camera,
+            new BloomEffect({
+              luminanceThreshold: 0.2,
+              luminanceSmoothing: 0,
+              resolutionScale: 1
+            })
+          );
+
+          const smaaPass = new EffectPass(
+            this.camera,
+            new SMAAEffect({
+              preset: SMAAPreset.MEDIUM,
+              searchImage: SMAAEffect.searchImageDataURL,
+              areaImage: SMAAEffect.areaImageDataURL
+            })
+          );
+          this.renderPass.renderToScreen = false;
+          this.bloomPass.renderToScreen = false;
+          smaaPass.renderToScreen = true;
+          this.composer.addPass(this.renderPass);
+          this.composer.addPass(this.bloomPass);
+          this.composer.addPass(smaaPass);
+          this.useComposer = true;
+        } catch (e) {
+          console.warn('Hyperspeed: postprocessing unavailable, using basic render', e);
+          this.useComposer = false;
+        }
       }
 
       loadAssets() {
@@ -794,7 +813,11 @@ const Hyperspeed = ({ effectOptions = DEFAULT_EFFECT_OPTIONS }) => {
       }
 
       render(delta) {
-        this.composer.render(delta);
+        if (this.useComposer) {
+          this.composer.render(delta);
+        } else {
+          this.renderer.render(this.scene, this.camera);
+        }
       }
 
       dispose() {
