@@ -40,6 +40,29 @@ class LoginConfiguracion(models.Model):
     spin_ease = models.FloatField(default=1.0)
     contrast = models.FloatField(default=3.5)
     lighting = models.FloatField(default=0.4)
+    # LineWaves specific
+    lw_inner_line_count = models.IntegerField(default=32)
+    lw_outer_line_count = models.IntegerField(default=36)
+    lw_warp_intensity = models.FloatField(default=1.0)
+    lw_rotation = models.FloatField(default=-45.0)
+    lw_edge_fade_width = models.FloatField(default=0.0)
+    lw_color_cycle_speed = models.FloatField(default=1.0)
+    lw_brightness = models.FloatField(default=0.2)
+    lw_mouse_influence = models.FloatField(default=2.0)
+    # Hyperspeed specific
+    hs_preset = models.CharField(
+        max_length=10, default='one',
+        choices=[
+            ('one', 'Preset 1 — Turbulento Violeta/Cyan'),
+            ('two', 'Preset 2 — Montaña Rojo/Gris'),
+            ('three', 'Preset 3 — XY Rojo/Dorado'),
+            ('four', 'Preset 4 — Long Race Rosa/Turquesa'),
+            ('five', 'Preset 5 — Turbulento Naranja/Azul'),
+            ('six', 'Preset 6 — Deep Rojo/Crema'),
+        ],
+        help_text='Preset de colores y distorsión para Hyperspeed',
+    )
+    hs_speed_up = models.FloatField(default=2.0, help_text='Factor de aceleración al hacer clic')
 
     class Meta:
         verbose_name = 'Configuración de Login'

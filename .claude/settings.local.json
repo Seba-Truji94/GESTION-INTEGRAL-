@@ -2,7 +2,11 @@
   "permissions": {
     "allow": [
       "Bash(npx shadcn@latest add @react-bits/LineWaves-JS-CSS)",
-      "Bash(npx shadcn@latest add \"https://react-bits.dev/components/line-waves\")"
+      "Bash(npx shadcn@latest add \"https://react-bits.dev/components/line-waves\")",
+      "Bash(python manage.py makemigrations usuarios --name=\"add_linewaves_fields\")",
+      "Bash(python manage.py migrate)",
+      "Bash(npm install:*)",
+      "Bash(python manage.py migrate usuarios)"
     ]
   }
 }

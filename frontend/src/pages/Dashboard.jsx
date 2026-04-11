@@ -23,6 +23,8 @@ export default function Dashboard() {
 
   if (loading || !data) return <div className="loading"><span className="spinner"></span>Cargando dashboard...</div>
 
+  const isMobile = window.innerWidth < 768
+
   const eventosEstadoData = Object.entries(data.eventos_por_estado)
     .filter(([,v]) => v.count > 0)
     .map(([k, v]) => ({ name: v.label, value: v.count }))
@@ -110,13 +112,17 @@ export default function Dashboard() {
       <div className="chart-grid">
         <div className="chart-card">
           <h4>📊 Ventas vs Costos vs Utilidad por Mes</h4>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={data.ventas_por_mes.filter(m => m.ventas > 0 || m.costos > 0)}>
+          <ResponsiveContainer width="100%" height={isMobile ? 220 : 300}>
+            <BarChart data={data.ventas_por_mes.filter(m => m.ventas > 0 || m.costos > 0)}
+                      margin={{ top: 4, right: 4, left: isMobile ? -20 : 0, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-              <XAxis dataKey="mes" tick={{ fontSize: 11 }} />
-              <YAxis tick={{ fontSize: 11 }} tickFormatter={v => `$${(v/1000000).toFixed(1)}M`} />
+              <XAxis dataKey="mes" tick={{ fontSize: isMobile ? 9 : 11 }}
+                     tickFormatter={v => isMobile ? v.slice(0, 3) : v} />
+              <YAxis tick={{ fontSize: isMobile ? 9 : 11 }}
+                     tickFormatter={v => `$${(v/1000000).toFixed(1)}M`}
+                     width={isMobile ? 44 : 60} />
               <Tooltip formatter={v => fmt(v)} />
-              <Legend />
+              {!isMobile && <Legend />}
               <Bar dataKey="ventas" name="Ventas" fill="#2563eb" radius={[4,4,0,0]} />
               <Bar dataKey="costos" name="Costos" fill="#d97706" radius={[4,4,0,0]} />
               <Bar dataKey="utilidad" name="Utilidad" fill="#059669" radius={[4,4,0,0]} />
@@ -126,13 +132,19 @@ export default function Dashboard() {
 
         <div className="chart-card">
           <h4>📈 Eventos por Estado</h4>
-          <ResponsiveContainer width="100%" height={300}>
+          <ResponsiveContainer width="100%" height={isMobile ? 220 : 300}>
             <PieChart>
-              <Pie data={eventosEstadoData} cx="50%" cy="50%" outerRadius={100}
-                   dataKey="value" label={({ name, value }) => `${name}: ${value}`}>
+              <Pie data={eventosEstadoData} cx="50%" cy="50%"
+                   outerRadius={isMobile ? 70 : 100}
+                   dataKey="value"
+                   label={isMobile
+                     ? ({ value }) => value
+                     : ({ name, value }) => `${name}: ${value}`}
+                   labelLine={!isMobile}>
                 {eventosEstadoData.map((_, i) => <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />)}
               </Pie>
-              <Tooltip />
+              <Tooltip formatter={(value, name) => [value, name]} />
+              {isMobile && <Legend iconSize={10} wrapperStyle={{ fontSize: 11 }} />}
             </PieChart>
           </ResponsiveContainer>
         </div>

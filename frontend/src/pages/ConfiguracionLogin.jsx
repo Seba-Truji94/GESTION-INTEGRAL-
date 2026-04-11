@@ -3,7 +3,7 @@ import { FiSave, FiRotateCcw } from 'react-icons/fi'
 import api from '../services/api'
 import Balatro from '../components/Balatro/Balatro'
 import LineWaves from '../components/LineWaves/LineWaves'
-import Hyperspeed from '../components/Hyperspeed/Hyperspeed'
+import Hyperspeed, { hyperspeedPresets } from '../components/Hyperspeed/Hyperspeed'
 
 const DEFAULTS = {
   animation_type: 'balatro',
@@ -19,6 +19,16 @@ const DEFAULTS = {
   spin_ease: 1.0,
   contrast: 3.5,
   lighting: 0.4,
+  lw_inner_line_count: 32,
+  lw_outer_line_count: 36,
+  lw_warp_intensity: 1.0,
+  lw_rotation: -45.0,
+  lw_edge_fade_width: 0.0,
+  lw_color_cycle_speed: 1.0,
+  lw_brightness: 0.2,
+  lw_mouse_influence: 2.0,
+  hs_preset: 'one',
+  hs_speed_up: 2.0,
 }
 
 const ANIMATIONS = [
@@ -137,19 +147,28 @@ function AnimationPreview({ form }) {
         color1={form.color1}
         color2={form.color2}
         color3={form.color3}
-        mouseInteraction={form.mouse_interaction}
-        speed={form.spin_speed * 0.1}
+        speed={form.spin_speed}
+        innerLineCount={form.lw_inner_line_count}
+        outerLineCount={form.lw_outer_line_count}
+        warpIntensity={form.lw_warp_intensity}
+        rotation={form.lw_rotation}
+        edgeFadeWidth={form.lw_edge_fade_width}
+        colorCycleSpeed={form.lw_color_cycle_speed}
+        brightness={form.lw_brightness}
+        enableMouseInteraction={form.mouse_interaction}
+        mouseInfluence={form.lw_mouse_influence}
       />
     )
   }
   if (form.animation_type === 'hyperspeed') {
     return (
       <Hyperspeed
-        color1={form.color1}
-        color2={form.color2}
-        color3={form.color3}
-        mouseInteraction={form.mouse_interaction}
-        speed={form.spin_speed * 0.7}
+        effectOptions={{
+          ...(hyperspeedPresets[form.hs_preset] || hyperspeedPresets.one),
+          speedUp: form.hs_speed_up,
+          onSpeedUp: () => {},
+          onSlowDown: () => {},
+        }}
       />
     )
   }
@@ -289,6 +308,75 @@ export default function ConfiguracionLogin() {
               </>}
             </div>
           </div>
+
+          {/* Controles específicos LineWaves */}
+          {form.animation_type === 'linewaves' && (
+            <div className="card">
+              <div className="card-header">
+                <h3 className="card-title">Parámetros Line Waves</h3>
+              </div>
+              <div style={{ padding: '16px 20px' }}>
+                <SliderField label="Líneas internas" name="lw_inner_line_count" value={form.lw_inner_line_count} min={4} max={80} step={1} onChange={handleChange} />
+                <SliderField label="Líneas externas" name="lw_outer_line_count" value={form.lw_outer_line_count} min={4} max={80} step={1} onChange={handleChange} />
+                <SliderField label="Intensidad de warp" name="lw_warp_intensity" value={form.lw_warp_intensity} min={0} max={5} step={0.1} onChange={handleChange} />
+                <SliderField label="Rotación (°)" name="lw_rotation" value={form.lw_rotation} min={-180} max={180} step={5} onChange={handleChange} />
+                <SliderField label="Fade de borde" name="lw_edge_fade_width" value={form.lw_edge_fade_width} min={0} max={1} step={0.05} onChange={handleChange} />
+                <SliderField label="Velocidad de color" name="lw_color_cycle_speed" value={form.lw_color_cycle_speed} min={0} max={5} step={0.1} onChange={handleChange} />
+                <SliderField label="Brillo" name="lw_brightness" value={form.lw_brightness} min={0.01} max={1} step={0.01} onChange={handleChange} />
+                <SliderField label="Influencia del mouse" name="lw_mouse_influence" value={form.lw_mouse_influence} min={0} max={10} step={0.5} onChange={handleChange} />
+              </div>
+            </div>
+          )}
+
+          {/* Controles específicos Hyperspeed */}
+          {form.animation_type === 'hyperspeed' && (
+            <div className="card">
+              <div className="card-header">
+                <h3 className="card-title">Presets Hyperspeed</h3>
+              </div>
+              <div style={{ padding: '12px 16px', display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {[
+                  { key: 'one',   label: 'Preset 1', desc: 'Turbulento — Violeta / Cyan' },
+                  { key: 'two',   label: 'Preset 2', desc: 'Montaña — Rojo / Gris' },
+                  { key: 'three', label: 'Preset 3', desc: 'XY — Rojo / Dorado' },
+                  { key: 'four',  label: 'Preset 4', desc: 'Long Race — Rosa / Turquesa' },
+                  { key: 'five',  label: 'Preset 5', desc: 'Turbulento — Naranja / Azul' },
+                  { key: 'six',   label: 'Preset 6', desc: 'Deep — Rojo / Crema' },
+                ].map(p => (
+                  <button
+                    key={p.key}
+                    type="button"
+                    onClick={() => handleChange('hs_preset', p.key)}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: 12,
+                      padding: '8px 12px', borderRadius: 8, border: 'none', cursor: 'pointer',
+                      background: form.hs_preset === p.key
+                        ? 'rgba(99,102,241,0.2)'
+                        : 'rgba(255,255,255,0.04)',
+                      outline: form.hs_preset === p.key
+                        ? '1.5px solid rgba(99,102,241,0.7)'
+                        : '1px solid rgba(255,255,255,0.08)',
+                      transition: 'all 0.15s', textAlign: 'left',
+                    }}
+                  >
+                    <div style={{
+                      width: 8, height: 8, borderRadius: '50%', flexShrink: 0,
+                      background: form.hs_preset === p.key ? '#6366f1' : 'rgba(255,255,255,0.2)',
+                    }} />
+                    <div>
+                      <div style={{ fontWeight: 600, fontSize: 13, color: form.hs_preset === p.key ? '#c7d2fe' : '#e2e8f0' }}>
+                        {p.label}
+                      </div>
+                      <div style={{ fontSize: 11, color: '#64748b', marginTop: 1 }}>{p.desc}</div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+              <div style={{ padding: '0 16px 16px' }}>
+                <SliderField label="Velocidad de aceleración" name="hs_speed_up" value={form.hs_speed_up} min={0.5} max={8} step={0.5} onChange={handleChange} />
+              </div>
+            </div>
+          )}
 
           {/* Imagen — solo Balatro */}
           {isBalatro && (

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import api from '../services/api'
 import Balatro from '../components/Balatro/Balatro'
 import LineWaves from '../components/LineWaves/LineWaves'
-import Hyperspeed from '../components/Hyperspeed/Hyperspeed'
+import Hyperspeed, { hyperspeedPresets } from '../components/Hyperspeed/Hyperspeed'
 
 export default function Login({ onLogin }) {
   const [username, setUsername] = useState('')
@@ -67,17 +67,26 @@ export default function Login({ onLogin }) {
           color1={config.color1}
           color2={config.color2}
           color3={config.color3}
-          mouseInteraction={config.mouse_interaction}
-          speed={config.spin_speed * 0.1}
+          speed={config.spin_speed}
+          innerLineCount={config.lw_inner_line_count}
+          outerLineCount={config.lw_outer_line_count}
+          warpIntensity={config.lw_warp_intensity}
+          rotation={config.lw_rotation}
+          edgeFadeWidth={config.lw_edge_fade_width}
+          colorCycleSpeed={config.lw_color_cycle_speed}
+          brightness={config.lw_brightness}
+          enableMouseInteraction={config.mouse_interaction}
+          mouseInfluence={config.lw_mouse_influence}
         />
       )}
       {config && config.animation_type === 'hyperspeed' && (
         <Hyperspeed
-          color1={config.color1}
-          color2={config.color2}
-          color3={config.color3}
-          mouseInteraction={config.mouse_interaction}
-          speed={config.spin_speed * 0.7}
+          effectOptions={{
+            ...(hyperspeedPresets[config.hs_preset] || hyperspeedPresets.one),
+            speedUp: config.hs_speed_up ?? 2,
+            onSpeedUp: () => {},
+            onSlowDown: () => {},
+          }}
         />
       )}
       
