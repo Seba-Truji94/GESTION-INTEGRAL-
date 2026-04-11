@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
+from .models import Usuario, LoginConfiguracion
 
 Usuario = get_user_model()
 
@@ -31,3 +32,9 @@ class MeSerializer(serializers.ModelSerializer):
         model = Usuario
         fields = ['id', 'username', 'email', 'first_name', 'last_name', 'rol', 'telefono', 'avatar']
         read_only_fields = ['id', 'username', 'rol']
+
+
+class LoginConfiguracionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LoginConfiguracion
+        fields = '__all__'

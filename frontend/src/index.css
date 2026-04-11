@@ -632,7 +632,9 @@ select.form-control { cursor: pointer; }
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, var(--nav) 0%, #1a2b3c 50%, var(--nav) 100%);
+  background: #000; /* Balatro will cover this */
+  position: relative;
+  overflow: hidden;
 }
 
 .login-card {
@@ -642,7 +644,27 @@ select.form-control { cursor: pointer; }
   width: 420px;
   max-width: 92vw;
   box-shadow: 0 25px 50px -12px rgba(0,0,0,0.4);
+  position: relative;
+  z-index: 10;
+  transition: all 0.3s ease;
 }
+
+.login-glass {
+  background: rgba(15, 25, 35, 0.7) !important;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.login-glass .login-title { color: #fff; }
+.login-glass .login-sub { color: rgba(255, 255, 255, 0.7); }
+.login-glass label { color: rgba(255, 255, 255, 0.6); }
+.login-glass .form-control { 
+  border-color: rgba(255, 255, 255, 0.2); 
+  color: #fff;
+}
+.login-glass .form-control::placeholder { color: rgba(255, 255, 255, 0.3); }
 
 .login-logo {
   width: 56px;

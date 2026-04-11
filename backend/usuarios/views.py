@@ -2,7 +2,8 @@ from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.contrib.auth import get_user_model
-from .serializers import UsuarioSerializer, UsuarioCreateSerializer, MeSerializer
+from .models import Usuario, LoginConfiguracion
+from .serializers import UsuarioSerializer, UsuarioCreateSerializer, MeSerializer, LoginConfiguracionSerializer
 
 Usuario = get_user_model()
 
@@ -43,3 +44,16 @@ class UsuarioDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Usuario.objects.all()
     serializer_class = UsuarioSerializer
     permission_classes = [IsAdmin]
+
+
+class LoginConfigView(APIView):
+    """Returns the login animation configuration (Public)."""
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request):
+        config = LoginConfiguracion.objects.first()
+        if not config:
+            # Create a default one if none exists
+            config = LoginConfiguracion.objects.create()
+        serializer = LoginConfiguracionSerializer(config)
+        return Response(serializer.data)

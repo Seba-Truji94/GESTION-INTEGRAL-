@@ -1,13 +1,27 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import api from '../services/api'
+import Balatro from '../components/Balatro/Balatro'
 
 export default function Login({ onLogin }) {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [config, setConfig] = useState(null)
   const navigate = useNavigate()
+
+  useEffect(() => {
+    const fetchConfig = async () => {
+      try {
+        const res = await api.get('/auth/login-config/')
+        setConfig(res.data)
+      } catch (err) {
+        console.error("Error fetching login config", err)
+      }
+    }
+    fetchConfig()
+  }, [])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -30,7 +44,21 @@ export default function Login({ onLogin }) {
 
   return (
     <div className="login-page">
-      <div className="login-card">
+      {config && (
+        <Balatro 
+          color1={config.color1}
+          color2={config.color2}
+          color3={config.color3}
+          pixelFilter={config.pixel_filter}
+          isRotate={config.is_rotate}
+          mouseInteraction={config.mouse_interaction}
+          spinSpeed={config.spin_speed}
+          contrast={config.contrast}
+          lighting={config.lighting}
+        />
+      )}
+      
+      <div className="login-card login-glass">
         <div className="login-logo">KR</div>
         <h1 className="login-title">Kruxel</h1>
         <p className="login-sub">Tu Gestión Integral de Software</p>
@@ -43,6 +71,7 @@ export default function Login({ onLogin }) {
             <input
               type="text"
               className="form-control"
+              style={{ background: 'rgba(255,255,255,0.1)', color: '#fff' }}
               value={username}
               onChange={e => setUsername(e.target.value)}
               placeholder="Ingresa tu usuario"
@@ -55,6 +84,7 @@ export default function Login({ onLogin }) {
             <input
               type="password"
               className="form-control"
+              style={{ background: 'rgba(255,255,255,0.1)', color: '#fff' }}
               value={password}
               onChange={e => setPassword(e.target.value)}
               placeholder="Ingresa tu contraseña"
