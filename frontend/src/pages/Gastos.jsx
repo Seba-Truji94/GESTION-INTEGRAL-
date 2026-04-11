@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { FiPlus, FiSearch, FiDollarSign, FiPaperclip, FiTrash2, FiCopy, FiCheckCircle, FiClock, FiDownload } from 'react-icons/fi'
-import api, { fmt } from '../services/api'
+import api, { fmt, toInputDate } from '../services/api'
 
 const CATEGORIAS_GASTOS = [
   { id: 'arriendo', label: 'Arriendo / Bodega' },
@@ -216,7 +216,7 @@ export default function Gastos() {
                         setSelectedGasto(g)
                         setForm({
                           nombre: g.nombre, categoria: g.categoria, monto: g.monto,
-                          fecha_vencimiento: g.fecha_vencimiento,
+                          fecha_vencimiento: toInputDate(g.fecha_vencimiento),
                           estado: g.estado, observaciones: g.observaciones, comprobante: null
                         })
                         setShowModal(true)

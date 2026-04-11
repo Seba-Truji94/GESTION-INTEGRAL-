@@ -49,6 +49,15 @@ export const fmtPct = (n) => {
   return (Math.round(Number(n) * 10) / 10).toFixed(1) + '%'
 }
 
+// Convert dd/MM/yyyy (backend format) → yyyy-MM-dd (HTML date input format)
+export const toInputDate = (d) => {
+  if (!d) return ''
+  if (/^\d{4}-\d{2}-\d{2}/.test(d)) return d.substring(0, 10) // already ISO
+  const [day, month, year] = d.split('/')
+  if (!year) return ''
+  return `${year}-${month.padStart(2,'0')}-${day.padStart(2,'0')}`
+}
+
 export const fmtDate = (d) => {
   if (!d) return 'Sin fecha'
   const date = new Date(d + 'T12:00:00') // Add T12:00:00 to avoid timezone offset issues (off-by-one)

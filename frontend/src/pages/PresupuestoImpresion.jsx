@@ -81,7 +81,7 @@ export default function PresupuestoImpresion() {
     // Update status to 'enviado' if it's currently 'borrador'
     if (presupuesto.estado === 'borrador') {
       try {
-        await api.patch(`/eventos/presupuestos/${presupuesto.id}/`, { estado: 'enviado' })
+        await api.patch(`/presupuestos/${presupuesto.id}/`, { estado: 'enviado' })
         setPresupuesto({ ...presupuesto, estado: 'enviado', estado_display: 'Enviado' })
       } catch (e) {
         console.error('Error updating status:', e)

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { FiPlus, FiSearch, FiDownload, FiEye, FiEdit2, FiTrash2 } from 'react-icons/fi'
-import api, { fmt, fmtDate } from '../services/api'
+import api, { fmt, fmtDate, toInputDate } from '../services/api'
 
 const ESTADOS = [
   { value: '', label: 'Todos' },
@@ -65,7 +65,7 @@ export default function Eventos() {
 
   const handleEdit = (ev) => {
     setEditEvento(ev)
-    setForm({ nombre: ev.nombre, cliente: ev.cliente, fecha: ev.fecha, tipo_evento: ev.tipo_evento, pax: ev.pax, lugar: ev.lugar, estado: ev.estado, menu: ev.menu || '', observaciones: ev.observaciones || '' })
+    setForm({ nombre: ev.nombre, cliente: ev.cliente, fecha: toInputDate(ev.fecha), tipo_evento: ev.tipo_evento, pax: ev.pax, lugar: ev.lugar, estado: ev.estado, menu: ev.menu || '', observaciones: ev.observaciones || '' })
     setShowModal(true)
   }
 
