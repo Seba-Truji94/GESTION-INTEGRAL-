@@ -47,6 +47,9 @@ export default function PagoComprobante() {
 
       <div className="impresion-sheet comprobante-sheet">
         <div className="doc-header center">
+          <div className="doc-logo-row">
+            <img src="/logoryf.jpeg" alt="Logo" className="doc-logo" />
+          </div>
           <h1 className="doc-title" style={{ fontSize: 24, marginBottom: 4 }}>COMPROBANTE DE PAGO</h1>
           <p className="doc-subtitle">Recibo N° {pago.id.toString().padStart(6, '0')}</p>
         </div>

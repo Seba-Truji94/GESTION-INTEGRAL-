@@ -908,6 +908,24 @@ select.form-control { cursor: pointer; }
   margin-bottom: 20px;
 }
 
+.doc-logo-row {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.doc-logo {
+  height: 90px;
+  width: auto;
+  object-fit: contain;
+}
+
+@media print {
+  .doc-logo {
+    height: 80px;
+  }
+}
+
 .doc-title-row {
   display: flex;
   justify-content: space-between;

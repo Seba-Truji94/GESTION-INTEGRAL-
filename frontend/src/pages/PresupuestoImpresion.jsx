@@ -138,6 +138,10 @@ export default function PresupuestoImpresion() {
             <span>Presupuesto</span>
           </div>
 
+          <div className="doc-logo-row">
+            <img src="/logoryf.jpeg" alt="Logo" className="doc-logo" />
+          </div>
+
           <div className="doc-title-row">
             <div>
               <h1 className="doc-title">PRESUPUESTO DE BANQUETERIA</h1>
