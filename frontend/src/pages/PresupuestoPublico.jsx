@@ -11,16 +11,17 @@ export default function PresupuestoPublico() {
   useEffect(() => {
     const load = async () => {
       try {
-        // Use the public endpoint
-        const [resP, resB] = await Promise.all([
-          api.get(`/eventos/presupuestos/publico/${id}/`),
-          api.get('/cobros/datos-transferencia/') // This might need to be public too if needed, but let's check
-        ])
+        const resP = await api.get(`/presupuestos/publico/${id}/`)
         setPresupuesto(resP.data)
-        const bankList = Array.isArray(resB.data) ? resB.data : (resB.data?.results || [])
-        setDatosBanco(bankList.find(d => d.activo) || bankList[0] || null)
       } catch (e) {
         console.error(e)
+      }
+      try {
+        const resB = await api.get('/cobros/datos-transferencia/')
+        const bankList = Array.isArray(resB.data) ? resB.data : (resB.data?.results || [])
+        setDatosBanco(bankList.find(d => d.activo) || bankList[0] || null)
+      } catch {
+        // datos bancarios no disponibles para usuarios públicos — no es crítico
       }
       setLoading(false)
     }
