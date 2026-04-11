@@ -1,9 +1,69 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, memo, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import api from '../services/api'
 import Balatro from '../components/Balatro/Balatro'
 import LineWaves from '../components/LineWaves/LineWaves'
 import Hyperspeed, { hyperspeedPresets } from '../components/Hyperspeed/Hyperspeed'
+
+// Memoized so it never re-renders when the form state (username/password) changes
+const AnimationBackground = memo(function AnimationBackground({ config }) {
+  const hyperspeedOptions = useMemo(() => {
+    if (!config || config.animation_type !== 'hyperspeed') return null
+    return {
+      ...(hyperspeedPresets[config.hs_preset] || hyperspeedPresets.one),
+      speedUp: config.hs_speed_up ?? 2,
+      onSpeedUp: () => {},
+      onSlowDown: () => {},
+    }
+  }, [config])
+
+  if (!config) return null
+
+  if (config.animation_type === 'balatro') {
+    return (
+      <Balatro
+        color1={config.color1}
+        color2={config.color2}
+        color3={config.color3}
+        pixelFilter={config.pixel_filter}
+        isRotate={config.is_rotate}
+        mouseInteraction={config.mouse_interaction}
+        spinSpeed={config.spin_speed}
+        spinRotation={config.spin_rotation}
+        spinAmount={config.spin_amount}
+        spinEase={config.spin_ease}
+        contrast={config.contrast}
+        lighting={config.lighting}
+      />
+    )
+  }
+
+  if (config.animation_type === 'linewaves') {
+    return (
+      <LineWaves
+        color1={config.color1}
+        color2={config.color2}
+        color3={config.color3}
+        speed={config.spin_speed}
+        innerLineCount={config.lw_inner_line_count}
+        outerLineCount={config.lw_outer_line_count}
+        warpIntensity={config.lw_warp_intensity}
+        rotation={config.lw_rotation}
+        edgeFadeWidth={config.lw_edge_fade_width}
+        colorCycleSpeed={config.lw_color_cycle_speed}
+        brightness={config.lw_brightness}
+        enableMouseInteraction={config.mouse_interaction}
+        mouseInfluence={config.lw_mouse_influence}
+      />
+    )
+  }
+
+  if (config.animation_type === 'hyperspeed') {
+    return <Hyperspeed effectOptions={hyperspeedOptions} />
+  }
+
+  return null
+})
 
 export default function Login({ onLogin }) {
   const [username, setUsername] = useState('')
@@ -46,50 +106,8 @@ export default function Login({ onLogin }) {
 
   return (
     <div className="login-page">
-      {config && config.animation_type === 'balatro' && (
-        <Balatro
-          color1={config.color1}
-          color2={config.color2}
-          color3={config.color3}
-          pixelFilter={config.pixel_filter}
-          isRotate={config.is_rotate}
-          mouseInteraction={config.mouse_interaction}
-          spinSpeed={config.spin_speed}
-          spinRotation={config.spin_rotation}
-          spinAmount={config.spin_amount}
-          spinEase={config.spin_ease}
-          contrast={config.contrast}
-          lighting={config.lighting}
-        />
-      )}
-      {config && config.animation_type === 'linewaves' && (
-        <LineWaves
-          color1={config.color1}
-          color2={config.color2}
-          color3={config.color3}
-          speed={config.spin_speed}
-          innerLineCount={config.lw_inner_line_count}
-          outerLineCount={config.lw_outer_line_count}
-          warpIntensity={config.lw_warp_intensity}
-          rotation={config.lw_rotation}
-          edgeFadeWidth={config.lw_edge_fade_width}
-          colorCycleSpeed={config.lw_color_cycle_speed}
-          brightness={config.lw_brightness}
-          enableMouseInteraction={config.mouse_interaction}
-          mouseInfluence={config.lw_mouse_influence}
-        />
-      )}
-      {config && config.animation_type === 'hyperspeed' && (
-        <Hyperspeed
-          effectOptions={{
-            ...(hyperspeedPresets[config.hs_preset] || hyperspeedPresets.one),
-            speedUp: config.hs_speed_up ?? 2,
-            onSpeedUp: () => {},
-            onSlowDown: () => {},
-          }}
-        />
-      )}
-      
+      <AnimationBackground config={config} />
+
       <div className="login-card login-glass">
         <div className="login-logo">KR</div>
         <h1 className="login-title">Kruxel</h1>
