@@ -827,7 +827,11 @@ select.form-control { cursor: pointer; }
   .kpi-grid {
     grid-template-columns: 1fr;
   }
-  
+
+  .chart-grid {
+    grid-template-columns: 1fr;
+  }
+
   .modal {
     padding: 20px;
   }
@@ -839,6 +843,31 @@ select.form-control { cursor: pointer; }
   .budget-entry-grid {
     grid-template-columns: 1fr !important;
   }
+
+  .responsive-stack {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .w-full-mobile {
+    width: 100%;
+  }
+
+  .responsive-select {
+    width: 100%;
+  }
+
+  .main-content {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+}
+
+.responsive-stack {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
 .responsive-kpi {
