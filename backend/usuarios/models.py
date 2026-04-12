@@ -12,6 +12,7 @@ MODULOS = [
     ('catalogo', 'Catálogo'),
     ('reportes', 'Reportes'),
     ('configuracion', 'Configuración'),
+    ('configuracion_login', 'Visual Login'),
 ]
 
 

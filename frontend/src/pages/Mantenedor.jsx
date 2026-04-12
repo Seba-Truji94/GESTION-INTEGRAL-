@@ -3,15 +3,16 @@ import { FiPlus, FiEdit2, FiTrash2, FiShield, FiX, FiCheck, FiUser, FiEye, FiEye
 import api from '../services/api'
 
 const MODULOS = [
-  { key: 'dashboard',     label: 'Dashboard' },
-  { key: 'eventos',       label: 'Eventos' },
-  { key: 'presupuestos',  label: 'Presupuestos' },
-  { key: 'cobros',        label: 'Cobros' },
-  { key: 'gastos',        label: 'Gastos' },
-  { key: 'inventario',    label: 'Inventario' },
-  { key: 'catalogo',      label: 'Catálogo' },
-  { key: 'reportes',      label: 'Reportes' },
-  { key: 'configuracion', label: 'Configuración' },
+  { key: 'dashboard',          label: 'Dashboard' },
+  { key: 'eventos',            label: 'Eventos' },
+  { key: 'presupuestos',       label: 'Presupuestos' },
+  { key: 'cobros',             label: 'Cobros' },
+  { key: 'gastos',             label: 'Gastos' },
+  { key: 'inventario',         label: 'Inventario' },
+  { key: 'catalogo',           label: 'Catálogo' },
+  { key: 'reportes',           label: 'Reportes' },
+  { key: 'configuracion',      label: 'Configuración' },
+  { key: 'configuracion_login',label: 'Visual Login' },
 ]
 
 const PERMS = [

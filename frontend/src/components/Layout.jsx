@@ -13,7 +13,7 @@ const NAV_ITEMS = [
   { to: '/inventario',     icon: <FiPackage />,    label: 'Inventario',     modulo: 'inventario' },
   { to: '/catalogo',       icon: <FiShoppingBag />,label: 'Catálogo',       modulo: 'catalogo' },
   { to: '/configuracion',  icon: <FiSettings />,   label: 'Configuración',  modulo: 'configuracion' },
-  { to: '/configuracion/login', icon: <FiSliders />, label: 'Visual Login', modulo: 'configuracion' },
+  { to: '/configuracion/login', icon: <FiSliders />, label: 'Visual Login', modulo: 'configuracion_login' },
 ]
 
 function canSee(user, modulo) {
