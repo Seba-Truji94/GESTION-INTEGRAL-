@@ -13,6 +13,12 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
+CSRF_TRUSTED_ORIGINS = [
+    'https://kruxel.cl',
+    'https://www.kruxel.cl',
+    f'https://{os.environ.get("ALLOWED_HOSTS", "kruxel.cl").split(",")[0].strip()}',
+]
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
