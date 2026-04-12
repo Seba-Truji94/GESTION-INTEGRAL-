@@ -6,7 +6,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('usuarios', '0008_add_hyperspeed_fields'),
+        ('usuarios', '0007_add_hyperspeed_fields'),
     ]
 
     operations = [
