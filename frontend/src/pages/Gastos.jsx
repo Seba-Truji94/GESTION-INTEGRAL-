@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { FiPlus, FiSearch, FiDollarSign, FiPaperclip, FiTrash2, FiCopy, FiCheckCircle, FiClock, FiDownload } from 'react-icons/fi'
 import api, { fmt, toInputDate } from '../services/api'
+import Paginador from '../components/Paginador'
 
 const CATEGORIAS_GASTOS = [
   { id: 'arriendo', label: 'Arriendo / Bodega' },
@@ -21,10 +22,12 @@ export default function Gastos() {
   const [selectedGasto, setSelectedGasto] = useState(null)
   
   const now = new Date()
-  const [filtro, setFiltro] = useState({ 
-    mes: now.getMonth() + 1, 
-    anio: now.getFullYear() 
+  const [filtro, setFiltro] = useState({
+    mes: now.getMonth() + 1,
+    anio: now.getFullYear()
   })
+  const [page, setPage] = useState(1)
+  const [pageSize, setPageSize] = useState(10)
 
   const [form, setForm] = useState({
     nombre: '',
@@ -50,7 +53,10 @@ export default function Gastos() {
 
   useEffect(() => {
     load()
+    setPage(1)
   }, [filtro])
+
+  const paginated = gastos.slice((page - 1) * pageSize, page * pageSize)
 
   const handleSave = async () => {
     if (!form.nombre || !form.monto) { alert('Completa los campos obligatorios'); return }
@@ -188,9 +194,9 @@ export default function Gastos() {
               </tr>
             </thead>
             <tbody>
-              {gastos.length === 0 ? (
+              {paginated.length === 0 ? (
                 <tr><td colSpan="6" className="center">No hay gastos registrados para este periodo</td></tr>
-              ) : gastos.map(g => (
+              ) : paginated.map(g => (
                 <tr key={g.id}>
                   <td className="bold">{g.nombre}</td>
                   <td>{g.categoria_display}</td>
@@ -229,6 +235,7 @@ export default function Gastos() {
             </tbody>
           </table>
         )}
+        <Paginador total={gastos.length} page={page} pageSize={pageSize} onPage={setPage} onPageSize={setPageSize} />
       </div>
 
       {showModal && (

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { FiPlus, FiSearch, FiDownload, FiEdit2, FiTrash2, FiArrowUp, FiArrowDown, FiRefreshCw } from 'react-icons/fi'
 import api, { fmt } from '../services/api'
+import Paginador from '../components/Paginador'
 
 export default function Inventario() {
   const [productos, setProductos] = useState([])
@@ -9,6 +10,10 @@ export default function Inventario() {
   const [search, setSearch] = useState('')
   const [filtroCat, setFiltroCat] = useState('')
   const [tab, setTab] = useState('productos') // productos | movimientos
+  const [pageP, setPageP] = useState(1)
+  const [pageSizeP, setPageSizeP] = useState(10)
+  const [pageM, setPageM] = useState(1)
+  const [pageSizeM, setPageSizeM] = useState(10)
   const [showModal, setShowModal] = useState(false)
   const [showMovModal, setShowMovModal] = useState(false)
   const [editProd, setEditProd] = useState(null)
@@ -29,6 +34,10 @@ export default function Inventario() {
   }
 
   useEffect(() => { load() }, [search, filtroCat])
+  useEffect(() => { setPageP(1) }, [search, filtroCat])
+
+  const paginatedProductos = productos.slice((pageP - 1) * pageSizeP, pageP * pageSizeP)
+  const paginatedMovimientos = movimientos.slice((pageM - 1) * pageSizeM, pageM * pageSizeM)
 
   const handleSave = async () => {
     try {
@@ -102,6 +111,7 @@ export default function Inventario() {
           </div>
 
           {loading ? <div className="loading"><span className="spinner"></span>Cargando...</div> : (
+            <>
             <table>
               <thead><tr>
                 <th>Producto</th><th>Categoría</th><th>Unidad</th><th className="right">Stock</th>
@@ -109,9 +119,9 @@ export default function Inventario() {
                 <th className="right">Margen%</th><th>Proveedor</th><th className="center">Estado</th><th className="center">Acciones</th>
               </tr></thead>
               <tbody>
-                {productos.length === 0 ? (
+                {paginatedProductos.length === 0 ? (
                   <tr><td colSpan="11"><div className="empty-state"><p>No hay productos</p></div></td></tr>
-                ) : productos.map(p => (
+                ) : paginatedProductos.map(p => (
                   <tr key={p.id}>
                     <td className="bold">{p.nombre}</td>
                     <td>{p.categoria_display}</td>
@@ -135,6 +145,8 @@ export default function Inventario() {
                 ))}
               </tbody>
             </table>
+            <Paginador total={productos.length} page={pageP} pageSize={pageSizeP} onPage={setPageP} onPageSize={setPageSizeP} />
+            </>
           )}
         </div>
       ) : (
@@ -144,7 +156,7 @@ export default function Inventario() {
             <tbody>
               {movimientos.length === 0 ? (
                 <tr><td colSpan="8"><div className="empty-state"><p>No hay movimientos registrados</p></div></td></tr>
-              ) : movimientos.map(m => (
+              ) : paginatedMovimientos.map(m => (
                 <tr key={m.id}>
                   <td className="bold">{m.producto_nombre}</td>
                   <td>
@@ -163,6 +175,7 @@ export default function Inventario() {
               ))}
             </tbody>
           </table>
+          <Paginador total={movimientos.length} page={pageM} pageSize={pageSizeM} onPage={setPageM} onPageSize={setPageSizeM} />
         </div>
       )}
 

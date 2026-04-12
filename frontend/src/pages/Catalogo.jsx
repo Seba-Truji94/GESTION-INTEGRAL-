@@ -1,9 +1,10 @@
 import { useState, useEffect, useMemo } from 'react'
-import { 
-  FiPlus, FiTrash2, FiEdit2, FiSave, FiX, FiSearch, FiFilter, 
+import {
+  FiPlus, FiTrash2, FiEdit2, FiSave, FiX, FiSearch, FiFilter,
   FiBriefcase, FiPercent, FiTrendingUp, FiShoppingBag, FiInfo, FiLayers
 } from 'react-icons/fi'
 import api, { fmt } from '../services/api'
+import Paginador from '../components/Paginador'
 
 export default function Catalogo() {
   const [items, setItems] = useState([])
@@ -15,6 +16,8 @@ export default function Catalogo() {
   // Filters
   const [search, setSearch] = useState('')
   const [catFilter, setCatFilter] = useState('all')
+  const [page, setPage] = useState(1)
+  const [pageSize, setPageSize] = useState(10)
 
   const [form, setForm] = useState({ 
     nombre: '', descripcion: '', categoria: 'otro', precio_venta: 0, ingredientes: [] 
@@ -37,12 +40,16 @@ export default function Catalogo() {
   // Derived Values & KPIs
   const filtered = useMemo(() => {
     return items.filter(it => {
-      const matchesSearch = it.nombre.toLowerCase().includes(search.toLowerCase()) || 
+      const matchesSearch = it.nombre.toLowerCase().includes(search.toLowerCase()) ||
                           it.descripcion.toLowerCase().includes(search.toLowerCase())
       const matchesCat = catFilter === 'all' || it.categoria === catFilter
       return matchesSearch && matchesCat
     })
   }, [items, search, catFilter])
+
+  useEffect(() => { setPage(1) }, [search, catFilter])
+
+  const paginated = filtered.slice((page - 1) * pageSize, page * pageSize)
 
   const kpis = useMemo(() => {
     const total = items.length
@@ -208,7 +215,7 @@ export default function Catalogo() {
             </tr>
           </thead>
           <tbody>
-            {filtered.length === 0 ? (
+            {paginated.length === 0 ? (
                 <tr>
                     <td colSpan={6}>
                         <div className="empty-state">
@@ -217,7 +224,7 @@ export default function Catalogo() {
                         </div>
                     </td>
                 </tr>
-            ) : filtered.map(it => (
+            ) : paginated.map(it => (
               <tr key={it.id}>
                 <td>
                     <div className="bold" style={{fontSize: 14}}>{it.nombre}</div>
@@ -254,6 +261,7 @@ export default function Catalogo() {
             ))}
           </tbody>
         </table>
+        <Paginador total={filtered.length} page={page} pageSize={pageSize} onPage={setPage} onPageSize={setPageSize} />
       </div>
 
       {showModal && (

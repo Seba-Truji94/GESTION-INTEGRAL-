@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { FiPlus, FiSearch, FiDownload, FiEye, FiEdit2, FiTrash2 } from 'react-icons/fi'
 import api, { fmt, fmtDate, toInputDate } from '../services/api'
+import Paginador from '../components/Paginador'
 
 const ESTADOS = [
   { value: '', label: 'Todos' },
@@ -31,6 +32,8 @@ export default function Eventos() {
   const [filtroEstado, setFiltroEstado] = useState('')
   const [showModal, setShowModal] = useState(false)
   const [editEvento, setEditEvento] = useState(null)
+  const [page, setPage] = useState(1)
+  const [pageSize, setPageSize] = useState(10)
   const navigate = useNavigate()
 
   const load = async () => {
@@ -46,6 +49,9 @@ export default function Eventos() {
   }
 
   useEffect(() => { load() }, [filtroEstado, search])
+  useEffect(() => { setPage(1) }, [filtroEstado, search])
+
+  const paginated = eventos.slice((page - 1) * pageSize, page * pageSize)
 
   const [form, setForm] = useState({ nombre: '', cliente: '', fecha: '', tipo_evento: 'matrimonio', pax: 1, lugar: '', estado: 'presupuestado', menu: '', observaciones: '' })
 
@@ -103,7 +109,7 @@ export default function Eventos() {
               {ESTADOS.map(e => <option key={e.value} value={e.value}>{e.label}</option>)}
             </select>
           </div>
-          <span className="mobile-hide" style={{ fontSize: 12, color: 'var(--txt3)' }}>{eventos.length} eventos</span>
+          <span className="mobile-hide" style={{ fontSize: 12, color: 'var(--txt3)' }}>{eventos.length} evento{eventos.length !== 1 ? 's' : ''}</span>
         </div>
 
         {loading ? <div className="loading"><span className="spinner"></span>Cargando...</div> : (
@@ -123,9 +129,9 @@ export default function Eventos() {
               </tr>
             </thead>
             <tbody>
-              {eventos.length === 0 ? (
+              {paginated.length === 0 ? (
                 <tr><td colSpan="10"><div className="empty-state"><p>No hay eventos registrados</p></div></td></tr>
-              ) : eventos.map(ev => (
+              ) : paginated.map(ev => (
                 <tr key={ev.id}>
                   <td className="bold" style={{ cursor: 'pointer', color: 'var(--acc)' }} onClick={() => navigate(`/eventos/${ev.id}`)}>{ev.nombre}</td>
                   <td>{ev.cliente}</td>
@@ -148,6 +154,7 @@ export default function Eventos() {
             </tbody>
           </table>
         )}
+        <Paginador total={eventos.length} page={page} pageSize={pageSize} onPage={setPage} onPageSize={setPageSize} />
       </div>
 
       {showModal && (

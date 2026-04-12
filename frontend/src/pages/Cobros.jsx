@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
+import Paginador from '../components/Paginador'
 import { Link, useNavigate } from 'react-router-dom'
 import { 
   FiPlus, FiSearch, FiDownload, FiDollarSign, FiPrinter, FiPaperclip, 
@@ -14,6 +15,10 @@ export default function Cobros() {
   const [search, setSearch] = useState('')
   const [filtroEstado, setFiltroEstado] = useState('')
   const [activeTab, setActiveTab] = useState('gestion') // 'gestion' | 'trazabilidad'
+  const [pageG, setPageG] = useState(1)
+  const [pageSizeG, setPageSizeG] = useState(10)
+  const [pageT, setPageT] = useState(1)
+  const [pageSizeT, setPageSizeT] = useState(10)
   
   const [showModal, setShowModal] = useState(false)
   const [showPagoModal, setShowPagoModal] = useState(false)
@@ -55,6 +60,11 @@ export default function Cobros() {
   }
 
   useEffect(() => { load() }, [filtroEstado, search])
+  useEffect(() => { setPageG(1) }, [filtroEstado, search])
+  useEffect(() => { setPageT(1) }, [filtroEstado, search])
+
+  const paginatedCobros = cobros.slice((pageG - 1) * pageSizeG, pageG * pageSizeG)
+  const paginatedPagos = allPagos.slice((pageT - 1) * pageSizeT, pageT * pageSizeT)
 
   const handleCreateCobro = async () => {
     if (!cobroForm.presupuesto) { alert('Selecciona un presupuesto'); return }
@@ -151,7 +161,7 @@ export default function Cobros() {
                             <th className="right">Saldo</th><th className="center">Estado</th><th className="center">Auditoría</th>
                         </tr></thead>
                         <tbody>
-                            {cobros.map(c => (
+                            {paginatedCobros.map(c => (
                                 <tr key={c.id}>
                                     <td className="font-mono" style={{fontSize:11}}>#{c.id}</td>
                                     <td className="bold">{c.presupuesto_numero}</td>
@@ -179,6 +189,7 @@ export default function Cobros() {
                             ))}
                         </tbody>
                     </table>
+                    <Paginador total={cobros.length} page={pageG} pageSize={pageSizeG} onPage={setPageG} onPageSize={setPageSizeG} />
                 </div>
             ) : (
                 <div className="table-wrapper" style={{boxShadow:'none', border:'none', background:'transparent'}}>
@@ -187,7 +198,7 @@ export default function Cobros() {
                             <th>Registro</th><th>Evento / Presupuesto</th><th>Monto</th><th>Método</th><th>Gestor (Auditoría)</th><th>Fecha Mov.</th><th className="center">Comprobante</th>
                         </tr></thead>
                         <tbody>
-                            {allPagos.length === 0 ? <tr><td colSpan="7" className="center py-24"><FiInfo/> No hay registros de pagos en el sistema</td></tr> : allPagos.map(p => (
+                            {allPagos.length === 0 ? <tr><td colSpan="7" className="center py-24"><FiInfo/> No hay registros de pagos en el sistema</td></tr> : paginatedPagos.map(p => (
                                 <tr key={p.id}>
                                     <td style={{fontSize:11, color:'var(--txt3)'}}>{new Date(p.created_at).toLocaleString()}</td>
                                     <td>
@@ -213,6 +224,7 @@ export default function Cobros() {
                             ))}
                         </tbody>
                     </table>
+                    <Paginador total={allPagos.length} page={pageT} pageSize={pageSizeT} onPage={setPageT} onPageSize={setPageSizeT} />
                 </div>
             )}
         </div>

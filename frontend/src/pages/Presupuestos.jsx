@@ -2,12 +2,15 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { FiPlus, FiSearch, FiDownload, FiEye, FiPrinter } from 'react-icons/fi'
 import api, { fmt } from '../services/api'
+import Paginador from '../components/Paginador'
 
 export default function Presupuestos() {
   const [presupuestos, setPresupuestos] = useState([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [filtroEstado, setFiltroEstado] = useState('')
+  const [page, setPage] = useState(1)
+  const [pageSize, setPageSize] = useState(10)
   const navigate = useNavigate()
 
   const load = async () => {
@@ -23,6 +26,9 @@ export default function Presupuestos() {
   }
 
   useEffect(() => { load() }, [filtroEstado, search])
+  useEffect(() => { setPage(1) }, [filtroEstado, search])
+
+  const paginated = presupuestos.slice((page - 1) * pageSize, page * pageSize)
 
   const totalPresupuestado = presupuestos.reduce((s, p) => s + Number(p.total || 0), 0)
   const totalCosto = presupuestos.reduce((s, p) => s + Number(p.costo_total || 0), 0)
@@ -86,9 +92,9 @@ export default function Presupuestos() {
               </tr>
             </thead>
             <tbody>
-              {presupuestos.length === 0 ? (
+              {paginated.length === 0 ? (
                 <tr><td colSpan="10"><div className="empty-state"><p>No hay presupuestos</p></div></td></tr>
-              ) : presupuestos.map(p => {
+              ) : paginated.map(p => {
                 const util = Number(p.total || 0) - Number(p.costo_total || 0)
                 const margen = Number(p.total) > 0 ? (util / Number(p.total) * 100) : 0
                 return (
@@ -113,6 +119,7 @@ export default function Presupuestos() {
             </tbody>
           </table>
         )}
+        <Paginador total={presupuestos.length} page={page} pageSize={pageSize} onPage={setPage} onPageSize={setPageSize} />
       </div>
     </div>
   )
