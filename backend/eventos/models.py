@@ -84,6 +84,7 @@ class Presupuesto(models.Model):
     ESTADOS = [
         ('borrador', 'Borrador'),
         ('enviado', 'Enviado'),
+        ('en_espera', 'En Espera'),
         ('aprobado', 'Aprobado'),
         ('rechazado', 'Rechazado'),
     ]

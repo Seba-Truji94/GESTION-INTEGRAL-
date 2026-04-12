@@ -1,8 +1,81 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { FiPlus, FiSearch, FiDownload, FiEye, FiPrinter } from 'react-icons/fi'
+import { FiPlus, FiSearch, FiDownload, FiEye, FiPrinter, FiChevronDown } from 'react-icons/fi'
 import api, { fmt } from '../services/api'
 import Paginador from '../components/Paginador'
+
+const ESTADOS_OPCIONES = [
+  { value: 'borrador',  label: 'Borrador',  color: '#94a3b8' },
+  { value: 'enviado',   label: 'Enviado',   color: '#3b82f6' },
+  { value: 'en_espera', label: 'En Espera', color: '#f59e0b' },
+  { value: 'aprobado',  label: 'Aprobado',  color: '#10b981' },
+  { value: 'rechazado', label: 'Rechazado', color: '#ef4444' },
+]
+
+function EstadoDropdown({ presupuesto, onChanged }) {
+  const [open, setOpen] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const ref = useRef(null)
+
+  useEffect(() => {
+    const handler = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false) }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [])
+
+  const handleSelect = async (value) => {
+    if (value === presupuesto.estado) { setOpen(false); return }
+    setLoading(true)
+    setOpen(false)
+    try {
+      await api.patch(`/presupuestos/${presupuesto.id}/`, { estado: value })
+      onChanged(presupuesto.id, value)
+    } catch (e) { console.error(e) }
+    setLoading(false)
+  }
+
+  const current = ESTADOS_OPCIONES.find(o => o.value === presupuesto.estado)
+
+  return (
+    <div ref={ref} style={{ position: 'relative', display: 'inline-block' }}>
+      <button
+        onClick={() => setOpen(o => !o)}
+        disabled={loading}
+        className={`badge badge-${presupuesto.estado}`}
+        style={{ cursor: 'pointer', border: 'none', display: 'inline-flex', alignItems: 'center', gap: 4 }}
+      >
+        {loading ? '...' : current?.label}
+        <FiChevronDown size={11} />
+      </button>
+      {open && (
+        <div style={{
+          position: 'absolute', top: '110%', left: 0, zIndex: 100,
+          background: 'var(--wh)', border: '1px solid var(--bd)',
+          borderRadius: 'var(--r)', boxShadow: '0 4px 12px rgba(0,0,0,0.12)',
+          minWidth: 140, overflow: 'hidden'
+        }}>
+          {ESTADOS_OPCIONES.map(op => (
+            <button
+              key={op.value}
+              onClick={() => handleSelect(op.value)}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 8,
+                width: '100%', padding: '8px 12px', border: 'none',
+                background: op.value === presupuesto.estado ? 'var(--bg)' : 'transparent',
+                cursor: 'pointer', fontSize: 13, textAlign: 'left',
+                fontWeight: op.value === presupuesto.estado ? 700 : 400,
+                color: op.color,
+              }}
+            >
+              <span style={{ width: 8, height: 8, borderRadius: '50%', background: op.color, flexShrink: 0 }} />
+              {op.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
 
 export default function Presupuestos() {
   const [presupuestos, setPresupuestos] = useState([])
@@ -29,6 +102,13 @@ export default function Presupuestos() {
   useEffect(() => { setPage(1) }, [filtroEstado, search])
 
   const paginated = presupuestos.slice((page - 1) * pageSize, page * pageSize)
+
+  const handleEstadoChanged = (id, newEstado) => {
+    const op = ESTADOS_OPCIONES.find(o => o.value === newEstado)
+    setPresupuestos(prev => prev.map(p =>
+      p.id === id ? { ...p, estado: newEstado, estado_display: op?.label || newEstado } : p
+    ))
+  }
 
   const totalPresupuestado = presupuestos.reduce((s, p) => s + Number(p.total || 0), 0)
   const totalCosto = presupuestos.reduce((s, p) => s + Number(p.costo_total || 0), 0)
@@ -69,6 +149,7 @@ export default function Presupuestos() {
               <option value="">Todos los estados</option>
               <option value="borrador">Borrador</option>
               <option value="enviado">Enviado</option>
+              <option value="en_espera">En Espera</option>
               <option value="aprobado">Aprobado</option>
               <option value="rechazado">Rechazado</option>
             </select>
@@ -106,7 +187,9 @@ export default function Presupuestos() {
                     <td className="right bold">{fmt(p.total)}</td>
                     <td className="right" style={{ color: margen >= 30 ? 'var(--grn)' : margen >= 15 ? 'var(--amb)' : 'var(--red)', fontWeight: 600 }}>{margen.toFixed(1)}%</td>
                     <td style={{ fontSize: 12 }}>{p.forma_pago_display}</td>
-                    <td className="center"><span className={`badge badge-${p.estado}`}>{p.estado_display}</span></td>
+                    <td className="center">
+                      <EstadoDropdown presupuesto={p} onChanged={handleEstadoChanged} />
+                    </td>
                     <td style={{ fontSize: 12, color: 'var(--txt3)' }}>{p.created_at}</td>
                     <td className="center" style={{ display: 'flex', justifyContent: 'center', gap: '8px' }}>
                       <button className="btn-icon" onClick={() => navigate(`/eventos/${p.evento}`)} title="Ver evento"><FiEye /></button>

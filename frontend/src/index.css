@@ -439,6 +439,7 @@ select.form-control { cursor: pointer; }
 .badge-borrador { background: #f1f5f9; color: #475569; }
 .badge-enviado { background: var(--acc-light); color: #1e40af; }
 .badge-aprobado { background: var(--grn-light); color: #065f46; }
+.badge-en_espera { background: #fef3c7; color: #92400e; }
 .badge-rechazado { background: var(--red-light); color: #7f1d1d; }
 .badge-green { background: var(--grn-light); color: #065f46; }
 .badge-red { background: var(--red-light); color: #7f1d1d; }
