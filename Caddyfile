@@ -1,9 +1,8 @@
 {
-    # Global options
-    email your-email@example.com
+    email {$CADDY_EMAIL:admin@example.com}
 }
 
-:80 {
+{$DOMAIN:localhost} {
     # Definimos lo que va al servidor Django
     @backend {
         path /api/* /admin* /static/* /media/*
