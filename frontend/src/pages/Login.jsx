@@ -1,4 +1,4 @@
-import { useState, useEffect, memo, useMemo } from 'react'
+import { useState, useEffect, useRef, memo, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import api from '../services/api'
 import Balatro from '../components/Balatro/Balatro'
@@ -66,8 +66,8 @@ const AnimationBackground = memo(function AnimationBackground({ config }) {
 })
 
 export default function Login({ onLogin }) {
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
+  const usernameRef = useRef(null)
+  const passwordRef = useRef(null)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [config, setConfig] = useState(null)
@@ -90,7 +90,10 @@ export default function Login({ onLogin }) {
     setError('')
     setLoading(true)
     try {
-      const tokenRes = await api.post('/auth/login/', { username, password })
+      const tokenRes = await api.post('/auth/login/', {
+        username: usernameRef.current.value,
+        password: passwordRef.current.value,
+      })
       const tokens = tokenRes.data
       localStorage.setItem('access_token', tokens.access)
       localStorage.setItem('refresh_token', tokens.refresh)
@@ -119,11 +122,10 @@ export default function Login({ onLogin }) {
           <div className="form-group">
             <label>Usuario</label>
             <input
+              ref={usernameRef}
               type="text"
               className="form-control"
               style={{ background: 'rgba(255,255,255,0.1)', color: '#fff' }}
-              value={username}
-              onChange={e => setUsername(e.target.value)}
               placeholder="Ingresa tu usuario"
               autoFocus
               required
@@ -132,11 +134,10 @@ export default function Login({ onLogin }) {
           <div className="form-group">
             <label>Contraseña</label>
             <input
+              ref={passwordRef}
               type="password"
               className="form-control"
               style={{ background: 'rgba(255,255,255,0.1)', color: '#fff' }}
-              value={password}
-              onChange={e => setPassword(e.target.value)}
               placeholder="Ingresa tu contraseña"
               required
             />
