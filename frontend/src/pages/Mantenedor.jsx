@@ -13,6 +13,7 @@ const MODULOS = [
   { key: 'reportes',           label: 'Reportes' },
   { key: 'configuracion',      label: 'Configuración' },
   { key: 'configuracion_login',label: 'Visual Login' },
+  { key: 'mantenedor',          label: 'Mantenedor' },
 ]
 
 const PERMS = [

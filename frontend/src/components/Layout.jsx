@@ -66,7 +66,7 @@ export default function Layout({ children, user, setUser, onLogout }) {
             </NavLink>
           ))}
 
-          {user?.rol === 'admin' && (
+          {canSee(user, 'mantenedor') && (
             <>
               <div className="nav-section" style={{ marginTop: 16 }}>Administración</div>
               <NavLink

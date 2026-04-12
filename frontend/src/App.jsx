@@ -90,7 +90,7 @@ function App() {
                 <Route path="/reportes" element={<ModuleRoute user={user} modulo="reportes"><Reportes /></ModuleRoute>} />
                 <Route path="/configuracion" element={<ModuleRoute user={user} modulo="configuracion"><ConfiguracionTransferencia /></ModuleRoute>} />
                 <Route path="/configuracion/login" element={<ModuleRoute user={user} modulo="configuracion_login"><ConfiguracionLogin /></ModuleRoute>} />
-                <Route path="/mantenedor" element={<AdminRoute user={user}><Mantenedor /></AdminRoute>} />
+                <Route path="/mantenedor" element={<ModuleRoute user={user} modulo="mantenedor"><Mantenedor /></ModuleRoute>} />
               </Routes>
             </Layout>
           </PrivateRoute>
