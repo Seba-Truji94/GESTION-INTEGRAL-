@@ -1,41 +1,45 @@
 import { useState } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
-import { FiGrid, FiCalendar, FiFileText, FiDollarSign, FiPackage, FiLogOut, FiSettings, FiBarChart2, FiMenu, FiX, FiSliders } from 'react-icons/fi'
+import { FiGrid, FiCalendar, FiFileText, FiDollarSign, FiPackage, FiLogOut, FiSettings, FiBarChart2, FiMenu, FiX, FiSliders, FiUsers, FiShoppingBag } from 'react-icons/fi'
 import PerfilUsuarioModal from './PerfilUsuarioModal'
 
-
-const navItems = [
-  { to: '/', icon: <FiGrid />, label: 'Dashboard', exact: true },
-  { to: '/eventos', icon: <FiCalendar />, label: 'Eventos' },
-  { to: '/presupuestos', icon: <FiFileText />, label: 'Presupuestos' },
-  { to: '/cobros', icon: <FiDollarSign />, label: 'Cobros' },
-  { to: '/gastos', icon: <FiDollarSign />, label: 'Gastos' },
-  { to: '/reportes', icon: <FiBarChart2 />, label: 'Reportes' },
-  { to: '/inventario', icon: <FiPackage />, label: 'Inventario' },
-  { to: '/catalogo', icon: <FiFileText />, label: 'Catálogo' },
-  { to: '/configuracion', icon: <FiSettings />, label: 'Configuración' },
-  { to: '/configuracion/login', icon: <FiSliders />, label: 'Visual Login' },
+const NAV_ITEMS = [
+  { to: '/',               icon: <FiGrid />,       label: 'Dashboard',      modulo: 'dashboard',    exact: true },
+  { to: '/eventos',        icon: <FiCalendar />,   label: 'Eventos',        modulo: 'eventos' },
+  { to: '/presupuestos',   icon: <FiFileText />,   label: 'Presupuestos',   modulo: 'presupuestos' },
+  { to: '/cobros',         icon: <FiDollarSign />, label: 'Cobros',         modulo: 'cobros' },
+  { to: '/gastos',         icon: <FiDollarSign />, label: 'Gastos',         modulo: 'gastos' },
+  { to: '/reportes',       icon: <FiBarChart2 />,  label: 'Reportes',       modulo: 'reportes' },
+  { to: '/inventario',     icon: <FiPackage />,    label: 'Inventario',     modulo: 'inventario' },
+  { to: '/catalogo',       icon: <FiShoppingBag />,label: 'Catálogo',       modulo: 'catalogo' },
+  { to: '/configuracion',  icon: <FiSettings />,   label: 'Configuración',  modulo: 'configuracion' },
+  { to: '/configuracion/login', icon: <FiSliders />, label: 'Visual Login', modulo: 'configuracion' },
 ]
 
+function canSee(user, modulo) {
+  if (!user) return false
+  if (user.rol === 'admin') return true
+  return user.permisos?.[modulo]?.ver === true
+}
+
 export default function Layout({ children, user, setUser, onLogout }) {
-  const location = useLocation()
+  useLocation()
   const [showProfileModal, setShowProfileModal] = useState(false)
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
-  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen)
+  const visibleItems = NAV_ITEMS.filter(item => canSee(user, item.modulo))
 
   return (
     <div className={`app-layout ${isSidebarOpen ? 'sidebar-open' : ''}`}>
       {/* Mobile Header */}
       <header className="mobile-header">
-        <button className="btn-menu" onClick={toggleSidebar}>
+        <button className="btn-menu" onClick={() => setIsSidebarOpen(s => !s)}>
           {isSidebarOpen ? <FiX /> : <FiMenu />}
         </button>
         <div className="mobile-brand">KRUXEL</div>
         <div style={{ width: 40 }}></div>
       </header>
 
-      {/* Overlay for mobile */}
       {isSidebarOpen && <div className="sidebar-overlay" onClick={() => setIsSidebarOpen(false)}></div>}
 
       <aside className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
@@ -49,7 +53,7 @@ export default function Layout({ children, user, setUser, onLogout }) {
 
         <nav className="sidebar-nav">
           <div className="nav-section">Menú Principal</div>
-          {navItems.map(item => (
+          {visibleItems.map(item => (
             <NavLink
               key={item.to}
               to={item.to}
@@ -61,6 +65,20 @@ export default function Layout({ children, user, setUser, onLogout }) {
               {item.label}
             </NavLink>
           ))}
+
+          {user?.rol === 'admin' && (
+            <>
+              <div className="nav-section" style={{ marginTop: 16 }}>Administración</div>
+              <NavLink
+                to="/mantenedor"
+                className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+                onClick={() => setIsSidebarOpen(false)}
+              >
+                <span className="nav-icon"><FiUsers /></span>
+                Mantenedor
+              </NavLink>
+            </>
+          )}
         </nav>
 
         <div className="sidebar-user" onClick={() => setShowProfileModal(true)} style={{ cursor: 'pointer', position: 'relative' }}>
@@ -73,10 +91,9 @@ export default function Layout({ children, user, setUser, onLogout }) {
           </div>
           <div className="sidebar-user-info">
             <div className="sidebar-user-name">{user?.first_name || user?.username}</div>
-            <div className="sidebar-user-role">{user?.rol}</div>
+            <div className="sidebar-user-role">{user?.rol === 'admin' ? 'Administrador' : 'Operador'}</div>
           </div>
-          <button className="btn-logout" onClick={(e) => { e.stopPropagation(); onLogout(); }} title="Cerrar sesión">
-
+          <button className="btn-logout" onClick={(e) => { e.stopPropagation(); onLogout() }} title="Cerrar sesión">
             <FiLogOut />
           </button>
         </div>
@@ -87,8 +104,8 @@ export default function Layout({ children, user, setUser, onLogout }) {
       </main>
 
       {showProfileModal && (
-        <PerfilUsuarioModal 
-          user={user} 
+        <PerfilUsuarioModal
+          user={user}
           onClose={() => setShowProfileModal(false)}
           onUpdate={(updatedUser) => setUser(updatedUser)}
         />

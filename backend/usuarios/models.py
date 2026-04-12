@@ -2,6 +2,19 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 
+MODULOS = [
+    ('dashboard', 'Dashboard'),
+    ('eventos', 'Eventos'),
+    ('presupuestos', 'Presupuestos'),
+    ('cobros', 'Cobros'),
+    ('gastos', 'Gastos'),
+    ('inventario', 'Inventario'),
+    ('catalogo', 'Catálogo'),
+    ('reportes', 'Reportes'),
+    ('configuracion', 'Configuración'),
+]
+
+
 class Usuario(AbstractUser):
     """Custom user model with roles."""
     ROLES = [
@@ -18,6 +31,26 @@ class Usuario(AbstractUser):
 
     def __str__(self):
         return f"{self.get_full_name() or self.username} ({self.get_rol_display()})"
+
+
+class PermisoModulo(models.Model):
+    """Granular per-module permissions for non-admin users."""
+    usuario = models.ForeignKey(
+        'Usuario', on_delete=models.CASCADE, related_name='permisos'
+    )
+    modulo = models.CharField(max_length=30, choices=MODULOS)
+    puede_ver = models.BooleanField(default=True)
+    puede_crear = models.BooleanField(default=True)
+    puede_editar = models.BooleanField(default=True)
+    puede_eliminar = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = ('usuario', 'modulo')
+        verbose_name = 'Permiso de Módulo'
+        verbose_name_plural = 'Permisos de Módulos'
+
+    def __str__(self):
+        return f"{self.usuario} — {self.modulo}"
 
 
 class LoginConfiguracion(models.Model):

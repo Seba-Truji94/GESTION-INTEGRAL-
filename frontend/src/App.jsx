@@ -17,12 +17,28 @@ import PresupuestoPublico from './pages/PresupuestoPublico'
 import Gastos from './pages/Gastos'
 import Catalogo from './pages/Catalogo'
 import Reportes from './pages/Reportes'
+import Mantenedor from './pages/Mantenedor'
 import api from './services/api'
 import './index.css'
 
 function PrivateRoute({ children }) {
   const token = localStorage.getItem('access_token')
   return token ? children : <Navigate to="/login" />
+}
+
+// Checks if user has 'ver' permission for a given module
+function ModuleRoute({ user, modulo, children }) {
+  if (!user) return null
+  if (user.rol === 'admin') return children
+  const perm = user.permisos?.[modulo]
+  if (!perm?.ver) return <Navigate to="/" replace />
+  return children
+}
+
+function AdminRoute({ user, children }) {
+  if (!user) return null
+  if (user.rol !== 'admin') return <Navigate to="/" replace />
+  return children
 }
 
 function App() {
@@ -60,20 +76,21 @@ function App() {
             <Layout user={user} setUser={setUser} onLogout={handleLogout}>
               <Routes>
                 <Route path="/" element={<Dashboard />} />
-                <Route path="/eventos" element={<Eventos />} />
-                <Route path="/eventos/:id" element={<EventoDetalle />} />
-                <Route path="/presupuestos" element={<Presupuestos />} />
-                <Route path="/presupuestos/nuevo" element={<PresupuestoNuevo />} />
-                <Route path="/presupuestos/:id/editar" element={<PresupuestoNuevo />} />
-                <Route path="/presupuestos/:id/imprimir" element={<PresupuestoImpresion />} />
-                <Route path="/cobros" element={<Cobros />} />
-                <Route path="/gastos" element={<Gastos />} />
-                <Route path="/pagos/:id/comprobante" element={<PagoComprobante />} />
-                <Route path="/inventario" element={<Inventario />} />
-                <Route path="/catalogo" element={<Catalogo />} />
-                <Route path="/reportes" element={<Reportes />} />
-                <Route path="/configuracion" element={<ConfiguracionTransferencia />} />
-                <Route path="/configuracion/login" element={<ConfiguracionLogin />} />
+                <Route path="/eventos" element={<ModuleRoute user={user} modulo="eventos"><Eventos /></ModuleRoute>} />
+                <Route path="/eventos/:id" element={<ModuleRoute user={user} modulo="eventos"><EventoDetalle /></ModuleRoute>} />
+                <Route path="/presupuestos" element={<ModuleRoute user={user} modulo="presupuestos"><Presupuestos /></ModuleRoute>} />
+                <Route path="/presupuestos/nuevo" element={<ModuleRoute user={user} modulo="presupuestos"><PresupuestoNuevo /></ModuleRoute>} />
+                <Route path="/presupuestos/:id/editar" element={<ModuleRoute user={user} modulo="presupuestos"><PresupuestoNuevo /></ModuleRoute>} />
+                <Route path="/presupuestos/:id/imprimir" element={<ModuleRoute user={user} modulo="presupuestos"><PresupuestoImpresion /></ModuleRoute>} />
+                <Route path="/cobros" element={<ModuleRoute user={user} modulo="cobros"><Cobros /></ModuleRoute>} />
+                <Route path="/gastos" element={<ModuleRoute user={user} modulo="gastos"><Gastos /></ModuleRoute>} />
+                <Route path="/pagos/:id/comprobante" element={<ModuleRoute user={user} modulo="cobros"><PagoComprobante /></ModuleRoute>} />
+                <Route path="/inventario" element={<ModuleRoute user={user} modulo="inventario"><Inventario /></ModuleRoute>} />
+                <Route path="/catalogo" element={<ModuleRoute user={user} modulo="catalogo"><Catalogo /></ModuleRoute>} />
+                <Route path="/reportes" element={<ModuleRoute user={user} modulo="reportes"><Reportes /></ModuleRoute>} />
+                <Route path="/configuracion" element={<ModuleRoute user={user} modulo="configuracion"><ConfiguracionTransferencia /></ModuleRoute>} />
+                <Route path="/configuracion/login" element={<ModuleRoute user={user} modulo="configuracion"><ConfiguracionLogin /></ModuleRoute>} />
+                <Route path="/mantenedor" element={<AdminRoute user={user}><Mantenedor /></AdminRoute>} />
               </Routes>
             </Layout>
           </PrivateRoute>
