@@ -13,6 +13,7 @@ MODULOS = [
     ('reportes', 'Reportes'),
     ('configuracion', 'Configuración'),
     ('configuracion_login', 'Visual Login'),
+    ('mantenedor', 'Mantenedor'),
 ]
 
 

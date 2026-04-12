@@ -17,6 +17,16 @@ class IsAdmin(permissions.BasePermission):
         return request.user.is_authenticated and request.user.rol == 'admin'
 
 
+class IsAdminOrMantenedor(permissions.BasePermission):
+    """Allows access to admins OR users with mantenedor module permission."""
+    def has_permission(self, request, view):
+        if not request.user.is_authenticated:
+            return False
+        if request.user.rol == 'admin':
+            return True
+        return request.user.permisos.filter(modulo='mantenedor', puede_ver=True).exists()
+
+
 class MeView(APIView):
     """Get current user profile."""
     permission_classes = [permissions.IsAuthenticated]
@@ -33,9 +43,9 @@ class MeView(APIView):
 
 
 class UsuarioListCreateView(generics.ListCreateAPIView):
-    """List/Create users (admin only)."""
+    """List/Create users (admin or mantenedor)."""
     queryset = Usuario.objects.all().order_by('-date_joined')
-    permission_classes = [IsAdmin]
+    permission_classes = [IsAdminOrMantenedor]
 
     def get_serializer_class(self):
         if self.request.method == 'POST':
@@ -44,15 +54,15 @@ class UsuarioListCreateView(generics.ListCreateAPIView):
 
 
 class UsuarioDetailView(generics.RetrieveUpdateDestroyAPIView):
-    """Detail/Update/Delete user (admin only)."""
+    """Detail/Update/Delete user (admin or mantenedor)."""
     queryset = Usuario.objects.all()
     serializer_class = UsuarioSerializer
-    permission_classes = [IsAdmin]
+    permission_classes = [IsAdminOrMantenedor]
 
 
 class UsuarioPermisosView(APIView):
-    """Get/Set module permissions for a user (admin only)."""
-    permission_classes = [IsAdmin]
+    """Get/Set module permissions for a user (admin or mantenedor)."""
+    permission_classes = [IsAdminOrMantenedor]
 
     def get(self, request, pk):
         try:
