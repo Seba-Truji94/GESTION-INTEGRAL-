@@ -57,13 +57,15 @@ class UsuarioCreateSerializer(serializers.ModelSerializer):
         user.set_password(password)
         user.save()
         if user.rol != 'admin':
+            RESTRICTED = {'mantenedor', 'configuracion_login'}
             for modulo_key in MODULOS_KEYS:
+                acceso = modulo_key not in RESTRICTED
                 PermisoModulo.objects.create(
                     usuario=user,
                     modulo=modulo_key,
-                    puede_ver=True,
-                    puede_crear=True,
-                    puede_editar=True,
+                    puede_ver=acceso,
+                    puede_crear=acceso,
+                    puede_editar=acceso,
                     puede_eliminar=False,
                 )
         return user

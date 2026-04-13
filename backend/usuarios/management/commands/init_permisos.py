@@ -10,17 +10,19 @@ class Command(BaseCommand):
     help = 'Crea permisos por defecto para operadores que no tienen ninguno'
 
     def handle(self, *args, **kwargs):
+        RESTRICTED = {'mantenedor', 'configuracion_login'}
         operadores = Usuario.objects.filter(rol='operador')
         creados = 0
         for user in operadores:
             for modulo_key in MODULOS_KEYS:
+                acceso = modulo_key not in RESTRICTED
                 _, created = PermisoModulo.objects.get_or_create(
                     usuario=user,
                     modulo=modulo_key,
                     defaults={
-                        'puede_ver': True,
-                        'puede_crear': True,
-                        'puede_editar': True,
+                        'puede_ver': acceso,
+                        'puede_crear': acceso,
+                        'puede_editar': acceso,
                         'puede_eliminar': False,
                     }
                 )

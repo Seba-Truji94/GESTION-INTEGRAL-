@@ -37,8 +37,12 @@ const PERMS = [
   { key: 'eliminar', label: 'Eliminar' },
 ]
 
+const RESTRICTED = new Set(['mantenedor', 'configuracion_login'])
 const emptyPermisos = () =>
-  Object.fromEntries(MODULOS.map(m => [m.key, { ver: true, crear: true, editar: true, eliminar: false }]))
+  Object.fromEntries(MODULOS.map(m => {
+    const acceso = !RESTRICTED.has(m.key)
+    return [m.key, { ver: acceso, crear: acceso, editar: acceso, eliminar: false }]
+  }))
 
 const emptyForm = () => ({ username: '', email: '', first_name: '', last_name: '', rol: 'operador', telefono: '', password: '', is_active: true })
 
