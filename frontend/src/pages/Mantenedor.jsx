@@ -1,6 +1,20 @@
 import { useState, useEffect } from 'react'
-import { FiPlus, FiEdit2, FiTrash2, FiShield, FiX, FiCheck, FiUser, FiEye, FiEyeOff } from 'react-icons/fi'
+import { FiPlus, FiEdit2, FiTrash2, FiShield, FiX, FiCheck, FiUser, FiEye, FiEyeOff, FiGrid, FiCalendar, FiFileText, FiDollarSign, FiPackage, FiBarChart2, FiSettings, FiSliders, FiShoppingBag, FiUsers } from 'react-icons/fi'
 import api from '../services/api'
+
+const SIDEBAR_ITEMS = [
+  { modulo: 'dashboard',          label: 'Dashboard',      icon: <FiGrid /> },
+  { modulo: 'eventos',            label: 'Eventos',        icon: <FiCalendar /> },
+  { modulo: 'presupuestos',       label: 'Presupuestos',   icon: <FiFileText /> },
+  { modulo: 'cobros',             label: 'Cobros',         icon: <FiDollarSign /> },
+  { modulo: 'gastos',             label: 'Gastos',         icon: <FiDollarSign /> },
+  { modulo: 'reportes',           label: 'Reportes',       icon: <FiBarChart2 /> },
+  { modulo: 'inventario',         label: 'Inventario',     icon: <FiPackage /> },
+  { modulo: 'catalogo',           label: 'Catálogo',       icon: <FiShoppingBag /> },
+  { modulo: 'configuracion',      label: 'Configuración',  icon: <FiSettings /> },
+  { modulo: 'configuracion_login',label: 'Visual Login',   icon: <FiSliders /> },
+  { modulo: 'mantenedor',         label: 'Mantenedor',     icon: <FiUsers /> },
+]
 
 const MODULOS = [
   { key: 'dashboard',          label: 'Dashboard' },
@@ -288,7 +302,7 @@ export default function Mantenedor() {
       {/* Modal Permisos */}
       {showPermsModal && selectedUser && (
         <div className="modal-overlay" onClick={e => e.target === e.currentTarget && setShowPermsModal(false)}>
-          <div className="modal" style={{ maxWidth: 700 }}>
+          <div className="modal" style={{ maxWidth: 900 }}>
             <div className="flex-between mb-24">
               <div>
                 <h3 style={{ margin: 0 }}>Permisos de Módulos</h3>
@@ -299,55 +313,78 @@ export default function Mantenedor() {
               <button className="btn-icon" onClick={() => setShowPermsModal(false)}><FiX /></button>
             </div>
 
-            <div style={{ overflowX: 'auto' }}>
-              <table style={{ fontSize: 13 }}>
-                <thead>
-                  <tr>
-                    <th>Módulo</th>
-                    {PERMS.map(p => (
-                      <th key={p.key} className="center" style={{ cursor: 'pointer', userSelect: 'none' }} onClick={() => toggleAllPerm(p.key)} title={`Alternar todos — ${p.label}`}>
-                        {p.label}
-                      </th>
-                    ))}
-                    <th className="center">Todo</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {MODULOS.map(m => {
-                    const allOn = Object.values(permisos[m.key]).every(Boolean)
-                    return (
-                      <tr key={m.key}>
-                        <td className="bold">{m.label}</td>
-                        {PERMS.map(p => (
-                          <td key={p.key} className="center">
-                            <input
-                              type="checkbox"
-                              checked={permisos[m.key][p.key]}
-                              onChange={() => togglePerm(m.key, p.key)}
-                              style={{ width: 16, height: 16, cursor: 'pointer' }}
-                            />
+            <div style={{ display: 'flex', gap: 24, alignItems: 'flex-start' }}>
+              {/* Tabla de permisos */}
+              <div style={{ flex: 1, overflowX: 'auto' }}>
+                <table style={{ fontSize: 13 }}>
+                  <thead>
+                    <tr>
+                      <th>Módulo</th>
+                      {PERMS.map(p => (
+                        <th key={p.key} className="center" style={{ cursor: 'pointer', userSelect: 'none' }} onClick={() => toggleAllPerm(p.key)} title={`Alternar todos — ${p.label}`}>
+                          {p.label}
+                        </th>
+                      ))}
+                      <th className="center">Todo</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {MODULOS.map(m => {
+                      const allOn = Object.values(permisos[m.key]).every(Boolean)
+                      return (
+                        <tr key={m.key}>
+                          <td className="bold">{m.label}</td>
+                          {PERMS.map(p => (
+                            <td key={p.key} className="center">
+                              <input
+                                type="checkbox"
+                                checked={permisos[m.key][p.key]}
+                                onChange={() => togglePerm(m.key, p.key)}
+                                style={{ width: 16, height: 16, cursor: 'pointer' }}
+                              />
+                            </td>
+                          ))}
+                          <td className="center">
+                            <button
+                              className="btn-icon"
+                              onClick={() => toggleAllModule(m.key)}
+                              title={allOn ? 'Quitar todos' : 'Marcar todos'}
+                              style={{ color: allOn ? 'var(--grn)' : 'var(--txt3)' }}
+                            >
+                              {allOn ? <FiCheck /> : <FiEyeOff />}
+                            </button>
                           </td>
-                        ))}
-                        <td className="center">
-                          <button
-                            className="btn-icon"
-                            onClick={() => toggleAllModule(m.key)}
-                            title={allOn ? 'Quitar todos' : 'Marcar todos'}
-                            style={{ color: allOn ? 'var(--grn)' : 'var(--txt3)' }}
-                          >
-                            {allOn ? <FiCheck /> : <FiEyeOff />}
-                          </button>
-                        </td>
-                      </tr>
-                    )
-                  })}
-                </tbody>
-              </table>
-            </div>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+                <p style={{ fontSize: 11, color: 'var(--txt3)', marginTop: 12 }}>
+                  Haz clic en el encabezado de una columna para alternar ese permiso en todos los módulos.
+                </p>
+              </div>
 
-            <p style={{ fontSize: 11, color: 'var(--txt3)', marginTop: 12 }}>
-              Haz clic en el encabezado de una columna para alternar ese permiso en todos los módulos.
-            </p>
+              {/* Vista previa de sidebar */}
+              <div style={{ width: 180, flexShrink: 0 }}>
+                <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--txt2)', margin: '0 0 8px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                  Vista previa sidebar
+                </p>
+                <div style={{ background: 'var(--sidebar-bg, #1a1a2e)', borderRadius: 10, padding: '12px 8px', minHeight: 200 }}>
+                  {SIDEBAR_ITEMS.filter(item => permisos[item.modulo]?.ver).length === 0 ? (
+                    <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', textAlign: 'center', padding: '16px 8px' }}>
+                      Sin acceso a ningún módulo
+                    </p>
+                  ) : (
+                    SIDEBAR_ITEMS.filter(item => permisos[item.modulo]?.ver).map(item => (
+                      <div key={item.modulo} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 10px', borderRadius: 6, color: 'rgba(255,255,255,0.8)', fontSize: 13 }}>
+                        <span style={{ fontSize: 14, opacity: 0.7 }}>{item.icon}</span>
+                        {item.label}
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            </div>
 
             <div className="modal-actions">
               <button className="btn btn-outline" onClick={() => setShowPermsModal(false)}>Cancelar</button>
