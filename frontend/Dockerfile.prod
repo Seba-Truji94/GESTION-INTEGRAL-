@@ -1,23 +1,23 @@
-# Etapa 1: Construcción del Frontend
-FROM node:20-alpine AS build-stage
-
-WORKDIR /app
-
-# Instalar dependencias
+# Stage 1: build sistema de gestión
+FROM node:20-alpine AS build-gestion
+WORKDIR /gestion
 COPY frontend/package.json frontend/package-lock.json* ./
 RUN npm install
-
-# Construir la aplicación
 COPY frontend/ ./
 RUN npm run build
 
-# Etapa 2: Servidor Caddy con el Frontend incluido
+# Stage 2: build sitio público
+FROM node:20-alpine AS build-website
+WORKDIR /website
+COPY website/package.json website/package-lock.json* ./
+RUN npm install
+COPY website/ ./
+RUN npm run build
+
+# Stage 3: Caddy sirve ambos
 FROM caddy:2-alpine
-
-# Copiar el build del frontend a la carpeta que sirve Caddy
-COPY --from=build-stage /app/dist /usr/share/caddy
-
-# El Caddyfile se montará directamente desde docker-compose.prod.yml
+COPY --from=build-gestion  /gestion/dist  /usr/share/caddy/gestion
+COPY --from=build-website  /website/dist  /usr/share/caddy/public
 
 EXPOSE 80
 EXPOSE 443

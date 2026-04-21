@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+// base="/gestion/" matches vite base and Caddy route
 import { useState, useEffect } from 'react'
 import Layout from './components/Layout'
 import Login from './pages/Login'
@@ -67,7 +68,7 @@ function App() {
   }
 
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/gestion">
       <Routes>
         <Route path="/login" element={<Login onLogin={handleLogin} />} />
         <Route path="/p/:id" element={<PresupuestoPublico />} />

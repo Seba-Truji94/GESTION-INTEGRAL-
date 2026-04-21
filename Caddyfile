@@ -3,22 +3,27 @@
 }
 
 {$DOMAIN:localhost} {
-    # Definimos lo que va al servidor Django
+    encode gzip
+
+    # Backend API, admin y archivos estáticos
     @backend {
         path /api/* /admin* /static/* /media/*
     }
-
-    # Logica para el Backend (API, Admin, Archivos estáticos)
     handle @backend {
         reverse_proxy backend:8000
     }
 
-    # Logica para el Frontend (Todo lo demás)
-    handle {
-        root * /usr/share/caddy
+    # Sistema de gestión en /gestion
+    handle /gestion* {
+        root * /usr/share/caddy/gestion
+        try_files {path} /gestion/index.html
         file_server
-        try_files {path} /index.html
     }
 
-    encode gzip
+    # Sitio público (raíz)
+    handle {
+        root * /usr/share/caddy/public
+        try_files {path} /index.html
+        file_server
+    }
 }

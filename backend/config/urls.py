@@ -22,6 +22,7 @@ urlpatterns = [
     path('api/', include('exportaciones.urls')),
     path('api/gastos/', include('gastos.urls')),
     path('api/catalogo/', include('catalogo.urls')),
+    path('api/public/', include('public_api.urls')),
     path('', api_root),
 ]
 
