@@ -431,12 +431,25 @@ export default function Mantenedor() {
 function SitioWebConfig() {
   const logoInputRef = useRef(null)
   const [form, setForm] = useState(null)
+  const [media, setMedia] = useState([])
   const [saving, setSaving] = useState(false)
+  const [savingMedia, setSavingMedia] = useState({})
   const [saved, setSaved] = useState(false)
 
-  useEffect(() => {
-    api.get('/public/config/').then(r => setForm(r.data)).catch(() => {})
-  }, [])
+  const load = async () => {
+    try {
+      const [configRes, mediaRes] = await Promise.all([
+        api.get('/public/config/'),
+        api.get('/public/media/')
+      ])
+      setForm(configRes.data)
+      setMedia(mediaRes.data)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  useEffect(() => { load() }, [])
 
   const handleChange = e => setForm(f => ({ ...f, [e.target.name]: e.target.value }))
 
@@ -456,67 +469,239 @@ function SitioWebConfig() {
     setSaving(false)
   }
 
+  const handleMediaUpload = async (seccion, file) => {
+    if (!file) return
+    setSavingMedia(prev => ({ ...prev, [seccion]: true }))
+    try {
+      const formData = new FormData()
+      formData.append('seccion', seccion)
+      formData.append('archivo', file)
+      formData.append('activo', 'true')
+      
+      // If singleton, try to update existing or create new
+      const existing = media.find(m => m.seccion === seccion && seccion !== 'galeria')
+      if (existing) {
+        await api.patch(`/public/media-assets/${existing.id}/`, formData, { headers: { 'Content-Type': 'multipart/form-data' } })
+      } else {
+        await api.post('/public/media-assets/', formData, { headers: { 'Content-Type': 'multipart/form-data' } })
+      }
+      load()
+    } catch (e) {
+      console.error(e)
+      alert('Error al subir archivo')
+    }
+    setSavingMedia(prev => ({ ...prev, [seccion]: false }))
+  }
+
+  const handleDeleteMedia = async (id) => {
+    if (!confirm('¿Eliminar este elemento de media?')) return
+    try {
+      await api.delete(`/public/media-assets/${id}/`)
+      load()
+    } catch (e) { console.error(e) }
+  }
+
   if (!form) return <div className="loading"><span className="spinner" />Cargando...</div>
 
+  const getMedia = (sec) => media.find(m => m.seccion === sec)
+  const galeria = media.filter(m => m.seccion === 'galeria')
+
   return (
-    <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6 max-w-2xl">
-      <p className="text-xs uppercase tracking-wider text-gray-400 mb-6">Información de marca y contacto del sitio público</p>
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: 32, alignItems: 'start' }}>
+      <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
+        <p className="text-xs uppercase tracking-wider text-gray-400 mb-6 font-bold flex items-center gap-2">
+            <FiSettings size={14} /> Información de marca y contacto
+        </p>
 
-      <div className="grid sm:grid-cols-2 gap-4 mb-6">
-        <SitioField label="Nombre de la marca" name="nombre_marca" value={form.nombre_marca} onChange={handleChange} />
-        <SitioField label="Eslogan (header/hero)" name="eslogan" value={form.eslogan} onChange={handleChange} />
-        <SitioField label="Subtítulo hero" name="hero_subtitulo" value={form.hero_subtitulo} onChange={handleChange} />
-        <SitioField label="Texto copyright footer" name="footer_copyright" value={form.footer_copyright} onChange={handleChange} />
-        <SitioField label="Email de contacto" name="email_contacto" type="email" value={form.email_contacto} onChange={handleChange} />
-        <SitioField label="Teléfono" name="telefono" value={form.telefono} onChange={handleChange} />
-        <SitioField label="Instagram URL" name="instagram_url" value={form.instagram_url} onChange={handleChange} />
-        <SitioField label="Instagram usuario (@...)" name="instagram_usuario" value={form.instagram_usuario} onChange={handleChange} />
-        <SitioField label="Facebook URL" name="facebook_url" value={form.facebook_url} onChange={handleChange} />
-        <SitioField label="Facebook usuario" name="facebook_usuario" value={form.facebook_usuario} onChange={handleChange} />
-        <SitioField label="WhatsApp (+569...)" name="whatsapp" value={form.whatsapp} onChange={handleChange} />
-      </div>
-
-      <p className="text-xs uppercase tracking-wider text-gray-400 mb-4 mt-6">Sección "Quiénes Somos"</p>
-      <div className="grid gap-4 mb-6">
-        <SitioField label="Título principal" name="nosotros_titulo" value={form.nosotros_titulo} onChange={handleChange} />
-        <SitioTextarea label="Párrafo 1" name="nosotros_texto1" value={form.nosotros_texto1} onChange={handleChange} />
-        <SitioTextarea label="Párrafo 2" name="nosotros_texto2" value={form.nosotros_texto2} onChange={handleChange} />
-      </div>
-
-      <p className="text-xs uppercase tracking-wider text-gray-400 mb-4">Estadísticas</p>
-      <div className="grid sm:grid-cols-3 gap-4 mb-6">
-        <div className="space-y-2">
-          <SitioField label="N° 1" name="stat1_num" type="number" value={form.stat1_num} onChange={handleChange} />
-          <SitioField label="Etiqueta 1" name="stat1_label" value={form.stat1_label} onChange={handleChange} />
+        <div className="grid sm:grid-cols-2 gap-4 mb-6">
+          <SitioField label="Nombre de la marca" name="nombre_marca" value={form.nombre_marca} onChange={handleChange} />
+          <SitioField label="Eslogan (header/hero)" name="eslogan" value={form.eslogan} onChange={handleChange} />
+          <SitioField label="Subtítulo hero" name="hero_subtitulo" value={form.hero_subtitulo} onChange={handleChange} />
+          <SitioField label="Texto copyright footer" name="footer_copyright" value={form.footer_copyright} onChange={handleChange} />
+          <SitioField label="Email de contacto" name="email_contacto" type="email" value={form.email_contacto} onChange={handleChange} />
+          <SitioField label="Teléfono" name="telefono" value={form.telefono} onChange={handleChange} />
+          <SitioField label="Instagram URL" name="instagram_url" value={form.instagram_url} onChange={handleChange} />
+          <SitioField label="Instagram usuario (@...)" name="instagram_usuario" value={form.instagram_usuario} onChange={handleChange} />
+          <SitioField label="Facebook URL" name="facebook_url" value={form.facebook_url} onChange={handleChange} />
+          <SitioField label="Facebook usuario" name="facebook_usuario" value={form.facebook_usuario} onChange={handleChange} />
+          <SitioField label="WhatsApp (+569...)" name="whatsapp" value={form.whatsapp} onChange={handleChange} />
         </div>
-        <div className="space-y-2">
-          <SitioField label="N° 2" name="stat2_num" type="number" value={form.stat2_num} onChange={handleChange} />
-          <SitioField label="Etiqueta 2" name="stat2_label" value={form.stat2_label} onChange={handleChange} />
+
+        <p className="text-xs uppercase tracking-wider text-gray-400 mb-4 mt-6">Sección "Quiénes Somos"</p>
+        <div className="grid gap-4 mb-6">
+          <SitioField label="Título principal" name="nosotros_titulo" value={form.nosotros_titulo} onChange={handleChange} />
+          <SitioTextarea label="Párrafo 1" name="nosotros_texto1" value={form.nosotros_texto1} onChange={handleChange} />
+          <SitioTextarea label="Párrafo 2" name="nosotros_texto2" value={form.nosotros_texto2} onChange={handleChange} />
         </div>
-        <div className="space-y-2">
-          <SitioField label="N° 3" name="stat3_num" type="number" value={form.stat3_num} onChange={handleChange} />
-          <SitioField label="Etiqueta 3" name="stat3_label" value={form.stat3_label} onChange={handleChange} />
+
+        <p className="text-xs uppercase tracking-wider text-gray-400 mb-4">Estadísticas</p>
+        <div className="grid sm:grid-cols-3 gap-4 mb-6">
+          <div className="space-y-2">
+            <SitioField label="N° 1" name="stat1_num" type="number" value={form.stat1_num} onChange={handleChange} />
+            <SitioField label="Etiqueta 1" name="stat1_label" value={form.stat1_label} onChange={handleChange} />
+          </div>
+          <div className="space-y-2">
+            <SitioField label="N° 2" name="stat2_num" type="number" value={form.stat2_num} onChange={handleChange} />
+            <SitioField label="Etiqueta 2" name="stat2_label" value={form.stat2_label} onChange={handleChange} />
+          </div>
+          <div className="space-y-2">
+            <SitioField label="N° 3" name="stat3_num" type="number" value={form.stat3_num} onChange={handleChange} />
+            <SitioField label="Etiqueta 3" name="stat3_label" value={form.stat3_label} onChange={handleChange} />
+          </div>
         </div>
+
+        <div className="mb-6">
+          <label className="block text-xs uppercase tracking-wider text-gray-400 mb-2">Logo (opcional)</label>
+          <div className="flex items-center gap-4">
+            {form.logo_url && (
+              <img src={form.logo_url} alt="Logo" className="h-10 object-contain border border-gray-100 p-1 rounded bg-gray-50" />
+            )}
+            <input ref={logoInputRef} type="file" accept="image/*"
+              className="text-xs text-gray-600 file:mr-3 file:py-1.5 file:px-3 file:border file:border-gray-200 file:rounded file:text-xs file:bg-white file:text-gray-700 hover:file:bg-gray-50" />
+          </div>
+        </div>
+
+        <button onClick={handleSave} disabled={saving}
+          className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors w-full justify-center">
+          {saving ? <span className="spinner" /> : <FiSave size={14} />}
+          {saving ? 'Guardando...' : saved ? '¡Guardado con éxito!' : 'Guardar Información General'}
+        </button>
       </div>
 
-      <div className="mb-6">
-        <label className="block text-xs uppercase tracking-wider text-gray-400 mb-2">Logo (opcional)</label>
-        {form.logo_url && (
-          <img src={form.logo_url} alt="Logo actual" className="h-12 object-contain mb-2 border border-gray-100 p-1 rounded" />
-        )}
-        <input ref={logoInputRef} type="file" accept="image/*"
-          className="text-sm text-gray-600 file:mr-3 file:py-1.5 file:px-3 file:border file:border-gray-200 file:rounded file:text-xs file:bg-white file:text-gray-700 hover:file:bg-gray-50" />
-        <p className="text-xs text-gray-400 mt-1">Si no se sube logo, se usa el nombre de la marca como texto.</p>
-      </div>
+      <div className="flex flex-col gap-6">
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
+            <p className="text-xs uppercase tracking-wider text-gray-400 mb-6 font-bold flex items-center gap-2">
+                <FiPackage size={14} /> Fotos de la Sección "Nosotros"
+            </p>
+            <div className="grid grid-cols-2 gap-6">
+                <MediaUploader 
+                   label="Foto 1 (Cocina/Interior)" 
+                   sec="nosotros_foto1" 
+                   asset={getMedia('nosotros_foto1')} 
+                   onUpload={handleMediaUpload} 
+                   loading={savingMedia['nosotros_foto1']} 
+                />
+                <MediaUploader 
+                   label="Foto 2 (Producto/Tabla)" 
+                   sec="nosotros_foto2" 
+                   asset={getMedia('nosotros_foto2')} 
+                   onUpload={handleMediaUpload} 
+                   loading={savingMedia['nosotros_foto2']} 
+                />
+            </div>
+            <div className="mt-6">
+                 <MediaUploader 
+                   label="Banner Superior Sección" 
+                   sec="nosotros_banner" 
+                   asset={getMedia('nosotros_banner')} 
+                   onUpload={handleMediaUpload} 
+                   loading={savingMedia['nosotros_banner']} 
+                />
+            </div>
+        </div>
 
-      <button onClick={handleSave} disabled={saving}
-        className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors">
-        {saving ? <span className="spinner" /> : <FiSave size={14} />}
-        {saving ? 'Guardando...' : saved ? '¡Guardado!' : 'Guardar cambios'}
-      </button>
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
+            <p className="text-xs uppercase tracking-wider text-gray-400 mb-6 font-bold flex items-center gap-2">
+                <FiBarChart2 size={14} /> Hero e Imagen del Principal
+            </p>
+            <div className="grid grid-cols-2 gap-6">
+                <MediaUploader 
+                   label="Video Hero (Fondo)" 
+                   sec="hero_video" 
+                   asset={getMedia('hero_video')} 
+                   onUpload={handleMediaUpload} 
+                   loading={savingMedia['hero_video']} 
+                />
+                <MediaUploader 
+                   label="Imagen Hero (Fallback)" 
+                   sec="hero_imagen" 
+                   asset={getMedia('hero_imagen')} 
+                   onUpload={handleMediaUpload} 
+                   loading={savingMedia['hero_imagen']} 
+                />
+            </div>
+        </div>
+
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
+            <div className="flex-between mb-6">
+                <p className="text-xs uppercase tracking-wider text-gray-400 font-bold flex items-center gap-2" style={{margin:0}}>
+                    <FiGrid size={14} /> Galería de Fotos
+                </p>
+                <div style={{ position: 'relative' }}>
+                    <input 
+                        type="file" 
+                        id="galeria-upload" 
+                        hidden 
+                        onChange={e => handleMediaUpload('galeria', e.target.files[0])} 
+                    />
+                    <label htmlFor="galeria-upload" className="btn btn-outline btn-xs px-2 py-1 flex items-center gap-1 cursor-pointer">
+                        <FiPlus size={12}/> Añadir a Galería
+                    </label>
+                </div>
+            </div>
+            
+            {galeria.length === 0 ? (
+                <div className="p-8 text-center border-2 border-dashed border-gray-100 rounded-lg text-gray-400 text-sm">
+                    No hay fotos en la galería aún.
+                </div>
+            ) : (
+                <div className="grid grid-cols-4 gap-3">
+                    {galeria.map(item => (
+                        <div key={item.id} className="relative group aspect-square rounded-lg overflow-hidden bg-gray-100 border border-gray-100">
+                            {item.url?.endsWith('.mp4') || item.url?.endsWith('.webm') ? (
+                                <video src={item.url} className="w-full h-full object-cover" />
+                            ) : (
+                                <img src={item.url} alt="" className="w-full h-full object-cover" />
+                            )}
+                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                <button className="p-2 bg-red-500 text-white rounded-full hover:bg-red-600 shadow-lg" onClick={() => handleDeleteMedia(item.id)}>
+                                    <FiTrash2 size={14}/>
+                                </button>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
+        </div>
+      </div>
     </div>
   )
 }
+
+function MediaUploader({ label, sec, asset, onUpload, loading }) {
+    const inputRef = useRef(null)
+    return (
+        <div className="flex flex-col gap-2">
+            <label className="text-[10px] uppercase tracking-widest text-gray-400 font-semibold">{label}</label>
+            <div 
+                className="relative aspect-video rounded-lg border-2 border-dashed border-gray-100 bg-gray-50/50 flex flex-col items-center justify-center overflow-hidden hover:border-blue-200 transition-colors cursor-pointer group"
+                onClick={() => inputRef.current?.click()}
+            >
+                {loading ? (
+                    <span className="spinner" />
+                ) : asset ? (
+                    <>
+                        {asset.url?.endsWith('.mp4') || asset.url?.endsWith('.webm') || asset.url?.endsWith('.mov') ? (
+                            <video src={asset.url} className="w-full h-full object-cover" autoPlay muted loop />
+                        ) : (
+                            <img src={asset.url} className="w-full h-full object-cover" alt="" />
+                        )}
+                        <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                            <span className="text-white text-[10px] font-bold bg-black/50 px-3 py-1 rounded-full border border-white/20">CAMBIAR ARCHIVO</span>
+                        </div>
+                    </>
+                ) : (
+                    <div className="flex flex-col items-center gap-2 text-gray-300">
+                        <FiPlus size={24} />
+                        <span className="text-[10px] font-bold">SUBIR</span>
+                    </div>
+                )}
+                <input ref={inputRef} type="file" hidden onChange={e => onUpload(sec, e.target.files[0])} />
+            </div>
+        </div>
+    )
+}
+
 
 function SitioField({ label, name, type = 'text', value, onChange }) {
   return (

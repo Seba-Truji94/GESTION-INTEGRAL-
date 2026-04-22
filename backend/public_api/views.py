@@ -1,4 +1,4 @@
-from rest_framework import generics, permissions
+from rest_framework import generics, permissions, viewsets, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from catalogo.models import ProductoCatalogo
@@ -66,3 +66,25 @@ class ConfiguracionSitioView(APIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
+
+
+class MediaAssetViewSet(viewsets.ModelViewSet):
+
+    queryset = MediaAsset.objects.all()
+    serializer_class = MediaAssetSerializer
+
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            return [permissions.AllowAny()]
+        return [permissions.IsAuthenticated()]
+
+    def perform_create(self, serializer):
+        # Determine type based on file extension
+        archivo = self.request.FILES.get('archivo')
+        tipo = 'imagen'
+        if archivo:
+            ext = archivo.name.split('.')[-1].lower()
+            if ext in ['mp4', 'mov', 'avi', 'webm', 'm4v']:
+                tipo = 'video'
+        serializer.save(tipo=tipo)
+

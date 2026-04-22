@@ -29,6 +29,8 @@ const DEFAULTS = {
   lw_mouse_influence: 2.0,
   hs_preset: 'one',
   hs_speed_up: 2.0,
+  login_titulo: '',
+  login_subtitulo: '',
 }
 
 const ANIMATIONS = [
@@ -280,6 +282,35 @@ export default function ConfiguracionLogin() {
             </div>
           </div>
 
+          {/* Texto de la tarjeta */}
+          <div className="card">
+            <div className="card-header">
+              <h3 className="card-title">Texto del login</h3>
+            </div>
+            <div style={{ padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <div>
+                <label style={{ fontSize: 13, color: '#94a3b8', display: 'block', marginBottom: 6 }}>Nombre de la empresa</label>
+                <input
+                  type="text"
+                  value={form.login_titulo}
+                  onChange={e => handleChange('login_titulo', e.target.value)}
+                  placeholder="Ej: RyF Banquetería"
+                  style={{ width: '100%', background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8, padding: '8px 12px', color: '#e2e8f0', fontSize: 14, boxSizing: 'border-box' }}
+                />
+              </div>
+              <div>
+                <label style={{ fontSize: 13, color: '#94a3b8', display: 'block', marginBottom: 6 }}>Slogan / descripción</label>
+                <input
+                  type="text"
+                  value={form.login_subtitulo}
+                  onChange={e => handleChange('login_subtitulo', e.target.value)}
+                  placeholder="Ej: Arte en cada evento"
+                  style={{ width: '100%', background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8, padding: '8px 12px', color: '#e2e8f0', fontSize: 14, boxSizing: 'border-box' }}
+                />
+              </div>
+            </div>
+          </div>
+
           {/* Colores */}
           <div className="card">
             <div className="card-header">
@@ -416,9 +447,9 @@ export default function ConfiguracionLogin() {
                   background: 'linear-gradient(135deg,#6366f1,#8b5cf6)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   margin: '0 auto 10px', fontSize: 18, fontWeight: 700, color: '#fff',
-                }}>KR</div>
-                <div style={{ fontWeight: 700, fontSize: 16, color: '#fff', marginBottom: 3 }}>Kruxel</div>
-                <div style={{ fontSize: 11, color: '#94a3b8', marginBottom: 16 }}>Tu Gestión Integral</div>
+                }}>{(form.login_titulo || 'GI').slice(0, 2).toUpperCase()}</div>
+                <div style={{ fontWeight: 700, fontSize: 16, color: '#fff', marginBottom: 3 }}>{form.login_titulo || 'Gestión Integral'}</div>
+                <div style={{ fontSize: 11, color: '#94a3b8', marginBottom: 16 }}>{form.login_subtitulo || 'Sistema ERP de Banquetería'}</div>
                 <div style={{ height: 28, borderRadius: 6, background: 'rgba(255,255,255,0.08)', marginBottom: 8 }} />
                 <div style={{ height: 28, borderRadius: 6, background: 'rgba(255,255,255,0.08)', marginBottom: 12 }} />
                 <div style={{ height: 32, borderRadius: 6, background: 'rgba(99,102,241,0.7)' }} />

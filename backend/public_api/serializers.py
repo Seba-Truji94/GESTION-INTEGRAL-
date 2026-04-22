@@ -7,7 +7,9 @@ class MediaAssetSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = MediaAsset
-        fields = ['id', 'seccion', 'tipo', 'url', 'label', 'orden']
+        fields = ['id', 'seccion', 'tipo', 'archivo', 'url', 'label', 'orden']
+        extra_kwargs = {'archivo': {'write_only': True}}
+
 
     def get_url(self, obj):
         return obj.archivo.url if obj.archivo else None

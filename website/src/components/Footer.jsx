@@ -1,5 +1,6 @@
 export default function Footer({ config = {} }) {
-  const marca = config.nombre_marca || 'KRUXEL'
+  const marca = config.nombre_marca || 'RyF banqueteria'
+  const branding = 'KRUXEL'
   const copyright = config.footer_copyright || 'Banquetería & Repostería. Todos los derechos reservados.'
   return (
     <footer className="bg-black border-t border-white/10 py-12 px-6">
@@ -7,8 +8,9 @@ export default function Footer({ config = {} }) {
         <span className="font-display text-2xl tracking-widest text-white">
           {config.logo_url
             ? <img src={config.logo_url} alt={marca} className="h-8 object-contain" />
-            : marca
+            : branding
           }
+
         </span>
         <p className="text-white/30 text-sm text-center">
           © {new Date().getFullYear()} {marca} — {copyright}

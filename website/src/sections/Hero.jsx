@@ -5,42 +5,69 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 gsap.registerPlugin(ScrollTrigger)
 
 export default function Hero({ media = {}, config = {} }) {
-  const section  = useRef(null)
-  const bgRef    = useRef(null)
-  const line1    = useRef(null)
-  const line2    = useRef(null)
-  const line3    = useRef(null)
-  const ctaRef   = useRef(null)
+  const section = useRef(null)
+  const bgRef = useRef(null)
+  const line1 = useRef(null)
+  const line2 = useRef(null)
+  const line3 = useRef(null)
+  const ctaRef = useRef(null)
   const scrollRef = useRef(null)
 
   useEffect(() => {
-    // Todos los elementos visibles por defecto — animación es un bonus
-    const els = [line1.current, line2.current, line3.current]
-    gsap.set(els, { opacity: 1, y: 0 })
-    gsap.set(ctaRef.current.children, { opacity: 1, y: 0 })
+    const ctx = gsap.context(() => {
+      // Estado inicial: TODO visible y en su sitio
+      const els = [line1.current, line2.current, line3.current, ctaRef.current]
+      gsap.set(els, { opacity: 1, y: 0 })
+      
+      // Animación de entrada mucho más sutil o instantánea
+      gsap.from(els, { 
+        opacity: 0, 
+        y: 10, 
+        duration: 0.8, 
+        stagger: 0.1, 
+        ease: 'power2.out' 
+      })
 
-    const tl = gsap.timeline({ delay: 0.2 })
-    tl.from(bgRef.current, { scale: 1.12, duration: 2.2, ease: 'power3.out' })
-      .from(line1.current, { y: 40, opacity: 0, duration: 0.9, ease: 'power4.out' }, '-=1.6')
-      .from(line2.current, { y: 60, opacity: 0, duration: 1,   ease: 'power4.out' }, '-=0.75')
-      .from(line3.current, { y: 30, opacity: 0, duration: 0.8, ease: 'power3.out' }, '-=0.7')
-      .from(ctaRef.current.children, { y: 20, opacity: 0, stagger: 0.15, duration: 0.6, ease: 'power3.out' }, '-=0.4')
-      .from(scrollRef.current, { opacity: 0, duration: 0.5 }, '-=0.2')
+      // Parallax fondo al scroll
+      gsap.to(bgRef.current, {
+        yPercent: 20, ease: 'none',
+        scrollTrigger: { trigger: section.current, start: 'top top', end: 'bottom top', scrub: true },
+      })
 
-    // Parallax fondo al scroll
-    gsap.to(bgRef.current, {
-      yPercent: 25, ease: 'none',
-      scrollTrigger: { trigger: section.current, start: 'top top', end: 'bottom top', scrub: true },
+      // Animación de SALIDA (hacia arriba y transparente) ajustada
+      gsap.to([line1.current, line3.current, ctaRef.current], {
+        opacity: 0,
+        y: -100,
+        scrollTrigger: {
+          trigger: section.current,
+          start: '5% top', // Empieza a desaparecer casi de inmediato al bajar
+          end: '40% top',
+          scrub: 1
+        }
+      })
+
+      // El nombre principal se desvanece un poco después
+      gsap.to(line2.current, {
+        opacity: 0,
+        scale: 0.85,
+        y: -50,
+        scrollTrigger: {
+          trigger: section.current,
+          start: '15% top',
+          end: '60% top',
+          scrub: 1.5
+        }
+      })
     })
 
-    // Texto se va al hacer scroll
-    gsap.to(els, {
-      y: -50, opacity: 0,
-      scrollTrigger: { trigger: section.current, start: 'top top', end: '35% top', scrub: 1 },
-    })
+    return () => ctx.revert()
   }, [])
 
-  const marca = config.nombre_marca || 'KRUXEL'
+
+  const marca = (config.nombre_marca && config.nombre_marca !== 'KRUXEL') 
+                ? config.nombre_marca 
+                : 'RyF banqueteria'
+
 
   return (
     <section id="hero" ref={section} className="relative h-screen w-full overflow-hidden flex items-center justify-center">
@@ -65,7 +92,8 @@ export default function Hero({ media = {}, config = {} }) {
           {config.eslogan || 'Banquetería & Repostería'}
         </p>
 
-        <h1 ref={line2} className="font-display text-7xl md:text-[10rem] lg:text-[13rem] font-bold text-white leading-none tracking-tight mb-4">
+        <h1 ref={line2} className="font-display font-bold text-white leading-none tracking-tight mb-4"
+          style={{ fontSize: 'clamp(2.8rem, 10vw, 11rem)' }}>
           {marca}
         </h1>
 
@@ -73,9 +101,9 @@ export default function Hero({ media = {}, config = {} }) {
           {config.hero_subtitulo || 'Arte en cada evento'}
         </p>
 
-        <div ref={ctaRef} className="flex flex-col sm:flex-row gap-4 justify-center">
-          <a href="#catalogo" className="btn-gold-fill font-light tracking-widest">Ver catálogo</a>
-          <a href="#pedidos" className="btn-gold font-light tracking-widest">Solicitar cotización</a>
+        <div ref={ctaRef} className="flex flex-wrap items-center justify-center gap-6 mt-4">
+          <a href="#catalogo" className="btn-gold-fill tracking-[0.2em]">Ver catálogo</a>
+          <a href="#pedidos" className="btn-gold tracking-[0.2em]">Solicitar cotización</a>
         </div>
       </div>
 

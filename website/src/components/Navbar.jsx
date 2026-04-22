@@ -32,8 +32,9 @@ export default function Navbar({ config = {} }) {
         <a href="#hero" className="font-display text-2xl tracking-widest text-white">
           {config.logo_url
             ? <img src={config.logo_url} alt={config.nombre_marca} className="h-8 object-contain" />
-            : config.nombre_marca || 'KRUXEL'
+            : (config.nombre_marca && config.nombre_marca !== 'KRUXEL') ? config.nombre_marca : 'RyF banqueteria'
           }
+
         </a>
 
         {/* Desktop */}

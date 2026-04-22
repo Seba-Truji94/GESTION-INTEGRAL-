@@ -99,6 +99,9 @@ class LoginConfiguracion(models.Model):
         help_text='Preset de colores y distorsión para Hyperspeed',
     )
     hs_speed_up = models.FloatField(default=2.0, help_text='Factor de aceleración al hacer clic')
+    # Login card text
+    login_titulo    = models.CharField(max_length=100, default='', blank=True, help_text='Nombre de la empresa en la tarjeta de login')
+    login_subtitulo = models.CharField(max_length=200, default='', blank=True, help_text='Slogan o descripción en la tarjeta de login')
 
     class Meta:
         verbose_name = 'Configuración de Login'

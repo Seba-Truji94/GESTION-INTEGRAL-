@@ -21,159 +21,194 @@ function fmt(n) {
 
 export default function Catalogo({ seleccion, onToggle }) {
   const section = useRef(null)
-  const titleRef = useRef(null)
+  const gridRef = useRef(null)
   const [productos, setProductos] = useState([])
   const [categoria, setCategoria] = useState('')
   const [loading, setLoading] = useState(true)
   const [expanded, setExpanded] = useState(null)
+  const [revealed, setRevealed] = useState(false)
 
+  // Carga inicial y cambios de categoría
   useEffect(() => {
     setLoading(true)
+    // Forzamos un pequeño retraso para asegurar que la animación se vea bien al cambiar
     getCatalogo(categoria)
-      .then(r => setProductos(r.data))
+      .then(r => {
+        setProductos(r.data)
+        // Refresh ScrollTrigger because content changed
+        setTimeout(() => ScrollTrigger.refresh(), 100)
+      })
       .catch(() => setProductos([]))
       .finally(() => setLoading(false))
   }, [categoria])
 
+  // Animación de entrada de la sección
   useEffect(() => {
     const ctx = gsap.context(() => {
-      gsap.from('.cat-title > *', {
-        y: 60, opacity: 0, duration: 1, stagger: 0.12, ease: 'power3.out',
-        scrollTrigger: { trigger: '.cat-title', start: 'top 80%' },
+      gsap.from('.cat-header > *', {
+        y: 60, opacity: 0, duration: 1.2, stagger: 0.15, ease: 'power4.out',
+        scrollTrigger: { trigger: '.cat-header', start: 'top 80%' },
       })
     }, section)
     return () => ctx.revert()
   }, [])
 
+  // Animación de aparición de productos
   useEffect(() => {
-    if (loading) return
+    if (loading || !revealed || productos.length === 0) return
     const ctx = gsap.context(() => {
       gsap.from('.prod-card', {
-        y: 60, opacity: 0, duration: 0.8, stagger: 0.07, ease: 'power3.out',
-        scrollTrigger: { trigger: '.prod-grid', start: 'top 85%', once: true },
+        y: 100,
+        opacity: 0,
+        scale: 0.95,
+        duration: 0.8,
+        stagger: 0.05,
+        ease: 'power3.out',
+        clearProps: 'all'
       })
-    }, section)
+    }, gridRef)
     return () => ctx.revert()
-  }, [loading, productos])
+  }, [loading, revealed, productos.length, categoria])
+
+  const handleReveal = () => {
+    setRevealed(true)
+    setTimeout(() => {
+        const el = document.getElementById('menu-start')
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }, 100)
+  }
 
   return (
-    <section id="catalogo" ref={section} className="py-32 bg-[#0A0A0A]">
-      {/* Header */}
-      <div className="cat-title px-8 md:px-20 mb-16 flex flex-col md:flex-row md:items-end justify-between gap-8 max-w-7xl mx-auto">
-        <div>
-          <p className="text-[#C9A84C] text-xs tracking-[0.4em] uppercase mb-4">Nuestro menú</p>
-          <h2 className="font-display text-6xl md:text-8xl font-bold text-white leading-none">Catálogo</h2>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {CATEGORIAS.map(c => (
-            <button
-              key={c.key}
-              onClick={() => setCategoria(c.key)}
-              className={`px-5 py-2 text-[10px] tracking-[0.2em] uppercase transition-all duration-300 border ${
-                categoria === c.key
-                  ? 'bg-[#C9A84C] text-black border-[#C9A84C]'
-                  : 'border-white/15 text-white/40 hover:border-[#C9A84C]/60 hover:text-[#C9A84C]'
-              }`}
-            >
-              {c.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Divider */}
-      <div className="w-full h-px bg-white/5 mb-0" />
-
-      {/* Grid tipo lista elegante */}
-      {loading ? (
-        <div className="flex justify-center py-32">
-          <div className="w-6 h-6 border border-[#C9A84C] border-t-transparent rounded-full animate-spin" />
-        </div>
-      ) : productos.length === 0 ? (
-        <p className="text-white/20 text-center py-32 tracking-widest uppercase text-sm">Sin productos en esta categoría</p>
-      ) : (
-        <div className="prod-grid max-w-7xl mx-auto">
-          {productos.map((p, i) => (
-            <div
-              key={p.id}
-              className={`prod-card relative border-b border-white/5 transition-all duration-300 cursor-pointer ${
-                seleccion.find(s => s.id === p.id) ? 'bg-[#C9A84C]/5 border-[#C9A84C]/20' : 'hover:border-white/10 hover:bg-white/[0.02]'
-              }`}
-              onClick={() => setExpanded(expanded === i ? null : i)}
-            >
-              <div className="flex items-center justify-between px-8 md:px-20 py-8 gap-6">
-                {/* Imagen/Miniatura */}
-                <div className="hidden sm:block w-12 h-12 flex-shrink-0 overflow-hidden relative">
-                  {p.imagen ? (
-                    <img src={p.imagen} alt="" className="w-full h-full object-cover opacity-60 transition-opacity duration-500" />
-                  ) : (
-                    <div className="w-full h-full bg-white/5 flex items-center justify-center text-white/10">
-                      <FiShoppingBag size={14} />
-                    </div>
-                  )}
-                </div>
-
-                {/* Nombre */}
-                <h3 className="flex-1 font-display text-2xl md:text-3xl text-white transition-colors duration-300">
-                  {p.nombre}
-                </h3>
-
-                {/* Descripción corta siempre visible */}
-                {p.descripcion && (
-                  <span className="hidden lg:block text-white/30 text-xs max-w-xs truncate flex-shrink-0">
-                    {p.descripcion}
-                  </span>
-                )}
-
-                {/* Categoría */}
-                <span className="hidden md:block text-[10px] tracking-[0.3em] uppercase text-white/25 flex-shrink-0">
-                  {CATEGORIAS.find(c => c.key === p.categoria)?.label || p.categoria}
-                </span>
-
-                {/* Precio */}
-                <span className="font-light text-xl text-white/60 transition-colors duration-300 flex-shrink-0">
-                  {fmt(p.precio_venta)}
-                </span>
-
-                {/* Expand indicator */}
-                {p.descripcion && (
-                  <span className="text-white/20 text-xs flex-shrink-0 transition-transform duration-300" style={{ transform: expanded === i ? 'rotate(45deg)' : 'none' }}>+</span>
-                )}
-
-                {/* CTA Agregar */}
-                <button
-                  onClick={e => { e.stopPropagation(); onToggle(p) }}
-                  className={`flex-shrink-0 w-10 h-10 border flex items-center justify-center transition-all duration-300 ${
-                    seleccion.find(s => s.id === p.id)
-                      ? 'bg-[#C9A84C] border-[#C9A84C] text-black'
-                      : 'border-white/10 text-white/20 hover:border-[#C9A84C]/60 hover:text-[#C9A84C]'
-                  }`}
-                  title={seleccion.find(s => s.id === p.id) ? 'Quitar de la lista' : 'Agregar a la cotización'}
-                >
-                  {seleccion.find(s => s.id === p.id) ? '✓' : '+'}
-                </button>
-              </div>
-
-              {/* Descripción completa expandible al click */}
-              {p.descripcion && (
-                <div
-                  className="overflow-hidden transition-all duration-500"
-                  style={{ maxHeight: expanded === i ? 120 : 0 }}
-                >
-                  <p className="px-8 md:px-20 pb-8 text-white/40 text-sm leading-relaxed pl-[4.5rem] md:pl-[5.5rem] border-t border-white/5 pt-4">
-                    {p.descripcion}
-                  </p>
-                </div>
-              )}
+    <section id="catalogo" ref={section} className="relative bg-[#050505]">
+      
+      {/* 1. PORTADA INTERACTIVA DEL CATÁLOGO */}
+      {!revealed && (
+        <div className="relative h-[80vh] flex items-center justify-center overflow-hidden group">
+            {/* Fondo con zoom sutil */}
+            <div className="absolute inset-0 z-0">
+                <div className="absolute inset-0 bg-black/60 z-10" />
+                <img 
+                    src="https://images.unsplash.com/photo-1550966842-7070d2833cb8?q=80&w=2070&auto=format&fit=crop" 
+                    className="w-full h-full object-cover transition-transform duration-[3s] group-hover:scale-110" 
+                    alt="Catalogo Background"
+                />
             </div>
-          ))}
+            
+            <div className="relative z-20 text-center px-6">
+                <p className="text-[#C9A84C] text-xs tracking-[0.6em] uppercase mb-6 animate-pulse">Explora el sabor</p>
+                <h2 className="font-display text-6xl md:text-8xl font-bold text-white mb-10 leading-none">Nuestra Carta</h2>
+                <button 
+                    onClick={handleReveal}
+                    className="group relative px-12 py-5 border border-white/20 text-white tracking-[0.3em] text-xs uppercase overflow-hidden transition-all hover:border-[#C9A84C]"
+                >
+                    <span className="relative z-10 group-hover:text-black transition-colors duration-300">Descubrir Menú</span>
+                    <div className="absolute inset-0 bg-[#C9A84C] translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-[power4.inOut]" />
+                </button>
+            </div>
+            
+            {/* Decoración lateral */}
+            <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-[#050505] to-transparent" />
         </div>
       )}
 
-      {/* CTA inferior */}
-      <div className="text-center mt-20">
-        <a href="#pedidos" className="btn-gold">Solicitar cotización personalizada</a>
+      {/* 2. EL CATÁLOGO (Solo se muestra o activa al revelar) */}
+      <div id="menu-start" className={`transition-all duration-1000 ${revealed ? 'opacity-100 visible' : 'opacity-0 invisible h-0 overflow-hidden'}`}>
+        
+        {/* Header con Filtros */}
+        <div className="cat-header pt-32 pb-16 px-8 md:px-20 max-w-7xl mx-auto border-b border-white/5">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-12">
+                <div className="max-w-xl">
+                    <p className="text-[#C9A84C] text-[10px] tracking-[0.5em] uppercase mb-4 font-bold">Selección Gourmet</p>
+                    <h2 className="font-display text-5xl md:text-7xl font-bold text-white leading-none">Categorías</h2>
+                    <p className="mt-6 text-white/40 font-light text-sm">Cada plato es una obra de arte creada con ingredientes de la más alta calidad.</p>
+                </div>
+                
+                <div className="flex flex-wrap gap-3">
+                    {CATEGORIAS.map(c => (
+                        <button
+                            key={c.key}
+                            onClick={() => setCategoria(c.key)}
+                            className={`px-6 py-2.5 text-[9px] tracking-[0.25em] uppercase transition-all duration-500 border rounded-full ${
+                                categoria === c.key
+                                    ? 'bg-white text-black border-white scale-110 shadow-[0_0_20px_rgba(255,255,255,0.2)]'
+                                    : 'border-white/10 text-white/30 hover:border-white/40 hover:text-white'
+                            }`}
+                        >
+                            {c.label}
+                        </button>
+                    ))}
+                </div>
+            </div>
+        </div>
+
+        {/* Listado de Productos */}
+        <div className="min-h-[60vh] pb-32">
+            {loading ? (
+                <div className="flex flex-col items-center justify-center py-40 gap-4">
+                    <div className="w-10 h-10 border-2 border-[#C9A84C] border-t-transparent rounded-full animate-spin" />
+                    <span className="text-[10px] tracking-[0.4em] text-white/20 uppercase">Preparando selección...</span>
+                </div>
+            ) : productos.length === 0 ? (
+                <div className="text-center py-48">
+                    <p className="text-white/20 tracking-[0.5em] uppercase text-xs italic">Próximamente más delicias en esta categoría</p>
+                </div>
+            ) : (
+                <div ref={gridRef} className="prod-grid max-w-7xl mx-auto px-4 md:px-20 mt-12 grid gap-4">
+                   {productos.map((p, i) => (
+                    <div
+                        key={`${categoria}-${p.id}`}
+                        className={`prod-card group relative flex items-center gap-6 p-6 md:p-8 transition-all duration-500 rounded-2xl border border-white/5 bg-white/[0.01] hover:bg-white/[0.04] hover:border-white/10 hover:-translate-y-1 ${
+                            seleccion.find(s => s.id === p.id) ? 'border-[#C9A84C]/40 bg-[#C9A84C]/5' : ''
+                        }`}
+                        onClick={() => setExpanded(expanded === i ? null : i)}
+                    >
+                        {/* Miniatura */}
+                        <div className="w-16 h-16 md:w-20 md:h-20 rounded-xl overflow-hidden flex-shrink-0 bg-white/5 border border-white/10 group-hover:border-[#C9A84C]/30 transition-colors">
+                            {p.imagen ? (
+                                <img src={p.imagen} alt={p.nombre} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                            ) : (
+                                <div className="w-full h-full flex items-center justify-center text-white/5">
+                                    <FiShoppingBag size={24} />
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-3 mb-1">
+                                <h3 className="font-display text-xl md:text-2xl text-white truncate group-hover:text-[#C9A84C] transition-colors">{p.nombre}</h3>
+                                {p.categoria && <span className="text-[8px] tracking-widest uppercase px-2 py-0.5 bg-white/5 text-white/30 rounded-sm hidden sm:block">{p.categoria}</span>}
+                            </div>
+                            <p className={`text-white/40 text-xs md:text-sm font-light transition-all duration-500 ${expanded === i ? '' : 'line-clamp-1'}`}>
+                                {p.descripcion || 'Especialidad de la casa preparada con ingredientes frescos del día.'}
+                            </p>
+                        </div>
+
+                        <div className="text-right flex flex-col items-end gap-3 pr-2 md:pr-4">
+                            <span className="font-display text-lg md:text-2xl text-white/80">{fmt(p.precio_venta)}</span>
+                            <button
+                                onClick={e => { e.stopPropagation(); onToggle(p) }}
+                                className={`w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all duration-500 ${
+                                    seleccion.find(s => s.id === p.id)
+                                        ? 'bg-[#C9A84C] text-black shadow-[0_0_15px_rgba(201,168,76,0.5)]'
+                                        : 'bg-white/5 text-white/20 border border-white/10 hover:border-[#C9A84C] hover:text-[#C9A84C]'
+                                }`}
+                            >
+                                {seleccion.find(s => s.id === p.id) ? '✓' : '+'}
+                            </button>
+                        </div>
+                    </div>
+                   ))}
+                </div>
+            )}
+        </div>
+
+        {/* Footer del Catálogo */}
+        <div className="bg-gradient-to-b from-transparent to-black py-24 text-center border-t border-white/5">
+            <p className="text-white/30 text-sm mb-8 font-light italic">¿No encuentras lo que buscas? Podemos crear un menú a tu medida.</p>
+            <a href="#pedidos" className="btn-gold px-16 py-5">Solicitar cotización personalizada</a>
+        </div>
       </div>
     </section>
   )
 }
+

@@ -112,9 +112,9 @@ export default function Login({ onLogin }) {
       <AnimationBackground config={config} />
 
       <div className="login-card login-glass">
-        <div className="login-logo">KR</div>
-        <h1 className="login-title">Kruxel</h1>
-        <p className="login-sub">Tu Gestión Integral de Software</p>
+        <div className="login-logo">{config?.login_titulo ? config.login_titulo.slice(0, 2).toUpperCase() : 'GI'}</div>
+        <h1 className="login-title">{config?.login_titulo || 'Gestión Integral'}</h1>
+        <p className="login-sub">{config?.login_subtitulo || 'Sistema ERP de Banquetería'}</p>
 
         {error && <div className="login-error">{error}</div>}
 

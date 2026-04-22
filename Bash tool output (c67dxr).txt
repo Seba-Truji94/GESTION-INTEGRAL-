@@ -1,0 +1,20 @@
+[
+    {
+        "id": 3,
+        "seccion": "galeria",
+        "tipo": "imagen",
+        "url": "/media/website/RyF_Animation_Page_A_luxurious_charcuterie_board_is_artfully_5iU4b1-Y.png",
+        "label": "",
+        "orden": 0
+    },
+    {
+        "id": 1,
+        "seccion": "hero_video",
+        "tipo": "video",
+        "url": "/media/website/WhatsApp_Video_2026-04-21_at_14.01.34.mp4",
+        "label": "",
+        "orden": 1
+    },
+    {
+        "id": 2,
+        "seccion": "nosotros_banner",

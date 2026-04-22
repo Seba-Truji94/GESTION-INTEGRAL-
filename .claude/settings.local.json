@@ -6,7 +6,8 @@
       "Bash(python manage.py makemigrations usuarios --name=\"add_linewaves_fields\")",
       "Bash(python manage.py migrate)",
       "Bash(npm install:*)",
-      "Bash(python manage.py migrate usuarios)"
+      "Bash(python manage.py migrate usuarios)",
+      "Bash(git commit -m ' *)"
     ]
   }
 }

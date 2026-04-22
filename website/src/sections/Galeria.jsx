@@ -63,7 +63,7 @@ export default function Galeria({ media = {} }) {
     <>
       {/* ── SECCIÓN PINNED (scroll horizontal) ── */}
       <div ref={pinRef} style={{ background: '#111111', overflow: 'hidden' }}>
-        <div style={{ height: '100vh', display: 'flex', alignItems: 'center' }}>
+        <div style={{ height: FOTOS.length === 0 ? '40vh' : '100vh', display: 'flex', alignItems: 'center' }}>
 
           {/* Track: header + fotos en fila */}
           <div
@@ -84,9 +84,9 @@ export default function Galeria({ media = {} }) {
 
             {/* Fotos */}
             {FOTOS.length === 0 ? (
-              <div style={{ width: '60vw', height: '70vh', border: '1px dashed rgba(255,255,255,.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                <p style={{ color: 'rgba(255,255,255,.15)', fontSize: 10, letterSpacing: '0.3em', textTransform: 'uppercase' }}>
-                  Sube fotos de galería desde el admin de Django
+              <div style={{ width: '70vw', height: '30vh', border: '1px dashed rgba(255,255,255,.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <p style={{ color: 'rgba(255,255,255,.2)', fontSize: 11, letterSpacing: '0.3em', textTransform: 'uppercase' }}>
+                  Sin fotos de galería — agregar desde Admin → Media
                 </p>
               </div>
             ) : FOTOS.map((f, i) => (
