@@ -9,7 +9,7 @@ const LINKS = [
   { label: 'Contacto', href: '#contacto' },
 ]
 
-export default function Navbar() {
+export default function Navbar({ config = {} }) {
   const nav = useRef(null)
   const [scrolled, setScrolled] = useState(false)
   const [open, setOpen] = useState(false)
@@ -30,7 +30,10 @@ export default function Navbar() {
     >
       <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
         <a href="#hero" className="font-display text-2xl tracking-widest text-white">
-          KR<span className="text-[#C9A84C]">U</span>XEL
+          {config.logo_url
+            ? <img src={config.logo_url} alt={config.nombre_marca} className="h-8 object-contain" />
+            : config.nombre_marca || 'KRUXEL'
+          }
         </a>
 
         {/* Desktop */}

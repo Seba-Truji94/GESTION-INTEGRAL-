@@ -5,7 +5,7 @@ import { FiInstagram, FiFacebook, FiMail, FiPhone } from 'react-icons/fi'
 
 gsap.registerPlugin(ScrollTrigger)
 
-export default function Contacto() {
+export default function Contacto({ config = {} }) {
   const section = useRef(null)
 
   useEffect(() => {
@@ -32,30 +32,38 @@ export default function Contacto() {
             </p>
 
             <div className="space-y-6">
-              <a href="mailto:contacto@kruxel.cl" className="contacto-item flex items-center gap-4 text-white/60 hover:text-[#C9A84C] transition-colors group">
-                <span className="w-10 h-10 border border-white/10 group-hover:border-[#C9A84C]/40 flex items-center justify-center transition-colors">
-                  <FiMail />
-                </span>
-                <span>contacto@kruxel.cl</span>
-              </a>
-              <a href="tel:+56900000000" className="contacto-item flex items-center gap-4 text-white/60 hover:text-[#C9A84C] transition-colors group">
-                <span className="w-10 h-10 border border-white/10 group-hover:border-[#C9A84C]/40 flex items-center justify-center transition-colors">
-                  <FiPhone />
-                </span>
-                <span>+56 9 0000 0000</span>
-              </a>
-              <a href="https://instagram.com/kruxel" target="_blank" rel="noopener noreferrer" className="contacto-item flex items-center gap-4 text-white/60 hover:text-[#C9A84C] transition-colors group">
-                <span className="w-10 h-10 border border-white/10 group-hover:border-[#C9A84C]/40 flex items-center justify-center transition-colors">
-                  <FiInstagram />
-                </span>
-                <span>@kruxel</span>
-              </a>
-              <a href="https://facebook.com/kruxel" target="_blank" rel="noopener noreferrer" className="contacto-item flex items-center gap-4 text-white/60 hover:text-[#C9A84C] transition-colors group">
-                <span className="w-10 h-10 border border-white/10 group-hover:border-[#C9A84C]/40 flex items-center justify-center transition-colors">
-                  <FiFacebook />
-                </span>
-                <span>KRUXEL</span>
-              </a>
+              {config.email_contacto && (
+                <a href={`mailto:${config.email_contacto}`} className="contacto-item flex items-center gap-4 text-white/60 hover:text-[#C9A84C] transition-colors group">
+                  <span className="w-10 h-10 border border-white/10 group-hover:border-[#C9A84C]/40 flex items-center justify-center transition-colors">
+                    <FiMail />
+                  </span>
+                  <span>{config.email_contacto}</span>
+                </a>
+              )}
+              {config.telefono && (
+                <a href={`tel:${config.telefono.replace(/\s/g, '')}`} className="contacto-item flex items-center gap-4 text-white/60 hover:text-[#C9A84C] transition-colors group">
+                  <span className="w-10 h-10 border border-white/10 group-hover:border-[#C9A84C]/40 flex items-center justify-center transition-colors">
+                    <FiPhone />
+                  </span>
+                  <span>{config.telefono}</span>
+                </a>
+              )}
+              {config.instagram_url && (
+                <a href={config.instagram_url} target="_blank" rel="noopener noreferrer" className="contacto-item flex items-center gap-4 text-white/60 hover:text-[#C9A84C] transition-colors group">
+                  <span className="w-10 h-10 border border-white/10 group-hover:border-[#C9A84C]/40 flex items-center justify-center transition-colors">
+                    <FiInstagram />
+                  </span>
+                  <span>{config.instagram_usuario || config.instagram_url}</span>
+                </a>
+              )}
+              {config.facebook_url && (
+                <a href={config.facebook_url} target="_blank" rel="noopener noreferrer" className="contacto-item flex items-center gap-4 text-white/60 hover:text-[#C9A84C] transition-colors group">
+                  <span className="w-10 h-10 border border-white/10 group-hover:border-[#C9A84C]/40 flex items-center justify-center transition-colors">
+                    <FiFacebook />
+                  </span>
+                  <span>{config.facebook_usuario || config.facebook_url}</span>
+                </a>
+              )}
             </div>
           </div>
 

@@ -19,6 +19,7 @@ import Gastos from './pages/Gastos'
 import Catalogo from './pages/Catalogo'
 import Reportes from './pages/Reportes'
 import Mantenedor from './pages/Mantenedor'
+import Solicitudes from './pages/Solicitudes'
 import api from './services/api'
 import './index.css'
 
@@ -92,6 +93,7 @@ function App() {
                 <Route path="/configuracion" element={<ModuleRoute user={user} modulo="configuracion"><ConfiguracionTransferencia /></ModuleRoute>} />
                 <Route path="/configuracion/login" element={<ModuleRoute user={user} modulo="configuracion_login"><ConfiguracionLogin /></ModuleRoute>} />
                 <Route path="/mantenedor" element={<ModuleRoute user={user} modulo="mantenedor"><Mantenedor /></ModuleRoute>} />
+                <Route path="/solicitudes" element={<ModuleRoute user={user} modulo="solicitudes"><Solicitudes /></ModuleRoute>} />
               </Routes>
             </Layout>
           </PrivateRoute>

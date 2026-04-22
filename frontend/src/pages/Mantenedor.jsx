@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react'
-import { FiPlus, FiEdit2, FiTrash2, FiShield, FiX, FiCheck, FiUser, FiEye, FiEyeOff, FiGrid, FiCalendar, FiFileText, FiDollarSign, FiPackage, FiBarChart2, FiSettings, FiSliders, FiShoppingBag, FiUsers } from 'react-icons/fi'
+import { useState, useEffect, useRef } from 'react'
+import { FiPlus, FiEdit2, FiTrash2, FiShield, FiX, FiCheck, FiUser, FiEye, FiEyeOff, FiGrid, FiCalendar, FiFileText, FiDollarSign, FiPackage, FiBarChart2, FiSettings, FiSliders, FiShoppingBag, FiUsers, FiGlobe, FiSave } from 'react-icons/fi'
 import api from '../services/api'
 
 const SIDEBAR_ITEMS = [
@@ -47,6 +47,7 @@ const emptyPermisos = () =>
 const emptyForm = () => ({ username: '', email: '', first_name: '', last_name: '', rol: 'operador', telefono: '', password: '', is_active: true })
 
 export default function Mantenedor() {
+  const [tab, setTab] = useState('usuarios')
   const [usuarios, setUsuarios] = useState([])
   const [loading, setLoading] = useState(true)
   const [showUserModal, setShowUserModal] = useState(false)
@@ -162,15 +163,39 @@ export default function Mantenedor() {
     <div>
       <div className="page-header">
         <div>
-          <h1 className="page-title">Mantenedor de Usuarios</h1>
-          <p className="page-subtitle">Gestión de usuarios y control de acceso por módulo</p>
+          <h1 className="page-title">Mantenedor</h1>
+          <p className="page-subtitle">Usuarios, permisos y configuración del sitio web</p>
         </div>
-        <button className="btn btn-primary" onClick={handleOpenNew}>
-          <FiPlus /> Nuevo Usuario
-        </button>
+        {tab === 'usuarios' && (
+          <button className="btn btn-primary" onClick={handleOpenNew}>
+            <FiPlus /> Nuevo Usuario
+          </button>
+        )}
       </div>
 
-      <div className="table-wrapper">
+      {/* Tabs */}
+      <div className="flex gap-1 mb-6 border-b border-gray-200">
+        {[
+          { key: 'usuarios', label: 'Usuarios', icon: <FiUsers size={14} /> },
+          { key: 'sitio',    label: 'Sitio Web', icon: <FiGlobe size={14} /> },
+        ].map(t => (
+          <button
+            key={t.key}
+            onClick={() => setTab(t.key)}
+            className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
+              tab === t.key
+                ? 'border-blue-600 text-blue-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            {t.icon} {t.label}
+          </button>
+        ))}
+      </div>
+
+      {tab === 'sitio' && <SitioWebConfig />}
+
+      {tab === 'usuarios' && <div className="table-wrapper">
         {loading ? (
           <div className="loading"><span className="spinner"></span>Cargando...</div>
         ) : (
@@ -232,7 +257,7 @@ export default function Mantenedor() {
             </tbody>
           </table>
         )}
-      </div>
+      </div>}
 
       {/* Modal Usuario */}
       {showUserModal && (
@@ -399,6 +424,126 @@ export default function Mantenedor() {
           </div>
         </div>
       )}
+    </div>
+  )
+}
+
+function SitioWebConfig() {
+  const logoInputRef = useRef(null)
+  const [form, setForm] = useState(null)
+  const [saving, setSaving] = useState(false)
+  const [saved, setSaved] = useState(false)
+
+  useEffect(() => {
+    api.get('/public/config/').then(r => setForm(r.data)).catch(() => {})
+  }, [])
+
+  const handleChange = e => setForm(f => ({ ...f, [e.target.name]: e.target.value }))
+
+  const handleSave = async () => {
+    setSaving(true)
+    try {
+      const data = new FormData()
+      Object.entries(form).forEach(([k, v]) => {
+        if (k === 'logo' || k === 'logo_url') return
+        if (v !== null && v !== undefined) data.append(k, v)
+      })
+      if (logoInputRef.current?.files[0]) data.append('logo', logoInputRef.current.files[0])
+      await api.patch('/public/config/', data, { headers: { 'Content-Type': 'multipart/form-data' } })
+      setSaved(true)
+      setTimeout(() => setSaved(false), 2500)
+    } catch {}
+    setSaving(false)
+  }
+
+  if (!form) return <div className="loading"><span className="spinner" />Cargando...</div>
+
+  return (
+    <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6 max-w-2xl">
+      <p className="text-xs uppercase tracking-wider text-gray-400 mb-6">Información de marca y contacto del sitio público</p>
+
+      <div className="grid sm:grid-cols-2 gap-4 mb-6">
+        <SitioField label="Nombre de la marca" name="nombre_marca" value={form.nombre_marca} onChange={handleChange} />
+        <SitioField label="Eslogan (header/hero)" name="eslogan" value={form.eslogan} onChange={handleChange} />
+        <SitioField label="Subtítulo hero" name="hero_subtitulo" value={form.hero_subtitulo} onChange={handleChange} />
+        <SitioField label="Texto copyright footer" name="footer_copyright" value={form.footer_copyright} onChange={handleChange} />
+        <SitioField label="Email de contacto" name="email_contacto" type="email" value={form.email_contacto} onChange={handleChange} />
+        <SitioField label="Teléfono" name="telefono" value={form.telefono} onChange={handleChange} />
+        <SitioField label="Instagram URL" name="instagram_url" value={form.instagram_url} onChange={handleChange} />
+        <SitioField label="Instagram usuario (@...)" name="instagram_usuario" value={form.instagram_usuario} onChange={handleChange} />
+        <SitioField label="Facebook URL" name="facebook_url" value={form.facebook_url} onChange={handleChange} />
+        <SitioField label="Facebook usuario" name="facebook_usuario" value={form.facebook_usuario} onChange={handleChange} />
+        <SitioField label="WhatsApp (+569...)" name="whatsapp" value={form.whatsapp} onChange={handleChange} />
+      </div>
+
+      <p className="text-xs uppercase tracking-wider text-gray-400 mb-4 mt-6">Sección "Quiénes Somos"</p>
+      <div className="grid gap-4 mb-6">
+        <SitioField label="Título principal" name="nosotros_titulo" value={form.nosotros_titulo} onChange={handleChange} />
+        <SitioTextarea label="Párrafo 1" name="nosotros_texto1" value={form.nosotros_texto1} onChange={handleChange} />
+        <SitioTextarea label="Párrafo 2" name="nosotros_texto2" value={form.nosotros_texto2} onChange={handleChange} />
+      </div>
+
+      <p className="text-xs uppercase tracking-wider text-gray-400 mb-4">Estadísticas</p>
+      <div className="grid sm:grid-cols-3 gap-4 mb-6">
+        <div className="space-y-2">
+          <SitioField label="N° 1" name="stat1_num" type="number" value={form.stat1_num} onChange={handleChange} />
+          <SitioField label="Etiqueta 1" name="stat1_label" value={form.stat1_label} onChange={handleChange} />
+        </div>
+        <div className="space-y-2">
+          <SitioField label="N° 2" name="stat2_num" type="number" value={form.stat2_num} onChange={handleChange} />
+          <SitioField label="Etiqueta 2" name="stat2_label" value={form.stat2_label} onChange={handleChange} />
+        </div>
+        <div className="space-y-2">
+          <SitioField label="N° 3" name="stat3_num" type="number" value={form.stat3_num} onChange={handleChange} />
+          <SitioField label="Etiqueta 3" name="stat3_label" value={form.stat3_label} onChange={handleChange} />
+        </div>
+      </div>
+
+      <div className="mb-6">
+        <label className="block text-xs uppercase tracking-wider text-gray-400 mb-2">Logo (opcional)</label>
+        {form.logo_url && (
+          <img src={form.logo_url} alt="Logo actual" className="h-12 object-contain mb-2 border border-gray-100 p-1 rounded" />
+        )}
+        <input ref={logoInputRef} type="file" accept="image/*"
+          className="text-sm text-gray-600 file:mr-3 file:py-1.5 file:px-3 file:border file:border-gray-200 file:rounded file:text-xs file:bg-white file:text-gray-700 hover:file:bg-gray-50" />
+        <p className="text-xs text-gray-400 mt-1">Si no se sube logo, se usa el nombre de la marca como texto.</p>
+      </div>
+
+      <button onClick={handleSave} disabled={saving}
+        className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors">
+        {saving ? <span className="spinner" /> : <FiSave size={14} />}
+        {saving ? 'Guardando...' : saved ? '¡Guardado!' : 'Guardar cambios'}
+      </button>
+    </div>
+  )
+}
+
+function SitioField({ label, name, type = 'text', value, onChange }) {
+  return (
+    <div className="flex flex-col gap-1.5">
+      <label className="text-xs uppercase tracking-wider text-gray-400">{label}</label>
+      <input
+        type={type}
+        name={name}
+        value={value || ''}
+        onChange={onChange}
+        className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+    </div>
+  )
+}
+
+function SitioTextarea({ label, name, value, onChange }) {
+  return (
+    <div className="flex flex-col gap-1.5">
+      <label className="text-xs uppercase tracking-wider text-gray-400">{label}</label>
+      <textarea
+        name={name}
+        value={value || ''}
+        onChange={onChange}
+        rows={3}
+        className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+      />
     </div>
   )
 }

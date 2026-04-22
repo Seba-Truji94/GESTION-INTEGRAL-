@@ -14,6 +14,7 @@ MODULOS = [
     ('configuracion', 'Configuración'),
     ('configuracion_login', 'Visual Login'),
     ('mantenedor', 'Mantenedor'),
+    ('solicitudes', 'Solicitudes'),
 ]
 
 

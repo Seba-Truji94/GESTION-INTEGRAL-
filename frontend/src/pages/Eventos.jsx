@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { FiPlus, FiSearch, FiDownload, FiEye, FiEdit2, FiTrash2 } from 'react-icons/fi'
+import { FiPlus, FiSearch, FiDownload, FiEye, FiEdit2, FiTrash2, FiChevronDown } from 'react-icons/fi'
 import api, { fmt, fmtDate, toInputDate } from '../services/api'
 import Paginador from '../components/Paginador'
 
 const ESTADOS = [
   { value: '', label: 'Todos' },
+  { value: 'prospecto', label: 'Prospecto' },
   { value: 'presupuestado', label: 'Presupuestado' },
   { value: 'confirmado', label: 'Confirmado' },
   { value: 'en_proceso', label: 'En Proceso' },
@@ -25,15 +26,50 @@ const TIPO_LABELS = {
   reunion_familiar:'Reunión Familiar', otro:'Otro'
 }
 
+const FILTRO_FECHA = [
+  { value: '', label: 'Sin filtro fecha' },
+  { value: 'evento_hoy', label: 'Evento: Hoy' },
+  { value: 'evento_semana', label: 'Evento: Esta semana' },
+  { value: 'evento_mes', label: 'Evento: Este mes' },
+  { value: 'creado_hoy', label: 'Creado: Hoy' },
+  { value: 'creado_semana', label: 'Creado: Esta semana' },
+  { value: 'creado_mes', label: 'Creado: Este mes' },
+]
+
+function matchFecha(ev, filtro) {
+  if (!filtro) return true
+  const now = new Date()
+  const startOfDay = d => new Date(d.getFullYear(), d.getMonth(), d.getDate())
+  const today = startOfDay(now)
+  const startOfWeek = new Date(today); startOfWeek.setDate(today.getDate() - today.getDay())
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+
+  if (filtro.startsWith('evento_')) {
+    const d = startOfDay(new Date(ev.fecha))
+    if (filtro === 'evento_hoy')   return d.getTime() === today.getTime()
+    if (filtro === 'evento_semana') return d >= startOfWeek
+    if (filtro === 'evento_mes')   return d >= startOfMonth
+  }
+  if (filtro.startsWith('creado_')) {
+    const d = startOfDay(new Date(ev.created_at))
+    if (filtro === 'creado_hoy')   return d.getTime() === today.getTime()
+    if (filtro === 'creado_semana') return d >= startOfWeek
+    if (filtro === 'creado_mes')   return d >= startOfMonth
+  }
+  return true
+}
+
 export default function Eventos() {
   const [eventos, setEventos] = useState([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [filtroEstado, setFiltroEstado] = useState('')
+  const [filtroFecha, setFiltroFecha] = useState('')
   const [showModal, setShowModal] = useState(false)
   const [editEvento, setEditEvento] = useState(null)
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
+  const [changingEstado, setChangingEstado] = useState(null)
   const navigate = useNavigate()
 
   const load = async () => {
@@ -49,9 +85,19 @@ export default function Eventos() {
   }
 
   useEffect(() => { load() }, [filtroEstado, search])
-  useEffect(() => { setPage(1) }, [filtroEstado, search])
+  useEffect(() => { setPage(1) }, [filtroEstado, search, filtroFecha])
 
-  const paginated = eventos.slice((page - 1) * pageSize, page * pageSize)
+  const filtered = eventos.filter(ev => matchFecha(ev, filtroFecha))
+  const paginated = filtered.slice((page - 1) * pageSize, page * pageSize)
+
+  const handleCambiarEstado = async (ev, nuevoEstado) => {
+    setChangingEstado(ev.id)
+    try {
+      await api.patch(`/eventos/${ev.id}/`, { estado: nuevoEstado })
+      setEventos(prev => prev.map(e => e.id === ev.id ? { ...e, estado: nuevoEstado, estado_display: ESTADOS.find(s => s.value === nuevoEstado)?.label || nuevoEstado } : e))
+    } catch {}
+    setChangingEstado(null)
+  }
 
   const [form, setForm] = useState({ nombre: '', cliente: '', fecha: '', tipo_evento: 'matrimonio', pax: 1, lugar: '', estado: 'presupuestado', menu: '', observaciones: '' })
 
@@ -66,7 +112,7 @@ export default function Eventos() {
       setEditEvento(null)
       setForm({ nombre: '', cliente: '', fecha: '', tipo_evento: 'matrimonio', pax: 1, lugar: '', estado: 'presupuestado', menu: '', observaciones: '' })
       load()
-    } catch (e) { alert('Error al guardar') }
+    } catch { alert('Error al guardar') }
   }
 
   const handleEdit = (ev) => {
@@ -108,8 +154,11 @@ export default function Eventos() {
             <select className="form-control responsive-select" value={filtroEstado} onChange={e => setFiltroEstado(e.target.value)}>
               {ESTADOS.map(e => <option key={e.value} value={e.value}>{e.label}</option>)}
             </select>
+            <select className="form-control responsive-select" value={filtroFecha} onChange={e => setFiltroFecha(e.target.value)}>
+              {FILTRO_FECHA.map(f => <option key={f.value} value={f.value}>{f.label}</option>)}
+            </select>
           </div>
-          <span className="mobile-hide" style={{ fontSize: 12, color: 'var(--txt3)' }}>{eventos.length} evento{eventos.length !== 1 ? 's' : ''}</span>
+          <span className="mobile-hide" style={{ fontSize: 12, color: 'var(--txt3)' }}>{filtered.length} evento{filtered.length !== 1 ? 's' : ''}</span>
         </div>
 
         {loading ? <div className="loading"><span className="spinner"></span>Cargando...</div> : (
@@ -118,7 +167,8 @@ export default function Eventos() {
               <tr>
                 <th>Evento</th>
                 <th>Cliente</th>
-                <th>Fecha</th>
+                <th>F. Evento</th>
+                <th>F. Creación</th>
                 <th>Tipo</th>
                 <th className="center">Pax</th>
                 <th className="right">Venta</th>
@@ -130,18 +180,39 @@ export default function Eventos() {
             </thead>
             <tbody>
               {paginated.length === 0 ? (
-                <tr><td colSpan="10"><div className="empty-state"><p>No hay eventos registrados</p></div></td></tr>
+                <tr><td colSpan="11"><div className="empty-state"><p>No hay eventos registrados</p></div></td></tr>
               ) : paginated.map(ev => (
                 <tr key={ev.id}>
-                  <td className="bold" style={{ cursor: 'pointer', color: 'var(--acc)' }} onClick={() => navigate(`/eventos/${ev.id}`)}>{ev.nombre}</td>
+                  <td className="bold" style={{ cursor: 'pointer', color: 'var(--acc)' }} onClick={() => navigate(`/eventos/${ev.id}`)}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      {ev.nombre}
+                      {ev.es_externo && <span style={{ fontSize: 9, background: 'var(--pur-light)', color: 'var(--pur)', padding: '1px 5px', borderRadius: 4, fontWeight: 800 }}>🌐 WEB</span>}
+                    </div>
+                  </td>
                   <td>{ev.cliente}</td>
                   <td style={{ whiteSpace: 'nowrap' }}>{fmtDate(ev.fecha)}</td>
+                  <td style={{ whiteSpace: 'nowrap', color: 'var(--txt3)', fontSize: 12 }}>{fmtDate(ev.created_at)}</td>
                   <td>{ev.tipo_evento_display}</td>
                   <td className="center">{ev.pax}</td>
                   <td className="right bold">{fmt(ev.venta_total)}</td>
                   <td className="right">{fmt(ev.costo_total)}</td>
                   <td className="right" style={{ color: ev.utilidad >= 0 ? 'var(--grn)' : 'var(--red)', fontWeight: 600 }}>{fmt(ev.utilidad)}</td>
-                  <td className="center"><span className={`badge badge-${ev.estado}`}>{ev.estado_display}</span></td>
+                  <td className="center">
+                    <div style={{ position: 'relative', display: 'inline-block' }}>
+                      <select
+                        value={ev.estado}
+                        disabled={changingEstado === ev.id}
+                        onChange={e => handleCambiarEstado(ev, e.target.value)}
+                        className={`badge badge-${ev.estado}`}
+                        style={{ appearance: 'none', paddingRight: 20, cursor: 'pointer', border: 'none', background: 'transparent', fontWeight: 600, fontSize: 11 }}
+                      >
+                        {ESTADOS.filter(e => e.value).map(e => (
+                          <option key={e.value} value={e.value}>{e.label}</option>
+                        ))}
+                      </select>
+                      <FiChevronDown size={10} style={{ position: 'absolute', right: 4, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', opacity: 0.6 }} />
+                    </div>
+                  </td>
                   <td className="center">
                     <div className="flex gap-8" style={{ justifyContent: 'center' }}>
                       <button className="btn-icon" onClick={() => navigate(`/eventos/${ev.id}`)} title="Ver detalle"><FiEye /></button>
@@ -154,7 +225,7 @@ export default function Eventos() {
             </tbody>
           </table>
         )}
-        <Paginador total={eventos.length} page={page} pageSize={pageSize} onPage={setPage} onPageSize={setPageSize} />
+        <Paginador total={filtered.length} page={page} pageSize={pageSize} onPage={setPage} onPageSize={setPageSize} />
       </div>
 
       {showModal && (

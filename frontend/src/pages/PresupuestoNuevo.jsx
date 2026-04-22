@@ -191,7 +191,7 @@ export default function PresupuestoNuevo() {
             {showSugg && suggs.length > 0 && (
               <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: 'var(--bg)', border: '1px solid var(--bd)', borderRadius: '0 0 var(--r) var(--r)', zIndex: 10, maxHeight: 200, overflowY: 'auto', boxShadow: '0 4px 10px rgba(0,0,0,0.1)' }}>
                 {suggs.map(p => (
-                  <div key={p.id} style={{ padding: '8px 12px', cursor: 'pointer', borderBottom: '1px solid var(--bd)', fontSize: 13 }}
+                  <div key={p.id} style={{ padding: '8px 12px', cursor: 'pointer', borderBottom: '1px solid var(--bd)', fontSize: 13, display: 'flex', alignItems: 'center', gap: 10 }}
                     className="suggestion-item"
                     onMouseDown={() => {
                       if (p.isCatalog) {
@@ -217,10 +217,19 @@ export default function PresupuestoNuevo() {
                       setShowSugg(false)
                     }}
                   >
-                    <strong>{p.isCatalog ? '📦' : '🍎'} {p.nombre || p.nombre}</strong> 
-                    <span style={{color: 'var(--txt3)', fontSize: 11}}>
-                      {p.isCatalog ? ` - Catálogo (${fmt(p.precio_venta)})` : ` - disp: ${Number(p.stock_actual)} ${p.unidad}`}
-                    </span>
+                    {p.isCatalog && p.imagen ? (
+                      <img src={p.imagen} alt="" style={{width: 32, height: 32, borderRadius: 4, objectFit: 'cover'}} />
+                    ) : (
+                      <div style={{width: 32, height: 32, borderRadius: 4, background: 'var(--bg2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16}}>
+                        {p.isCatalog ? '📦' : '🍎'}
+                      </div>
+                    )}
+                    <div style={{flex: 1}}>
+                      <strong>{p.nombre}</strong> 
+                      <div style={{color: 'var(--txt3)', fontSize: 11}}>
+                        {p.isCatalog ? `Catálogo MASTER (${fmt(p.precio_venta)})` : `Insumo disp: ${Number(p.stock_actual)} ${p.unidad}`}
+                      </div>
+                    </div>
                   </div>
                 ))}
               </div>

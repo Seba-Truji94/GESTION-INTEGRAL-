@@ -17,7 +17,7 @@ class ProductoCatalogoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ProductoCatalogo
-        fields = ['id', 'nombre', 'descripcion', 'categoria', 'precio_venta', 'ingredientes', 'costo_base', 'margen_estimado', 'activo']
+        fields = ['id', 'nombre', 'descripcion', 'imagen', 'categoria', 'precio_venta', 'ingredientes', 'costo_base', 'margen_estimado', 'activo']
 
     def create(self, validated_data):
         ingredientes_data = validated_data.pop('ingredientes', [])

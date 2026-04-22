@@ -13,6 +13,7 @@ class ProductoCatalogo(models.Model):
     
     nombre = models.CharField(max_length=200)
     descripcion = models.TextField(blank=True, default='')
+    imagen = models.ImageField(upload_to='catalogo/', null=True, blank=True)
     categoria = models.CharField(max_length=30, choices=CATEGORIAS, default='otro')
     precio_venta = models.DecimalField(max_digits=12, decimal_places=0, default=0)
     activo = models.BooleanField(default=True)

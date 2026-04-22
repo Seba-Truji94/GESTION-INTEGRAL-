@@ -14,7 +14,7 @@ const emptyForm = () => ({
   descripcion: '',
 })
 
-export default function Pedido({ onPedidoEnviado }) {
+export default function Pedido({ onPedidoEnviado, seleccion, onClear }) {
   const section = useRef(null)
   const formRef = useRef(null)
   const [form, setForm] = useState(emptyForm())
@@ -39,9 +39,21 @@ export default function Pedido({ onPedidoEnviado }) {
     setSending(true)
     setError(null)
     try {
-      await crearSolicitud({ ...form, pax: Number(form.pax) || 0 })
+      // Concatenar productos seleccionados a la descripción
+      const listaProductos = seleccion.length > 0 
+        ? `\n\nPRODUCTOS INTERÉS:\n- ${seleccion.map(p => p.nombre).join('\n- ')}`
+        : ''
+      
+      const payload = { 
+        ...form, 
+        pax: Number(form.pax) || 0,
+        descripcion: form.descripcion + listaProductos
+      }
+
+      await crearSolicitud(payload)
       setSent(true)
       setForm(emptyForm())
+      onClear?.() // Limpiar selección al éxito
       onPedidoEnviado?.()
     } catch {
       setError('Hubo un problema al enviar tu solicitud. Intenta de nuevo.')
@@ -70,6 +82,20 @@ export default function Pedido({ onPedidoEnviado }) {
           </div>
         ) : (
           <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
+            {/* Lista de productos seleccionados */}
+            {seleccion.length > 0 && (
+              <div className="mb-8 p-6 border border-[#C9A84C]/20 bg-[#C9A84C]/5">
+                <p className="text-[10px] tracking-[0.2em] uppercase text-[#C9A84C] mb-4">Tu selección de productos:</p>
+                <div className="flex flex-wrap gap-2">
+                  {seleccion.map(p => (
+                    <span key={p.id} className="text-xs px-3 py-1 bg-white/5 text-white/70 border border-white/10">
+                      {p.nombre}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <div className="grid sm:grid-cols-2 gap-6">
               <Field label="Nombre completo" name="nombre_cliente" value={form.nombre_cliente} onChange={handleChange} required />
               <Field label="Email" name="email" type="email" value={form.email} onChange={handleChange} required />

@@ -428,6 +428,7 @@ select.form-control { cursor: pointer; }
   white-space: nowrap;
 }
 
+.badge-prospecto { background: var(--pur-light); color: #5b21b6; }
 .badge-presupuestado { background: var(--acc-light); color: #1e40af; }
 .badge-confirmado { background: var(--grn-light); color: #065f46; }
 .badge-en_proceso { background: var(--amb-light); color: #78350f; }

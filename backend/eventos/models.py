@@ -21,6 +21,7 @@ class Evento(models.Model):
         ('otro', 'Otro'),
     ]
     ESTADOS = [
+        ('prospecto', 'Prospecto'),
         ('presupuestado', 'Presupuestado'),
         ('confirmado', 'Confirmado'),
         ('en_proceso', 'En Proceso'),
@@ -35,6 +36,7 @@ class Evento(models.Model):
     pax = models.PositiveIntegerField(default=1, verbose_name='Cantidad de Personas')
     lugar = models.CharField(max_length=300, blank=True, default='')
     estado = models.CharField(max_length=20, choices=ESTADOS, default='presupuestado')
+    es_externo = models.BooleanField(default=False, verbose_name='Origen Externo (Web)')
     menu = models.TextField(blank=True, default='', verbose_name='Descripción del Menú')
     observaciones = models.TextField(blank=True, default='')
     created_by = models.ForeignKey(
@@ -115,6 +117,7 @@ class Presupuesto(models.Model):
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True
     )
+    stock_procesado = models.BooleanField(default=False, verbose_name='Stock deducido')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

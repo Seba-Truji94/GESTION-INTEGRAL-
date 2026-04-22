@@ -20,7 +20,7 @@ export default function Catalogo() {
   const [pageSize, setPageSize] = useState(10)
 
   const [form, setForm] = useState({ 
-    nombre: '', descripcion: '', categoria: 'otro', precio_venta: 0, ingredientes: [] 
+    nombre: '', descripcion: '', categoria: 'otro', precio_venta: 0, ingredientes: [], imagen: null 
   })
 
   useEffect(() => {
@@ -67,11 +67,12 @@ export default function Catalogo() {
         descripcion: item.descripcion,
         categoria: item.categoria,
         precio_venta: item.precio_venta,
-        ingredientes: item.ingredientes.map(i => ({ producto: i.producto, cantidad: i.cantidad }))
+        ingredientes: item.ingredientes.map(i => ({ producto: i.producto, cantidad: i.cantidad })),
+        imagen: null
       })
     } else {
       setEditing(null)
-      setForm({ nombre: '', descripcion: '', categoria: 'otro', precio_venta: 0, ingredientes: [] })
+      setForm({ nombre: '', descripcion: '', categoria: 'otro', precio_venta: 0, ingredientes: [], imagen: null })
     }
     setShowModal(true)
   }
@@ -106,11 +107,24 @@ export default function Catalogo() {
   const handleSave = async () => {
     if (!form.nombre) return alert('El nombre es obligatorio')
     try {
+      let savedItem = null
       if (editing) {
-        await api.put(`/catalogo/productos/${editing}/`, form)
+        const res = await api.put(`/catalogo/productos/${editing}/`, form)
+        savedItem = res.data
       } else {
-        await api.post('/catalogo/productos/', form)
+        const res = await api.post('/catalogo/productos/', form)
+        savedItem = res.data
       }
+
+      // Upload image if present
+      if (form.imagen && savedItem) {
+        const formData = new FormData()
+        formData.append('imagen', form.imagen)
+        await api.patch(`/catalogo/productos/${savedItem.id}/`, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        })
+      }
+
       setShowModal(false)
       load()
     } catch (e) { 
@@ -227,8 +241,19 @@ export default function Catalogo() {
             ) : paginated.map(it => (
               <tr key={it.id}>
                 <td>
-                    <div className="bold" style={{fontSize: 14}}>{it.nombre}</div>
-                    <div style={{fontSize: 11, color:'var(--txt3)', marginTop: 2}}>{it.descripcion || 'Sin descripción'}</div>
+                    <div style={{display: 'flex', gap: 12, alignItems: 'center'}}>
+                        {it.imagen ? (
+                            <img src={it.imagen} alt={it.nombre} style={{width: 44, height: 44, borderRadius: 8, objectFit: 'cover', background: '#f1f5f9'}} />
+                        ) : (
+                            <div style={{width: 44, height: 44, borderRadius: 8, background: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--txt3)'}}>
+                                <FiShoppingBag />
+                            </div>
+                        )}
+                        <div>
+                            <div className="bold" style={{fontSize: 14}}>{it.nombre}</div>
+                            <div style={{fontSize: 11, color:'var(--txt3)', marginTop: 2}}>{it.descripcion || 'Sin descripción'}</div>
+                        </div>
+                    </div>
                 </td>
                 <td>
                     <span className="badge" style={{background: `${catColors[it.categoria]}15`, color: catColors[it.categoria], border: `1px solid ${catColors[it.categoria]}30`}}>
@@ -296,6 +321,16 @@ export default function Catalogo() {
                     
                     <div className="form-group"><label>Descripción / Notas de producción</label>
                         <textarea className="form-control" rows={4} placeholder="Detalles de preparación, empaque, etc." value={form.descripcion} onChange={e => setForm({...form, descripcion: e.target.value})} /></div>
+                    
+                    <div className="form-group">
+                        <label>Imagen del Producto</label>
+                        <input type="file" className="form-control" accept="image/*" onChange={e => setForm({...form, imagen: e.target.files[0]})} />
+                        {editing && items.find(i => i.id === editing)?.imagen && !form.imagen && (
+                            <div style={{marginTop: 8, fontSize: 11, color: 'var(--txt3)'}}>
+                                Imagen actual: <a href={items.find(i => i.id === editing).imagen} target="_blank" rel="noreferrer">Ver</a>
+                            </div>
+                        )}
+                    </div>
                     
                     <div className="form-group" style={{marginTop: 32}}>
                         <label>Precio de Venta Final ($)</label>

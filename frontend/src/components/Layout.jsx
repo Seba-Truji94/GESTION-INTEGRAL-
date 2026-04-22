@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
-import { FiGrid, FiCalendar, FiFileText, FiDollarSign, FiPackage, FiLogOut, FiSettings, FiBarChart2, FiMenu, FiX, FiSliders, FiUsers, FiShoppingBag } from 'react-icons/fi'
+import { FiGrid, FiCalendar, FiFileText, FiDollarSign, FiPackage, FiLogOut, FiSettings, FiBarChart2, FiMenu, FiX, FiSliders, FiUsers, FiShoppingBag, FiInbox } from 'react-icons/fi'
 import PerfilUsuarioModal from './PerfilUsuarioModal'
 
 const NAV_ITEMS = [
@@ -12,6 +12,7 @@ const NAV_ITEMS = [
   { to: '/reportes',       icon: <FiBarChart2 />,  label: 'Reportes',       modulo: 'reportes' },
   { to: '/inventario',     icon: <FiPackage />,    label: 'Inventario',     modulo: 'inventario' },
   { to: '/catalogo',       icon: <FiShoppingBag />,label: 'Catálogo',       modulo: 'catalogo' },
+  { to: '/solicitudes',   icon: <FiInbox />,      label: 'Solicitudes',    modulo: 'solicitudes' },
   { to: '/configuracion',  icon: <FiSettings />,   label: 'Configuración',  modulo: 'configuracion' },
   { to: '/configuracion/login', icon: <FiSliders />, label: 'Visual Login', modulo: 'configuracion_login' },
 ]
