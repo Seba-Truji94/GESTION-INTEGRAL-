@@ -88,7 +88,7 @@ export default function Catalogo({ media = {}, seleccion, onToggle }) {
             <div className="absolute inset-0 z-0">
                 <div className="absolute inset-0 bg-black/60 z-10" />
                 <img 
-                    src={media.catalogo_fondo?.url || "https://images.unsplash.com/photo-1550966842-7070d2833cb8?q=80&w=2070&auto=format&fit=crop"} 
+                    src={media.catalogo_fondo?.url || "https://images.unsplash.com/photo-1555244162-803834f70033?q=80&w=2070&auto=format&fit=crop"} 
                     className="w-full h-full object-cover transition-transform duration-[3s] group-hover:scale-110" 
                     alt="Catalogo Background"
                 />
