@@ -1,5 +1,5 @@
 {
-  "name": "RyF Banquetería - Bot IA Instagram",
+  "name": "RyF Banquetería - Bot IA Instagram (ManyChat Free)",
   "nodes": [
     {
       "parameters": {
@@ -28,7 +28,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const ctx = $('Obtener Contexto Negocio').item.json;\nconst userMsg = $('Webhook ManyChat').item.json.body.last_input_text || '';\nconst subscriberId = $('Webhook ManyChat').item.json.body.id || '';\n\nconst systemPrompt = `Eres el asistente virtual de ${ctx.negocio.nombre}, empresa de banquetería y repostería chilena. Responde siempre en español, de forma amable y concisa (máximo 3 oraciones). Si preguntan por disponibilidad de fechas, consulta las fechas ocupadas y responde si la fecha está disponible o no. Si preguntan por productos o precios, menciona las opciones relevantes con precio en pesos chilenos. Siempre ofrece cotizar por este canal.\n\nINFO DEL NEGOCIO: ${JSON.stringify(ctx.negocio)}\n\nPRODUCTOS DISPONIBLES: ${JSON.stringify(ctx.productos)}\n\nFECHAS OCUPADAS próximos 60 días: ${JSON.stringify(ctx.fechas_ocupadas)}\n\nHOY: ${ctx.hoy}`;\n\nreturn [{\n  json: {\n    subscriber_id: subscriberId,\n    groq_payload: {\n      model: 'llama-3.1-8b-instant',\n      max_tokens: 300,\n      temperature: 0.7,\n      messages: [\n        { role: 'system', content: systemPrompt },\n        { role: 'user', content: userMsg }\n      ]\n    }\n  }\n}];"
+        "jsCode": "const ctx = $('Obtener Contexto Negocio').item.json;\nconst userMsg = $('Webhook ManyChat').item.json.body.last_input_text || '';\n\nconst systemPrompt = `Eres el asistente virtual de ${ctx.negocio.nombre}, empresa de banquetería y repostería chilena. Responde siempre en español, de forma amable y concisa (máximo 3 oraciones). Si preguntan por disponibilidad de fechas, consulta las fechas ocupadas y responde si la fecha está disponible o no. Si preguntan por productos o precios, menciona las opciones relevantes con precio en pesos chilenos. Siempre ofrece cotizar por este canal.\n\nINFO DEL NEGOCIO: ${JSON.stringify(ctx.negocio)}\n\nPRODUCTOS DISPONIBLES: ${JSON.stringify(ctx.productos)}\n\nFECHAS OCUPADAS próximos 60 días: ${JSON.stringify(ctx.fechas_ocupadas)}\n\nHOY: ${ctx.hoy}`;\n\nreturn [{\n  json: {\n    groq_payload: {\n      model: 'llama-3.1-8b-instant',\n      max_tokens: 300,\n      temperature: 0.7,\n      messages: [\n        { role: 'system', content: systemPrompt },\n        { role: 'user', content: userMsg }\n      ]\n    }\n  }\n}];"
       },
       "id": "build-payload",
       "name": "Construir Payload",
@@ -55,7 +55,7 @@
         "jsonBody": "={{ JSON.stringify($json.groq_payload) }}",
         "options": {}
       },
-      "id": "openai-call",
+      "id": "groq-call",
       "name": "Groq Llama",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4,
@@ -63,49 +63,14 @@
     },
     {
       "parameters": {
-        "jsCode": "const reply = $input.item.json.choices[0].message.content;\nconst subscriberId = $('Construir Payload').item.json.subscriber_id;\n\nreturn [{\n  json: {\n    subscriber_id: subscriberId,\n    data: {\n      version: 'v2',\n      content: {\n        messages: [{ type: 'text', text: reply }]\n      }\n    },\n    message_tag: 'NON_PROMOTIONAL_SUBSCRIPTION'\n  }\n}];"
-      },
-      "id": "build-reply",
-      "name": "Construir Respuesta",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [1250, 300]
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "https://api.manychat.com/fb/sending/sendContent",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "Authorization",
-              "value": "Bearer TU_MANYCHAT_API_KEY"
-            }
-          ]
-        },
-        "sendBody": true,
-        "contentType": "json",
-        "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify($json) }}",
-        "options": {}
-      },
-      "id": "send-manychat",
-      "name": "Responder por ManyChat",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4,
-      "position": [1500, 300]
-    },
-    {
-      "parameters": {
         "respondWith": "json",
-        "responseBody": "={\"status\": \"ok\"}"
+        "responseBody": "={{ JSON.stringify({ version: 'v2', content: { messages: [{ type: 'text', text: $json.choices[0].message.content }] } }) }}"
       },
       "id": "respond-webhook",
       "name": "Responder Webhook",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1,
-      "position": [1750, 300]
+      "position": [1250, 300]
     }
   ],
   "connections": {
@@ -119,12 +84,6 @@
       "main": [[{ "node": "Groq Llama", "type": "main", "index": 0 }]]
     },
     "Groq Llama": {
-      "main": [[{ "node": "Construir Respuesta", "type": "main", "index": 0 }]]
-    },
-    "Construir Respuesta": {
-      "main": [[{ "node": "Responder por ManyChat", "type": "main", "index": 0 }]]
-    },
-    "Responder por ManyChat": {
       "main": [[{ "node": "Responder Webhook", "type": "main", "index": 0 }]]
     }
   },
