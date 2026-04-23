@@ -174,7 +174,7 @@ export default function Mantenedor() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 mb-6 border-b border-gray-200">
+      <div className="tabs-container">
         {[
           { key: 'usuarios', label: 'Usuarios', icon: <FiUsers size={14} /> },
           { key: 'sitio',    label: 'Sitio Web', icon: <FiGlobe size={14} /> },
@@ -183,11 +183,7 @@ export default function Mantenedor() {
           <button
             key={t.key}
             onClick={() => setTab(t.key)}
-            className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
-              tab === t.key
-                ? 'border-blue-600 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700'
-            }`}
+            className={`tab-btn ${tab === t.key ? 'active' : ''}`}
           >
             {t.icon} {t.label}
           </button>
@@ -509,13 +505,13 @@ function SitioWebConfig() {
   const galeria = media.filter(m => m.seccion === 'galeria')
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: 32, alignItems: 'start' }}>
-      <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
-        <p className="text-xs uppercase tracking-wider text-gray-400 mb-6 font-bold flex items-center gap-2">
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(450px, 1fr))', gap: 24, alignItems: 'start' }}>
+      <div className="card">
+        <p className="card-title flex-center gap-8">
             <FiSettings size={14} /> Información de marca y contacto
         </p>
 
-        <div className="grid sm:grid-cols-2 gap-4 mb-6">
+        <div className="form-grid form-grid-2 mb-24">
           <SitioField label="Nombre de la marca" name="nombre_marca" value={form.nombre_marca} onChange={handleChange} />
           <SitioField label="Eslogan (header/hero)" name="eslogan" value={form.eslogan} onChange={handleChange} />
           <SitioField label="Subtítulo hero" name="hero_subtitulo" value={form.hero_subtitulo} onChange={handleChange} />
@@ -529,53 +525,51 @@ function SitioWebConfig() {
           <SitioField label="WhatsApp (+569...)" name="whatsapp" value={form.whatsapp} onChange={handleChange} />
         </div>
 
-        <p className="text-xs uppercase tracking-wider text-gray-400 mb-4 mt-6">Sección "Quiénes Somos"</p>
-        <div className="grid gap-4 mb-6">
+        <p className="card-title">Sección "Quiénes Somos"</p>
+        <div className="form-grid mb-24">
           <SitioField label="Título principal" name="nosotros_titulo" value={form.nosotros_titulo} onChange={handleChange} />
           <SitioTextarea label="Párrafo 1" name="nosotros_texto1" value={form.nosotros_texto1} onChange={handleChange} />
           <SitioTextarea label="Párrafo 2" name="nosotros_texto2" value={form.nosotros_texto2} onChange={handleChange} />
         </div>
 
-        <p className="text-xs uppercase tracking-wider text-gray-400 mb-4">Estadísticas</p>
-        <div className="grid sm:grid-cols-3 gap-4 mb-6">
-          <div className="space-y-2">
+        <p className="card-title">Estadísticas</p>
+        <div className="form-grid form-grid-3 mb-24">
+          <div className="form-group">
             <SitioField label="N° 1" name="stat1_num" type="number" value={form.stat1_num} onChange={handleChange} />
             <SitioField label="Etiqueta 1" name="stat1_label" value={form.stat1_label} onChange={handleChange} />
           </div>
-          <div className="space-y-2">
+          <div className="form-group">
             <SitioField label="N° 2" name="stat2_num" type="number" value={form.stat2_num} onChange={handleChange} />
             <SitioField label="Etiqueta 2" name="stat2_label" value={form.stat2_label} onChange={handleChange} />
           </div>
-          <div className="space-y-2">
+          <div className="form-group">
             <SitioField label="N° 3" name="stat3_num" type="number" value={form.stat3_num} onChange={handleChange} />
             <SitioField label="Etiqueta 3" name="stat3_label" value={form.stat3_label} onChange={handleChange} />
           </div>
         </div>
 
-        <div className="mb-6">
-          <label className="block text-xs uppercase tracking-wider text-gray-400 mb-2">Logo (opcional)</label>
-          <div className="flex items-center gap-4">
+        <div className="mb-24">
+          <label className="card-title" style={{ display: 'block', marginBottom: 8 }}>Logo (opcional)</label>
+          <div className="flex-center gap-16">
             {form.logo_url && (
-              <img src={form.logo_url} alt="Logo" className="h-10 object-contain border border-gray-100 p-1 rounded bg-gray-50" />
+              <img src={form.logo_url} alt="Logo" style={{ height: 40, objectFit: 'contain', border: '1px solid var(--bd)', padding: 4, borderRadius: 'var(--r)', background: 'var(--bg)' }} />
             )}
-            <input ref={logoInputRef} type="file" accept="image/*"
-              className="text-xs text-gray-600 file:mr-3 file:py-1.5 file:px-3 file:border file:border-gray-200 file:rounded file:text-xs file:bg-white file:text-gray-700 hover:file:bg-gray-50" />
+            <input ref={logoInputRef} type="file" accept="image/*" style={{ fontSize: 12 }} />
           </div>
         </div>
 
-        <button onClick={handleSave} disabled={saving}
-          className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors w-full justify-center">
+        <button onClick={handleSave} disabled={saving} className="btn btn-primary w-full" style={{ justifyContent: 'center' }}>
           {saving ? <span className="spinner" /> : <FiSave size={14} />}
           {saving ? 'Guardando...' : saved ? '¡Guardado con éxito!' : 'Guardar Información General'}
         </button>
       </div>
 
-      <div className="flex flex-col gap-6">
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
-            <p className="text-xs uppercase tracking-wider text-gray-400 mb-6 font-bold flex items-center gap-2">
+      <div className="flex flex-col gap-24">
+        <div className="card">
+            <p className="card-title flex-center gap-8">
                 <FiPackage size={14} /> Fotos de la Sección "Nosotros"
             </p>
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid-2">
                 <MediaUploader 
                    label="Foto 1 (Cocina/Interior)" 
                    sec="nosotros_foto1" 
@@ -591,7 +585,7 @@ function SitioWebConfig() {
                    loading={savingMedia['nosotros_foto2']} 
                 />
             </div>
-            <div className="mt-6">
+            <div style={{ marginTop: 20 }}>
                  <MediaUploader 
                    label="Banner Superior Sección" 
                    sec="nosotros_banner" 
@@ -602,11 +596,11 @@ function SitioWebConfig() {
             </div>
         </div>
 
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
-            <p className="text-xs uppercase tracking-wider text-gray-400 mb-6 font-bold flex items-center gap-2">
-                <FiBarChart2 size={14} /> Hero e Imagen del Principal
+        <div className="card">
+            <p className="card-title flex-center gap-8">
+                <FiBarChart2 size={14} /> Hero e Imagen Principal
             </p>
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid-2">
                 <MediaUploader 
                    label="Video Hero (Fondo)" 
                    sec="hero_video" 
@@ -624,9 +618,9 @@ function SitioWebConfig() {
             </div>
         </div>
 
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
-            <div className="flex-between mb-6">
-                <p className="text-xs uppercase tracking-wider text-gray-400 font-bold flex items-center gap-2" style={{margin:0}}>
+        <div className="card">
+            <div className="flex-between mb-16">
+                <p className="card-title flex-center gap-8" style={{margin:0}}>
                     <FiGrid size={14} /> Galería de Fotos
                 </p>
                 <div style={{ position: 'relative' }}>
@@ -636,27 +630,27 @@ function SitioWebConfig() {
                         hidden 
                         onChange={e => handleMediaUpload('galeria', e.target.files[0])} 
                     />
-                    <label htmlFor="galeria-upload" className="btn btn-outline btn-xs px-2 py-1 flex items-center gap-1 cursor-pointer">
-                        <FiPlus size={12}/> Añadir a Galería
+                    <label htmlFor="galeria-upload" className="btn btn-outline btn-sm cursor-pointer">
+                        <FiPlus size={14}/> Añadir
                     </label>
                 </div>
             </div>
             
             {galeria.length === 0 ? (
-                <div className="p-8 text-center border-2 border-dashed border-gray-100 rounded-lg text-gray-400 text-sm">
+                <div className="empty-state" style={{ padding: 30, border: '1px dashed var(--bd)', borderRadius: 'var(--r)' }}>
                     No hay fotos en la galería aún.
                 </div>
             ) : (
-                <div className="grid grid-cols-4 gap-3">
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(80px, 1fr))', gap: 10 }}>
                     {galeria.map(item => (
-                        <div key={item.id} className="relative group aspect-square rounded-lg overflow-hidden bg-gray-100 border border-gray-100">
+                        <div key={item.id} className="relative group aspect-square rounded-lg overflow-hidden bg-gray-100 border border-gray-100" style={{ position: 'relative', aspectRatio: '1/1' }}>
                             {item.url?.endsWith('.mp4') || item.url?.endsWith('.webm') ? (
-                                <video src={item.url} className="w-full h-full object-cover" />
+                                <video src={item.url} className="w-full h-full object-cover" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                             ) : (
-                                <img src={item.url} alt="" className="w-full h-full object-cover" />
+                                <img src={item.url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                             )}
-                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                <button className="p-2 bg-red-500 text-white rounded-full hover:bg-red-600 shadow-lg" onClick={() => handleDeleteMedia(item.id)}>
+                            <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.4)', opacity: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'opacity 0.2s' }} className="gallery-hover">
+                                <button className="btn-icon" style={{ background: 'var(--red)', color: '#fff', border: 'none' }} onClick={() => handleDeleteMedia(item.id)}>
                                     <FiTrash2 size={14}/>
                                 </button>
                             </div>
@@ -758,23 +752,23 @@ function DatosBancariosConfig() {
     } catch {}
   }
 
-  if (loading) return <div className="p-8 text-center"><span className="spinner" /></div>
+  if (loading) return <div className="loading"><span className="spinner" /></div>
 
   return (
-    <div className="space-y-6">
-      <div className="flex-between">
-        <p className="text-xs uppercase tracking-wider text-gray-400 font-bold flex items-center gap-2">
+    <div>
+      <div className="flex-between mb-24">
+        <p className="card-title flex-center gap-8" style={{margin:0}}>
             <FiDollarSign size={14} /> Cuentas para Transferencias
         </p>
-        <button className="btn btn-primary btn-sm" onClick={() => { setIsAdding(true); setEditForm({ activo: true }) }}>
+        <button className="btn btn-primary" onClick={() => { setIsAdding(true); setEditForm({ activo: true }) }}>
           <FiPlus /> Nueva Cuenta
         </button>
       </div>
 
       {(isAdding || editingId) && (
-        <div className="bg-white rounded-xl border border-blue-100 shadow-sm p-6 mb-6">
-          <h3 className="text-sm font-bold mb-4">{editingId ? 'Editar Cuenta' : 'Registrar Nueva Cuenta'}</h3>
-          <div className="grid sm:grid-cols-2 gap-4">
+        <div className="card mb-24" style={{ borderColor: 'var(--acc)' }}>
+          <h3 style={{ fontSize: 16, marginBottom: 20 }}>{editingId ? 'Editar Cuenta' : 'Registrar Nueva Cuenta'}</h3>
+          <div className="form-grid form-grid-2">
             <SitioField label="Banco" value={editForm.banco} onChange={e => setEditForm({...editForm, banco: e.target.value})} />
             <SitioField label="Tipo de Cuenta" value={editForm.tipo_cuenta} onChange={e => setEditForm({...editForm, tipo_cuenta: e.target.value})} />
             <SitioField label="N° Cuenta" value={editForm.numero_cuenta} onChange={e => setEditForm({...editForm, numero_cuenta: e.target.value})} />
@@ -782,48 +776,51 @@ function DatosBancariosConfig() {
             <SitioField label="RUT" value={editForm.rut} onChange={e => setEditForm({...editForm, rut: e.target.value})} />
             <SitioField label="Email Confirmación" value={editForm.email} onChange={e => setEditForm({...editForm, email: e.target.value})} />
           </div>
-          <div className="flex gap-2 mt-6">
-            <button className="btn btn-primary" onClick={handleSave}><FiSave /> Guardar</button>
+          <div className="modal-actions">
             <button className="btn btn-outline" onClick={() => { setEditingId(null); setIsAdding(false) }}>Cancelar</button>
+            <button className="btn btn-primary" onClick={handleSave}><FiSave /> Guardar Cuenta</button>
           </div>
         </div>
       )}
 
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid-3">
         {datos.map(item => (
-          <div key={item.id} className={`bg-white rounded-xl border p-4 shadow-sm transition-all ${item.activo ? 'border-blue-500 ring-1 ring-blue-500/20' : 'border-gray-100'}`}>
-            <div className="flex-between mb-3">
+          <div key={item.id} className={`card bank-card ${item.activo ? 'active' : ''}`}>
+            <div className="flex-between mb-16">
               <div>
-                <p className="font-bold text-gray-900">{item.banco}</p>
-                <p className="text-[10px] text-gray-500 uppercase tracking-widest">{item.tipo_cuenta}</p>
+                <p style={{ fontWeight: 700, fontSize: 15, color: 'var(--txt)' }}>{item.banco}</p>
+                <p style={{ fontSize: 10, color: 'var(--txt3)', textTransform: 'uppercase', letterSpacing: 0.5 }}>{item.tipo_cuenta}</p>
               </div>
-              <div className="flex gap-1">
+              <div className="flex gap-8">
                 <button 
-                  className={`p-1.5 rounded-lg border transition-colors ${item.activo ? 'bg-green-50 text-green-600 border-green-200' : 'bg-gray-50 text-gray-400 border-gray-200 hover:text-blue-600 hover:border-blue-200'}`}
+                  className="btn-icon"
                   onClick={() => toggleActivo(item)}
                   title={item.activo ? 'Cuenta activa' : 'Activar esta cuenta'}
+                  style={{ color: item.activo ? 'var(--grn)' : 'var(--txt3)' }}
                 >
-                  <FiCheck size={14} />
+                  <FiCheck />
                 </button>
-                <button className="p-1.5 bg-gray-50 text-gray-400 border border-gray-200 rounded-lg hover:text-blue-600 hover:border-blue-200 transition-colors" onClick={() => handleEdit(item)}>
-                  <FiEdit2 size={14} />
+                <button className="btn-icon" onClick={() => handleEdit(item)}>
+                  <FiEdit2 />
                 </button>
-                <button className="p-1.5 bg-gray-50 text-gray-400 border border-gray-200 rounded-lg hover:text-red-600 hover:border-red-200 transition-colors" onClick={() => handleDelete(item.id)}>
-                  <FiTrash2 size={14} />
+                <button className="btn-icon" onClick={() => handleDelete(item.id)} style={{ color: 'var(--red)' }}>
+                  <FiTrash2 />
                 </button>
               </div>
             </div>
-            <div className="space-y-1.5 text-sm">
-              <div className="flex-between text-gray-500"><span className="text-xs">N° Cuenta</span><span className="font-medium text-gray-900">{item.numero_cuenta}</span></div>
-              <div className="flex-between text-gray-500"><span className="text-xs">Titular</span><span className="font-medium text-gray-900">{item.titular}</span></div>
-              <div className="flex-between text-gray-500"><span className="text-xs">RUT</span><span className="font-medium text-gray-900">{item.rut}</span></div>
-              <div className="pt-1.5 border-t border-gray-50 text-[11px] text-blue-600 truncate">{item.email}</div>
+            <div style={{ display: 'grid', gap: 8, fontSize: 13 }}>
+              <div className="flex-between"><span style={{ color: 'var(--txt3)' }}>N° Cuenta:</span><span className="bold">{item.numero_cuenta}</span></div>
+              <div className="flex-between"><span style={{ color: 'var(--txt3)' }}>Titular:</span><span>{item.titular}</span></div>
+              <div className="flex-between"><span style={{ color: 'var(--txt3)' }}>RUT:</span><span>{item.rut}</span></div>
+              <div style={{ marginTop: 8, paddingTop: 8, borderTop: '1px solid var(--bd)', fontSize: 11, color: 'var(--acc)', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                {item.email}
+              </div>
             </div>
           </div>
         ))}
       </div>
       {datos.length === 0 && !isAdding && (
-        <div className="p-12 text-center bg-gray-50 rounded-xl border-2 border-dashed border-gray-100 text-gray-400 text-sm">
+        <div className="empty-state card" style={{ padding: 60 }}>
           No hay cuentas bancarias registradas.
         </div>
       )}
@@ -834,14 +831,14 @@ function DatosBancariosConfig() {
 
 function SitioField({ label, name, type = 'text', value, onChange }) {
   return (
-    <div className="flex flex-col gap-1.5">
-      <label className="text-xs uppercase tracking-wider text-gray-400">{label}</label>
+    <div className="form-group">
+      <label>{label}</label>
       <input
         type={type}
         name={name}
         value={value || ''}
         onChange={onChange}
-        className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="form-control"
       />
     </div>
   )
@@ -849,14 +846,15 @@ function SitioField({ label, name, type = 'text', value, onChange }) {
 
 function SitioTextarea({ label, name, value, onChange }) {
   return (
-    <div className="flex flex-col gap-1.5">
-      <label className="text-xs uppercase tracking-wider text-gray-400">{label}</label>
+    <div className="form-group">
+      <label>{label}</label>
       <textarea
         name={name}
         value={value || ''}
         onChange={onChange}
         rows={3}
-        className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+        className="form-control"
+        style={{ resize: 'none' }}
       />
     </div>
   )

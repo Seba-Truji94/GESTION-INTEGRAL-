@@ -1146,3 +1146,53 @@ select.form-control { cursor: pointer; }
   .paginador { justify-content: center; }
   .paginador-info { margin-right: 0; width: 100%; text-align: center; }
 }
+
+/* ===== TABS ===== */
+.tabs-container {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--bd);
+  padding-bottom: 1px;
+}
+
+.tab-btn {
+  padding: 10px 20px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--txt3);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tab-btn:hover {
+  color: var(--txt);
+  background: rgba(0,0,0,0.02);
+}
+
+.tab-btn.active {
+  color: var(--acc);
+  border-bottom-color: var(--acc);
+}
+
+/* ===== GRID UTILS ===== */
+.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+
+@media (max-width: 768px) {
+  .grid-2, .grid-3 { grid-template-columns: 1fr; }
+}
+
+.bank-card {
+  border-top: 4px solid var(--acc);
+}
+.bank-card.active {
+  border-top-color: var(--grn);
+  background: #f8fafc;
+}
