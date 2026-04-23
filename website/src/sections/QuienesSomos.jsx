@@ -107,7 +107,7 @@ export default function QuienesSomos({ media = {}, config = {} }) {
           </div>
         </div>
 
-        <div className="grid grid-rows-2 h-[100vh] md:h-[600px]">
+        <div className="grid grid-rows-2 h-[50vh] md:h-[600px]">
           <div className="overflow-hidden relative bg-[#1a1a1a]">
             <div className="parallax-fast absolute inset-0 scale-125">
               {media.nosotros_foto1?.url ? (

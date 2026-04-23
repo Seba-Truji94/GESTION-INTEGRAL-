@@ -62,7 +62,7 @@ export default function Pedido({ onPedidoEnviado, seleccion, onClear }) {
   }
 
   return (
-    <section id="pedidos" ref={section} className="py-32 px-6 bg-[#0A0A0A]">
+    <section id="pedidos" ref={section} className="py-20 md:py-32 px-6 bg-[#0A0A0A]">
       <div className="max-w-3xl mx-auto pedido-content">
         <p className="text-[#C9A84C] text-sm tracking-widest uppercase mb-3">Hablemos</p>
         <h2 className="font-display text-5xl md:text-6xl font-bold text-white mb-4">

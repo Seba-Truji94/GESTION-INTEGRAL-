@@ -23,6 +23,12 @@
 
   /* Hide default cursor everywhere */
   * { cursor: none !important; }
+
+  /* Touch devices: restore cursor (custom cursor never moves on mobile) */
+  @media (hover: none) and (pointer: coarse) {
+    body { cursor: auto; }
+    * { cursor: auto !important; }
+  }
 }
 
 @layer components {
@@ -31,12 +37,12 @@
   }
 
   .btn-gold {
-    @apply inline-block px-10 py-4 border-2 border-[#C9A84C] text-[#C9A84C] text-xs font-bold tracking-[0.2em] uppercase
+    @apply inline-block px-6 py-3 md:px-10 md:py-4 border-2 border-[#C9A84C] text-[#C9A84C] text-xs font-bold tracking-[0.2em] uppercase
            hover:bg-[#C9A84C] hover:text-black transition-all duration-500 rounded-none;
   }
 
   .btn-gold-fill {
-    @apply inline-block px-10 py-4 bg-[#C9A84C] text-black text-xs font-bold tracking-[0.2em] uppercase
+    @apply inline-block px-6 py-3 md:px-10 md:py-4 bg-[#C9A84C] text-black text-xs font-bold tracking-[0.2em] uppercase
            hover:bg-white hover:text-black transition-all duration-500 rounded-none shadow-[0_10px_20px_rgba(201,168,76,0.2)];
   }
 }

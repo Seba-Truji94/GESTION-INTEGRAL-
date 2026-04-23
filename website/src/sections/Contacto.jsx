@@ -19,7 +19,7 @@ export default function Contacto({ config = {} }) {
   }, [])
 
   return (
-    <section id="contacto" ref={section} className="py-32 px-6 bg-[#0A0A0A]">
+    <section id="contacto" ref={section} className="py-20 md:py-32 px-6 bg-[#0A0A0A]">
       <div className="max-w-7xl mx-auto">
         <div className="grid md:grid-cols-2 gap-20 items-start">
           <div>

@@ -116,7 +116,7 @@ export default function Hero({ media = {}, config = {} }) {
       </div>
 
       {/* Scroll indicator */}
-      <div ref={scrollRef} className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3">
+      <div ref={scrollRef} className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
         <span className="text-[10px] tracking-[0.3em] uppercase text-white/30">Descubrir</span>
         <div className="relative w-px h-16 overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-b from-[#C9A84C] to-transparent animate-[fall_1.5s_ease-in-out_infinite]" />

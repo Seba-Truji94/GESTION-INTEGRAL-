@@ -1,0 +1,282 @@
+contexto: levante un caddy global en mi servidor hice todo estos pasos pero aun asi no me corre n8n.kruxel.cl 
+
+El Dockerfile.prod buildea los archivos estáticos DENTRO de la imagen Caddy. Solución limpia: Caddy del proyecto sirve HTTP interno, global Caddy termina TLS y hace proxy.
+
+Cambios locales:
+
+Write c:\Users\cuent\Downloads\BAQUETERIA\GESTION_INTEGRAL\Caddyfile
+30 lines
+:80 {
+    encode zstd gzip
+
+    @static {
+        file
+        path *.js *.css *.png *.jpg *.jpeg *.gif *.svg *.woff *.woff2 *.ico *.webm *.mp4
+    }
+    header @static Cache-Control "public, max-age=31536000, immutable"
+
+    @backend {
+        path /api/* /admin* /static/* /media/*
+    }
+    handle @backend {
+        reverse_proxy backend:8000
+    }
+
+    handle /gestion* {
+        root * /usr/share/caddy/gestion
+        uri strip_prefix /gestion
+        try_files {path} /index.html
+        file_server
+    }
+
+    handle {
+        root * /usr/share/caddy/public
+        try_files {path} /index.html
+        file_server
+    }
+}
+Write c:\Users\cuent\Downloads\BAQUETERIA\GESTION_INTEGRAL\docker-compose.prod.yml
+59 lines
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: gestion_db_prod
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgrespassword}
+      POSTGRES_DB: gestion_integral_db
+    volumes:
+      - pgdata_prod:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: gestion_backend_prod
+    restart: always
+    environment:
+      - DB_ENGINE=django.db.backends.postgresql
+      - DB_NAME=gestion_integral_db
+      - DB_USER=postgres
+      - DB_PASSWORD=${DB_PASSWORD:-postgrespassword}
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DEBUG=False
+      - SECRET_KEY=${SECRET_KEY}
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS:-*}
+    depends_on:
+      - db
+    volumes:
+      - static_volume:/app/static
+      - media_volume:/app/media
+
+  caddy:
+    build:
+      context: .
+      dockerfile: ./frontend/Dockerfile.prod
+    container_name: gestion_caddy_prod
+    restart: always
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - static_volume:/app/static:ro
+      - media_volume:/app/media:ro
+    depends_on:
+      - backend
+    networks:
+      - default
+      - proxy
+
+networks:
+  proxy:
+    external: true
+
+volumes:
+  pgdata_prod:
+  static_volume:
+  media_volume:
+Ahora en server, todo en orden:
+
+
+# 1. Crear red proxy (si no existe)
+docker network create proxy 2>/dev/null || true
+
+# 2. Crear Caddy global
+mkdir -p ~/caddy
+
+cat > ~/caddy/Caddyfile << 'EOF'
+{
+    email admin@kruxel.cl
+}
+
+n8n.kruxel.cl {
+    reverse_proxy n8n-n8n-1:5678
+}
+
+ryfbanqueteria.kruxel.cl {
+    reverse_proxy gestion_caddy_prod:80
+}
+EOF
+
+cat > ~/caddy/docker-compose.yml << 'EOF'
+services:
+  caddy:
+    image: caddy:2-alpine
+    container_name: caddy_global
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    external: true
+
+volumes:
+  caddy_data:
+  caddy_config:
+EOF
+
+# 3. Conectar n8n a red proxy
+docker network connect proxy n8n-n8n-1 2>/dev/null || true
+
+# 4. Bajar Caddy del proyecto y rebuilding con nuevo Caddyfile
+cd ~/GESTION-INTEGRAL-
+docker compose -f docker-compose.prod.yml stop caddy
+docker compose -f docker-compose.prod.yml rm -f caddy
+docker compose -f docker-compose.prod.yml up -d --build caddy
+
+# 5. Subir Caddy global
+cd ~/caddy
+docker compose up -d
+Arquitectura resultante:
+
+
+Internet → caddy_global (80/443, TLS)
+              ├── n8n.kruxel.cl        → n8n-n8n-1:5678
+              └── ryfbanqueteria.kruxel.cl → gestion_caddy_prod:80 → backend:8000
+Nuevo proyecto futuro = solo agregar bloque en ~/caddy/Caddyfile + docker network connect proxy <container>.
+
+✔ Volume caddy_caddy_data   Created                                                                                0.0s
+ ✔ Volume caddy_caddy_config Created                                                                                0.0s
+ ⠦ Container caddy_global    Starting                                                                               0.5s
+Error response from daemon: failed to set up container networking: driver failed programming external connectivity on endpoint caddy_global (7498eead1a76488bfee7713ab0a2a90fe25745d96de400ea335afdc63edd92b4): Bind for 0.0.0.0:80 failed: port is already allocated
+Puerto 80 aún ocupado — proyecto Caddy sigue corriendo con config vieja (server no tiene el docker-compose.prod.yml actualizado).
+
+Corrige en server:
+
+
+# Ver qué ocupa puerto 80
+docker ps --format "table {{.Names}}\t{{.Ports}}" | grep :80
+
+# Actualizar docker-compose.prod.yml en server (sin ports en caddy)
+cat > ~/GESTION-INTEGRAL-/docker-compose.prod.yml << 'EOF'
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: gestion_db_prod
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgrespassword}
+      POSTGRES_DB: gestion_integral_db
+    volumes:
+      - pgdata_prod:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: gestion_backend_prod
+    restart: always
+    environment:
+      - DB_ENGINE=django.db.backends.postgresql
+      - DB_NAME=gestion_integral_db
+      - DB_USER=postgres
+      - DB_PASSWORD=${DB_PASSWORD:-postgrespassword}
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DEBUG=False
+      - SECRET_KEY=${SECRET_KEY}
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS:-*}
+    depends_on:
+      - db
+    volumes:
+      - static_volume:/app/static
+      - media_volume:/app/media
+
+  caddy:
+    build:
+      context: .
+      dockerfile: ./frontend/Dockerfile.prod
+    container_name: gestion_caddy_prod
+    restart: always
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - static_volume:/app/static:ro
+      - media_volume:/app/media:ro
+    depends_on:
+      - backend
+    networks:
+      - default
+      - proxy
+
+networks:
+  proxy:
+    external: true
+
+volumes:
+  pgdata_prod:
+  static_volume:
+  media_volume:
+EOF
+
+# Actualizar Caddyfile del proyecto (HTTP solo)
+cat > ~/GESTION-INTEGRAL-/Caddyfile << 'EOF'
+:80 {
+    encode zstd gzip
+
+    @static {
+        file
+        path *.js *.css *.png *.jpg *.jpeg *.gif *.svg *.woff *.woff2 *.ico *.webm *.mp4
+    }
+    header @static Cache-Control "public, max-age=31536000, immutable"
+
+    @backend {
+        path /api/* /admin* /static/* /media/*
+    }
+    handle @backend {
+        reverse_proxy backend:8000
+    }
+
+    handle /gestion* {
+        root * /usr/share/caddy/gestion
+        uri strip_prefix /gestion
+        try_files {path} /index.html
+        file_server
+    }
+
+    handle {
+        root * /usr/share/caddy/public
+        try_files {path} /index.html
+        file_server
+    }
+}
+EOF
+
+# Recrear caddy del proyecto (sin ports)
+cd ~/GESTION-INTEGRAL-
+docker compose -f docker-compose.prod.yml stop caddy
+docker compose -f docker-compose.prod.yml rm -f caddy
+docker compose -f docker-compose.prod.yml up -d --build caddy
+
+# Ahora sí levantar Caddy global
+cd ~/caddy
+docker compose up -d

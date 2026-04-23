@@ -51,7 +51,7 @@ export default function Pago() {
   }, [])
 
   return (
-    <section id="pago" ref={section} className="py-32 px-6 bg-[#111111]">
+    <section id="pago" ref={section} className="py-20 md:py-32 px-6 bg-[#111111]">
       <div className="max-w-2xl mx-auto pago-content">
         <p className="text-[#C9A84C] text-sm tracking-widest uppercase mb-3">Pago</p>
         <h2 className="font-display text-4xl md:text-5xl font-bold text-white mb-4">
@@ -65,7 +65,7 @@ export default function Pago() {
         {!datos ? (
           <p className="text-white/30 text-center py-12">Cargando datos bancarios...</p>
         ) : (
-          <div className="bg-[#1A1A1A] border border-white/10 p-8">
+          <div className="bg-[#1A1A1A] border border-white/10 p-5 md:p-8">
             <div className="flex items-center gap-3 mb-6">
               <div className="w-1 h-8 bg-[#C9A84C]" />
               <p className="text-[#C9A84C] font-display text-xl">{datos.banco}</p>

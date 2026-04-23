@@ -38,24 +38,21 @@ services:
       dockerfile: ./frontend/Dockerfile.prod
     container_name: gestion_caddy_prod
     restart: always
-    ports:
-      - "80:80"
-      - "443:443"
-    environment:
-      - DOMAIN=${DOMAIN:-localhost}
-      - CADDY_EMAIL=${CADDY_EMAIL:-admin@example.com}
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile
       - static_volume:/app/static:ro
       - media_volume:/app/media:ro
-      - caddy_data:/data
-      - caddy_config:/config
     depends_on:
       - backend
+    networks:
+      - default
+      - proxy
+
+networks:
+  proxy:
+    external: true
 
 volumes:
   pgdata_prod:
   static_volume:
   media_volume:
-  caddy_data:
-  caddy_config:

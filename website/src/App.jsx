@@ -13,6 +13,8 @@ import Contacto from './sections/Contacto'
 import { useMedia } from './services/useMedia'
 import { useSiteConfig } from './services/useSiteConfig'
 
+const isPointerDevice = window.matchMedia('(hover: hover) and (pointer: fine)').matches
+
 export default function App() {
   const { media, loading } = useMedia()
   const config = useSiteConfig()
@@ -35,7 +37,7 @@ export default function App() {
 
   return (
     <>
-      <Cursor />
+      {isPointerDevice && <Cursor />}
       <Navbar config={config} />
       <main>
         <Hero media={media} config={config} />

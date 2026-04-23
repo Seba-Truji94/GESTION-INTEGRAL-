@@ -1,21 +1,12 @@
-{
-    email {$CADDY_EMAIL:admin@example.com}
-}
-
-{$DOMAIN:localhost}, ryfbanqueteria.kruxel.cl {
-    log {
-        output stdout
-    }
+:80 {
     encode zstd gzip
 
-    # Headers de caché para archivos estáticos (JS, CSS, Imágenes, Fuentes)
     @static {
         file
         path *.js *.css *.png *.jpg *.jpeg *.gif *.svg *.woff *.woff2 *.ico *.webm *.mp4
     }
     header @static Cache-Control "public, max-age=31536000, immutable"
 
-    # Backend API, admin y archivos estáticos
     @backend {
         path /api/* /admin* /static/* /media/*
     }
@@ -23,7 +14,6 @@
         reverse_proxy backend:8000
     }
 
-    # Sistema de gestión en /gestion
     handle /gestion* {
         root * /usr/share/caddy/gestion
         uri strip_prefix /gestion
@@ -31,7 +21,6 @@
         file_server
     }
 
-    # Sitio público (raíz)
     handle {
         root * /usr/share/caddy/public
         try_files {path} /index.html

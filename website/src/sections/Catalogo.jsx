@@ -6,6 +6,23 @@ import { FiShoppingBag } from 'react-icons/fi'
 
 gsap.registerPlugin(ScrollTrigger)
 
+const U = (id) => `https://images.unsplash.com/photo-${id}?w=400&auto=format&fit=crop&q=80`
+
+const DEMO_PRODUCTOS = [
+  { id: 1, nombre: 'Torta Naked Cake', descripcion: 'Torta de bizcocho húmedo con relleno de manjar y frutos rojos frescos. Decoración rústica con flores comestibles.', imagen: U('1565299543923-37dd37887442'), categoria: 'reposteria', precio_venta: 38000, ingredientes: [] },
+  { id: 2, nombre: 'Macarons Franceses', descripcion: 'Selección de 12 macarons artesanales en sabores de temporada: frambuesa, chocolate, pistacho y vainilla.', imagen: U('1558326567-6cb58d57c6c0'), categoria: 'reposteria', precio_venta: 18000, ingredientes: [] },
+  { id: 3, nombre: 'Cheesecake de Berries', descripcion: 'Base crocante de galleta, relleno cremoso de queso Philadelphia y coulis de berries casero.', imagen: U('1571115177098-24ec42ed204d'), categoria: 'reposteria', precio_venta: 28000, ingredientes: [] },
+  { id: 4, nombre: 'Cena 3 Tiempos', descripcion: 'Entrada, plato de fondo y postre. Menú personalizable según temporada. Incluye mise en place completo.', imagen: U('1414235077428-338989a2e8c0'), categoria: 'banqueteria', precio_venta: 18500, ingredientes: [] },
+  { id: 5, nombre: 'Brunch Gourmet', descripcion: 'Mesa de brunch completa con huevos benedictinos, pan artesanal, fruta de temporada y jugos naturales. Por persona.', imagen: U('1504674900247-0877df9cc836'), categoria: 'banqueteria', precio_venta: 12000, ingredientes: [] },
+  { id: 6, nombre: 'Finger Foods x 20', descripcion: 'Selección de 20 piezas: brochetas, mini sándwiches, crostini y tartaletas saladas. Ideal para cócteles.', imagen: U('1555244162-803834f70033'), categoria: 'banqueteria', precio_venta: 22000, ingredientes: [] },
+  { id: 7, nombre: 'Asado Cordero al Palo', descripcion: 'Cordero entero a las brasas, 8 horas de cocción lenta. Incluye ensaladas, panes y chimichurri casero. Por persona.', imagen: U('1467003909585-2f8a72700288'), categoria: 'banqueteria', precio_venta: 25000, ingredientes: [] },
+  { id: 8, nombre: 'Pisco Sour Premium', descripcion: 'Pisco ABA 40°, limón de pica, clara de huevo y angostura. Preparación en vivo por barman. Por persona por hora.', imagen: U('1527529482837-4698179dc6ce'), categoria: 'cocteleria', precio_venta: 8500, ingredientes: [] },
+  { id: 9, nombre: 'Barra de Cócteles', descripcion: 'Barra completa con 5 cócteles de la carta + mocktails. Barman con hielos, vasos y decoraciones. 3 horas.', imagen: U('1551782450-a2132b4ba21d'), categoria: 'cocteleria', precio_venta: 95000, ingredientes: [] },
+  { id: 10, nombre: 'Sangría de la Casa', descripcion: 'Sangría artesanal con vino tinto, naranja, manzana, canela y toque de brandy. Jarra de 2 litros.', imagen: U('1544145945-f90425340c7e'), categoria: 'bebidas', precio_venta: 14000, ingredientes: [] },
+  { id: 11, nombre: 'Aguas Saborizadas x6', descripcion: 'Set de 6 botellas de agua saborizada natural: pepino-menta, limón-jengibre y frutos rojos. Sin azúcar.', imagen: U('1548839038-88977e52aa90'), categoria: 'bebidas', precio_venta: 9000, ingredientes: [] },
+  { id: 12, nombre: 'Mesa de Dulces', descripcion: 'Montaje decorativo con torta central, cupcakes, galletas decoradas, trufas y candy bar. Para 30 personas.', imagen: U('1565299624946-b28f40a0ae38'), categoria: 'otro', precio_venta: 85000, ingredientes: [] },
+]
+
 const CATEGORIAS = [
   { key: '', label: 'Todos' },
   { key: 'banqueteria', label: 'Banquetería' },
@@ -38,7 +55,7 @@ export default function Catalogo({ media = {}, seleccion, onToggle }) {
         // Refresh ScrollTrigger because content changed
         setTimeout(() => ScrollTrigger.refresh(), 100)
       })
-      .catch(() => setProductos([]))
+      .catch(() => setProductos(categoria ? DEMO_PRODUCTOS.filter(p => p.categoria === categoria) : DEMO_PRODUCTOS))
       .finally(() => setLoading(false))
   }, [categoria])
 
@@ -123,7 +140,7 @@ export default function Catalogo({ media = {}, seleccion, onToggle }) {
                     <p className="mt-6 text-white/40 font-light text-sm">Cada plato es una obra de arte creada con ingredientes de la más alta calidad.</p>
                 </div>
                 
-                <div className="flex flex-wrap gap-3">
+                <div className="flex flex-wrap gap-2 md:gap-3">
                     {CATEGORIAS.map(c => (
                         <button
                             key={c.key}
@@ -157,7 +174,7 @@ export default function Catalogo({ media = {}, seleccion, onToggle }) {
                    {productos.map((p, i) => (
                     <div
                         key={`${categoria}-${p.id}`}
-                        className={`prod-card group relative flex items-center gap-6 p-6 md:p-8 transition-all duration-500 rounded-2xl border border-white/5 bg-white/[0.01] hover:bg-white/[0.04] hover:border-white/10 hover:-translate-y-1 ${
+                        className={`prod-card group relative flex items-center gap-3 p-4 md:gap-6 md:p-8 transition-all duration-500 rounded-2xl border border-white/5 bg-white/[0.01] hover:bg-white/[0.04] hover:border-white/10 hover:-translate-y-1 ${
                             seleccion.find(s => s.id === p.id) ? 'border-[#C9A84C]/40 bg-[#C9A84C]/5' : ''
                         }`}
                         onClick={() => setExpanded(expanded === i ? null : i)}
