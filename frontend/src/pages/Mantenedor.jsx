@@ -598,9 +598,9 @@ function SitioWebConfig() {
 
         <div className="card">
             <p className="card-title flex-center gap-8">
-                <FiBarChart2 size={14} /> Hero e Imagen Principal
+                <FiBarChart2 size={14} /> Fondos y Multimedia Principal
             </p>
-            <div className="grid-2">
+            <div className="grid-3">
                 <MediaUploader 
                    label="Video Hero (Fondo)" 
                    sec="hero_video" 
@@ -614,6 +614,13 @@ function SitioWebConfig() {
                    asset={getMedia('hero_imagen')} 
                    onUpload={handleMediaUpload} 
                    loading={savingMedia['hero_imagen']} 
+                />
+                <MediaUploader 
+                   label="Fondo Portada Catálogo" 
+                   sec="catalogo_fondo" 
+                   asset={getMedia('catalogo_fondo')} 
+                   onUpload={handleMediaUpload} 
+                   loading={savingMedia['catalogo_fondo']} 
                 />
             </div>
         </div>

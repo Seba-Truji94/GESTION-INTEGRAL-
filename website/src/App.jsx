@@ -41,7 +41,7 @@ export default function App() {
         <Hero media={media} config={config} />
         <QuienesSomos media={media} config={config} />
         <Galeria media={media} />
-        <Catalogo seleccion={seleccion} onToggle={toggleSeleccion} />
+        <Catalogo media={media} seleccion={seleccion} onToggle={toggleSeleccion} />
         <Pedido seleccion={seleccion} onClear={() => setSeleccion([])} />
         <Pago />
         <Contacto config={config} />
