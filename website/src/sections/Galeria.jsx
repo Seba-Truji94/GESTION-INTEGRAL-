@@ -6,8 +6,8 @@ gsap.registerPlugin(ScrollTrigger)
 
 function MobileGallery({ fotos }) {
   return (
-    <div style={{ background: '#111111', padding: '48px 16px' }}>
-      <div style={{ marginBottom: 32 }}>
+    <div style={{ background: '#111111', paddingTop: 48, paddingBottom: 48 }}>
+      <div style={{ marginBottom: 28, paddingLeft: 16, paddingRight: 16 }}>
         <p style={{ color: '#C9A84C', fontSize: 10, letterSpacing: '0.4em', textTransform: 'uppercase', marginBottom: 10 }}>
           Nuestra obra
         </p>
@@ -19,41 +19,56 @@ function MobileGallery({ fotos }) {
       </div>
 
       {fotos.length === 0 ? (
-        <div style={{ width: '100%', height: 180, border: '1px dashed rgba(255,255,255,.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ margin: '0 16px', height: 180, border: '1px dashed rgba(255,255,255,.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <p style={{ color: 'rgba(255,255,255,.2)', fontSize: 11, letterSpacing: '0.3em', textTransform: 'uppercase' }}>
             Sin fotos — agregar desde Admin → Media
           </p>
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-          {fotos.map((f, i) => {
-            const featured = i % 3 === 0
-            return (
-              <div
-                key={f.id ?? i}
-                style={{
-                  position: 'relative',
-                  gridColumn: featured ? 'span 2' : 'span 1',
-                  height: featured ? '52vw' : '40vw',
-                  overflow: 'hidden',
-                  background: '#1a1a1a',
-                }}
-              >
-                {f.tipo === 'video' ? (
-                  <video autoPlay muted loop playsInline style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}>
-                    <source src={f.url} type="video/mp4" />
-                  </video>
-                ) : (
-                  <img src={f.url} alt={f.label || ''} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+        <div style={{
+          display: 'flex',
+          overflowX: 'auto',
+          scrollSnapType: 'x mandatory',
+          WebkitOverflowScrolling: 'touch',
+          gap: 10,
+          paddingLeft: 16,
+          paddingRight: 16,
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none',
+        }}>
+          {fotos.map((f, i) => (
+            <div
+              key={f.id ?? i}
+              style={{
+                flexShrink: 0,
+                scrollSnapAlign: 'start',
+                position: 'relative',
+                width: i % 3 === 0 ? '80vw' : '65vw',
+                height: '60vw',
+                overflow: 'hidden',
+                background: '#1a1a1a',
+                borderRadius: 4,
+              }}
+            >
+              {f.tipo === 'video' ? (
+                <video autoPlay muted loop playsInline style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}>
+                  <source src={f.url} type="video/mp4" />
+                </video>
+              ) : (
+                <img src={f.url} alt={f.label || ''} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+              )}
+              <div style={{ position: 'absolute', bottom: 10, left: 10, right: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+                {f.label && (
+                  <p style={{ color: 'rgba(255,255,255,.6)', fontSize: 9, letterSpacing: '0.3em', textTransform: 'uppercase', margin: 0 }}>{f.label}</p>
                 )}
-                <div style={{ position: 'absolute', top: 10, right: 10, width: 26, height: 26, border: '1px solid rgba(255,255,255,.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <span style={{ color: 'rgba(255,255,255,.35)', fontSize: 9, fontWeight: 300 }}>
+                <div style={{ marginLeft: 'auto', width: 22, height: 22, border: '1px solid rgba(255,255,255,.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <span style={{ color: 'rgba(255,255,255,.35)', fontSize: 8, fontWeight: 300 }}>
                     {String(i + 1).padStart(2, '0')}
                   </span>
                 </div>
               </div>
-            )
-          })}
+            </div>
+          ))}
         </div>
       )}
     </div>
