@@ -28,7 +28,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const ctx = $('Obtener Contexto Negocio').item.json;\nconst userMsg = $('Webhook ManyChat').item.json.body.last_input_text || '';\nconst subscriberId = $('Webhook ManyChat').item.json.body.id || '';\n\nconst systemPrompt = `Eres el asistente virtual de ${ctx.negocio.nombre}, empresa de banquetería y repostería chilena. Responde siempre en español, de forma amable y concisa (máximo 3 oraciones). Si preguntan por disponibilidad de fechas, consulta las fechas ocupadas y responde si la fecha está disponible o no. Si preguntan por productos o precios, menciona las opciones relevantes con precio en pesos chilenos. Siempre ofrece cotizar por este canal.\n\nINFO DEL NEGOCIO: ${JSON.stringify(ctx.negocio)}\n\nPRODUCTOS DISPONIBLES: ${JSON.stringify(ctx.productos)}\n\nFECHAS OCUPADAS próximos 60 días: ${JSON.stringify(ctx.fechas_ocupadas)}\n\nHOY: ${ctx.hoy}`;\n\nreturn [{\n  json: {\n    subscriber_id: subscriberId,\n    claude_payload: {\n      model: 'claude-haiku-4-5-20251001',\n      max_tokens: 300,\n      system: systemPrompt,\n      messages: [\n        { role: 'user', content: userMsg }\n      ]\n    }\n  }\n}];"
+        "jsCode": "const ctx = $('Obtener Contexto Negocio').item.json;\nconst userMsg = $('Webhook ManyChat').item.json.body.last_input_text || '';\nconst subscriberId = $('Webhook ManyChat').item.json.body.id || '';\n\nconst systemPrompt = `Eres el asistente virtual de ${ctx.negocio.nombre}, empresa de banquetería y repostería chilena. Responde siempre en español, de forma amable y concisa (máximo 3 oraciones). Si preguntan por disponibilidad de fechas, consulta las fechas ocupadas y responde si la fecha está disponible o no. Si preguntan por productos o precios, menciona las opciones relevantes con precio en pesos chilenos. Siempre ofrece cotizar por este canal.\n\nINFO DEL NEGOCIO: ${JSON.stringify(ctx.negocio)}\n\nPRODUCTOS DISPONIBLES: ${JSON.stringify(ctx.productos)}\n\nFECHAS OCUPADAS próximos 60 días: ${JSON.stringify(ctx.fechas_ocupadas)}\n\nHOY: ${ctx.hoy}`;\n\nreturn [{\n  json: {\n    subscriber_id: subscriberId,\n    groq_payload: {\n      model: 'llama-3.1-8b-instant',\n      max_tokens: 300,\n      temperature: 0.7,\n      messages: [\n        { role: 'system', content: systemPrompt },\n        { role: 'user', content: userMsg }\n      ]\n    }\n  }\n}];"
       },
       "id": "build-payload",
       "name": "Construir Payload",
@@ -39,35 +39,31 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://api.anthropic.com/v1/messages",
+        "url": "https://api.groq.com/openai/v1/chat/completions",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
             {
-              "name": "x-api-key",
-              "value": "TU_ANTHROPIC_API_KEY"
-            },
-            {
-              "name": "anthropic-version",
-              "value": "2023-06-01"
+              "name": "Authorization",
+              "value": "Bearer TU_GROQ_API_KEY"
             }
           ]
         },
         "sendBody": true,
         "contentType": "json",
         "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify($json.claude_payload) }}",
+        "jsonBody": "={{ JSON.stringify($json.groq_payload) }}",
         "options": {}
       },
       "id": "openai-call",
-      "name": "Claude Haiku",
+      "name": "Groq Llama",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4,
       "position": [1000, 300]
     },
     {
       "parameters": {
-        "jsCode": "const reply = $input.item.json.content[0].text;\nconst subscriberId = $('Construir Payload').item.json.subscriber_id;\n\nreturn [{\n  json: {\n    subscriber_id: subscriberId,\n    data: {\n      version: 'v2',\n      content: {\n        messages: [{ type: 'text', text: reply }]\n      }\n    },\n    message_tag: 'NON_PROMOTIONAL_SUBSCRIPTION'\n  }\n}];"
+        "jsCode": "const reply = $input.item.json.choices[0].message.content;\nconst subscriberId = $('Construir Payload').item.json.subscriber_id;\n\nreturn [{\n  json: {\n    subscriber_id: subscriberId,\n    data: {\n      version: 'v2',\n      content: {\n        messages: [{ type: 'text', text: reply }]\n      }\n    },\n    message_tag: 'NON_PROMOTIONAL_SUBSCRIPTION'\n  }\n}];"
       },
       "id": "build-reply",
       "name": "Construir Respuesta",
@@ -122,7 +118,7 @@
     "Construir Payload": {
       "main": [[{ "node": "GPT-4o Mini", "type": "main", "index": 0 }]]
     },
-    "Claude Haiku": {
+    "Groq Llama": {
       "main": [[{ "node": "Construir Respuesta", "type": "main", "index": 0 }]]
     },
     "Construir Respuesta": {
