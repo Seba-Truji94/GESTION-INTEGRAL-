@@ -1212,9 +1212,9 @@ select.form-control { cursor: pointer; }
 
 @media (max-width: 768px) {
   .gal-item {
-    width: 75vw !important;
-    height: 45vh !important;
-    margin-right: 15px;
+    width: 60vw !important;
+    height: 32vh !important;
+    margin-right: 20px;
   }
   
   /* Ajuste para que el texto de Nosotros no se vea tan apretado */
