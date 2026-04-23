@@ -162,8 +162,9 @@ export default function Galeria({ media = {} }) {
     const ctx = gsap.context(() => {
       ScrollTrigger.refresh()
       const distance = track.scrollWidth - window.innerWidth
+      gsap.set(track, { x: -distance })
       gsap.to(track, {
-        x: -distance,
+        x: 0,
         ease: 'none',
         scrollTrigger: {
           trigger: pin,
