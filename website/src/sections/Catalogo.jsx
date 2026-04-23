@@ -174,7 +174,7 @@ export default function Catalogo({ media = {}, seleccion, onToggle }) {
                    {productos.map((p, i) => (
                     <div
                         key={`${categoria}-${p.id}`}
-                        className={`prod-card group relative flex items-center gap-3 p-4 md:gap-6 md:p-8 transition-all duration-500 rounded-2xl border border-white/5 bg-white/[0.01] hover:bg-white/[0.04] hover:border-white/10 hover:-translate-y-1 ${
+                        className={`prod-card group relative flex items-center gap-3 p-4 md:gap-6 md:p-8 transition-all duration-500 rounded-2xl border border-white/5 bg-white/[0.01] hover:bg-white/[0.04] hover:border-white/10 md:hover:-translate-y-1 ${
                             seleccion.find(s => s.id === p.id) ? 'border-[#C9A84C]/40 bg-[#C9A84C]/5' : ''
                         }`}
                         onClick={() => setExpanded(expanded === i ? null : i)}
@@ -200,11 +200,11 @@ export default function Catalogo({ media = {}, seleccion, onToggle }) {
                             </p>
                         </div>
 
-                        <div className="text-right flex flex-col items-end gap-3 pr-2 md:pr-4">
-                            <span className="font-display text-lg md:text-2xl text-white/80">{fmt(p.precio_venta)}</span>
+                        <div className="text-right flex flex-col items-end gap-3 pr-1 md:pr-4 flex-shrink-0 min-w-[80px] md:min-w-[120px]">
+                            <span className="font-display text-sm md:text-2xl text-white/80 whitespace-nowrap">{fmt(p.precio_venta)}</span>
                             <button
                                 onClick={e => { e.stopPropagation(); onToggle(p) }}
-                                className={`w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all duration-500 ${
+                                className={`w-9 h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all duration-500 flex-shrink-0 ${
                                     seleccion.find(s => s.id === p.id)
                                         ? 'bg-[#C9A84C] text-black shadow-[0_0_15px_rgba(201,168,76,0.5)]'
                                         : 'bg-white/5 text-white/20 border border-white/10 hover:border-[#C9A84C] hover:text-[#C9A84C]'
