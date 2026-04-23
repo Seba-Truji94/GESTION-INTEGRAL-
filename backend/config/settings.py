@@ -16,8 +16,7 @@ ALLOWED_HOSTS = ['*']  # Permitir todos en producción (seguro detrás de Caddy/
 CSRF_TRUSTED_ORIGINS = [
     'https://kruxel.cl',
     'https://www.kruxel.cl',
-    'https://ryfbanqueteria.cl',
-    'https://www.ryfbanqueteria.cl',
+    'https://ryfbanqueteria.kruxel.cl',
 ]
 
 # Agregar dinámicamente desde variable de entorno si existe
