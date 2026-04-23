@@ -77,8 +77,8 @@ function MobileGallery({ fotos }) {
 
 function DesktopGallery({ fotos, pinRef, trackRef }) {
   return (
-    <div ref={pinRef} style={{ background: '#111111', overflow: 'hidden' }}>
-      <div style={{ height: '100vh', display: 'flex', alignItems: 'center' }}>
+    <div ref={pinRef} style={{ background: '#111111' }}>
+      <div style={{ position: 'sticky', top: 0, height: '100vh', overflow: 'hidden', display: 'flex', alignItems: 'center' }}>
         <div
           ref={trackRef}
           style={{ display: 'flex', alignItems: 'center', gap: 16, paddingLeft: 0, willChange: 'transform', flexShrink: 0 }}
@@ -166,7 +166,7 @@ export default function Galeria({ media = {} }) {
     return () => { window.removeEventListener('resize', onResize); clearTimeout(timer) }
   }, [])
 
-  // Desktop only: GSAP horizontal pin (unchanged logic)
+  // Desktop: CSS sticky pin + scroll listener drives transform (no GSAP pin)
   useLayoutEffect(() => {
     if (FOTOS.length === 0 || isMobile) return
 
@@ -174,26 +174,23 @@ export default function Galeria({ media = {} }) {
     const pin   = pinRef.current
     if (!track || !pin) return
 
-    const ctx = gsap.context(() => {
-      ScrollTrigger.refresh()
-      const distance = track.scrollWidth - window.innerWidth
-      gsap.set(track, { x: -distance })
-      gsap.to(track, {
-        x: 0,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: pin,
-          start: 'top top',
-          end: () => `+=${distance}`,
-          pin: true,
-          scrub: 1.2,
-          anticipatePin: 1,
-          invalidateOnRefresh: true,
-        },
-      })
-    })
+    const distance = track.scrollWidth - window.innerWidth
+    pin.style.height = `${distance + window.innerHeight}px`
+    gsap.set(track, { x: -distance })
 
-    return () => ctx.revert()
+    const setter = gsap.quickSetter(track, 'x', 'px')
+    const onScroll = () => {
+      const top = pin.getBoundingClientRect().top
+      const progress = Math.max(0, Math.min(1, -top / distance))
+      setter(-distance + distance * progress)
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      pin.style.height = ''
+      gsap.set(track, { x: 0 })
+    }
   }, [FOTOS.length, isMobile])
 
   // Video showcase animation (both mobile + desktop)
