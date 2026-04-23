@@ -11,7 +11,6 @@ import PresupuestoNuevo from './pages/PresupuestoNuevo'
 import PresupuestoImpresion from './pages/PresupuestoImpresion'
 import Cobros from './pages/Cobros'
 import Inventario from './pages/Inventario'
-import ConfiguracionTransferencia from './pages/ConfiguracionTransferencia'
 import ConfiguracionLogin from './pages/ConfiguracionLogin'
 import PagoComprobante from './pages/PagoComprobante'
 import PresupuestoPublico from './pages/PresupuestoPublico'
@@ -90,7 +89,6 @@ function App() {
                 <Route path="/inventario" element={<ModuleRoute user={user} modulo="inventario"><Inventario /></ModuleRoute>} />
                 <Route path="/catalogo" element={<ModuleRoute user={user} modulo="catalogo"><Catalogo /></ModuleRoute>} />
                 <Route path="/reportes" element={<ModuleRoute user={user} modulo="reportes"><Reportes /></ModuleRoute>} />
-                <Route path="/configuracion" element={<ModuleRoute user={user} modulo="configuracion"><ConfiguracionTransferencia /></ModuleRoute>} />
                 <Route path="/configuracion/login" element={<ModuleRoute user={user} modulo="configuracion_login"><ConfiguracionLogin /></ModuleRoute>} />
                 <Route path="/mantenedor" element={<ModuleRoute user={user} modulo="mantenedor"><Mantenedor /></ModuleRoute>} />
                 <Route path="/solicitudes" element={<ModuleRoute user={user} modulo="solicitudes"><Solicitudes /></ModuleRoute>} />

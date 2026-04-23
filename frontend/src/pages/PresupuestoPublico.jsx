@@ -17,7 +17,7 @@ export default function PresupuestoPublico() {
         console.error(e)
       }
       try {
-        const resB = await api.get('/cobros/datos-transferencia/')
+        const resB = await api.get('/datos-transferencia/')
         const bankList = Array.isArray(resB.data) ? resB.data : (resB.data?.results || [])
         setDatosBanco(bankList.find(d => d.activo) || bankList[0] || null)
       } catch {

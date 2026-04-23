@@ -178,6 +178,7 @@ export default function Mantenedor() {
         {[
           { key: 'usuarios', label: 'Usuarios', icon: <FiUsers size={14} /> },
           { key: 'sitio',    label: 'Sitio Web', icon: <FiGlobe size={14} /> },
+          { key: 'bancos',   label: 'Datos Bancarios', icon: <FiDollarSign size={14} /> },
         ].map(t => (
           <button
             key={t.key}
@@ -194,6 +195,7 @@ export default function Mantenedor() {
       </div>
 
       {tab === 'sitio' && <SitioWebConfig />}
+      {tab === 'bancos' && <DatosBancariosConfig />}
 
       {tab === 'usuarios' && <div className="table-wrapper">
         {loading ? (
@@ -700,6 +702,133 @@ function MediaUploader({ label, sec, asset, onUpload, loading }) {
             </div>
         </div>
     )
+}
+
+
+function DatosBancariosConfig() {
+  const [datos, setDatos] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [editingId, setEditingId] = useState(null)
+  const [editForm, setEditForm] = useState({})
+  const [isAdding, setIsAdding] = useState(false)
+
+  const load = async () => {
+    setLoading(true)
+    try {
+      const res = await api.get('/datos-transferencia/')
+      const list = Array.isArray(res.data) ? res.data : (res.data?.results || [])
+      setDatos(list)
+    } catch (e) { console.error(e) }
+    setLoading(false)
+  }
+
+  useEffect(() => { load() }, [])
+
+  const handleEdit = (item) => {
+    setEditingId(item.id)
+    setEditForm(item)
+    setIsAdding(false)
+  }
+
+  const handleSave = async () => {
+    try {
+      if (editingId) {
+        await api.put(`/datos-transferencia/${editingId}/`, editForm)
+      } else {
+        await api.post('/datos-transferencia/', editForm)
+      }
+      setEditingId(null)
+      setIsAdding(false)
+      load()
+    } catch { alert('Error al guardar datos bancarios') }
+  }
+
+  const handleDelete = async (id) => {
+    if (!confirm('¿Eliminar estos datos?')) return
+    try {
+      await api.delete(`/datos-transferencia/${id}/`)
+      load()
+    } catch { alert('Error al eliminar') }
+  }
+
+  const toggleActivo = async (item) => {
+    try {
+      await api.patch(`/datos-transferencia/${item.id}/`, { activo: !item.activo })
+      load()
+    } catch {}
+  }
+
+  if (loading) return <div className="p-8 text-center"><span className="spinner" /></div>
+
+  return (
+    <div className="space-y-6">
+      <div className="flex-between">
+        <p className="text-xs uppercase tracking-wider text-gray-400 font-bold flex items-center gap-2">
+            <FiDollarSign size={14} /> Cuentas para Transferencias
+        </p>
+        <button className="btn btn-primary btn-sm" onClick={() => { setIsAdding(true); setEditForm({ activo: true }) }}>
+          <FiPlus /> Nueva Cuenta
+        </button>
+      </div>
+
+      {(isAdding || editingId) && (
+        <div className="bg-white rounded-xl border border-blue-100 shadow-sm p-6 mb-6">
+          <h3 className="text-sm font-bold mb-4">{editingId ? 'Editar Cuenta' : 'Registrar Nueva Cuenta'}</h3>
+          <div className="grid sm:grid-cols-2 gap-4">
+            <SitioField label="Banco" value={editForm.banco} onChange={e => setEditForm({...editForm, banco: e.target.value})} />
+            <SitioField label="Tipo de Cuenta" value={editForm.tipo_cuenta} onChange={e => setEditForm({...editForm, tipo_cuenta: e.target.value})} />
+            <SitioField label="N° Cuenta" value={editForm.numero_cuenta} onChange={e => setEditForm({...editForm, numero_cuenta: e.target.value})} />
+            <SitioField label="Titular" value={editForm.titular} onChange={e => setEditForm({...editForm, titular: e.target.value})} />
+            <SitioField label="RUT" value={editForm.rut} onChange={e => setEditForm({...editForm, rut: e.target.value})} />
+            <SitioField label="Email Confirmación" value={editForm.email} onChange={e => setEditForm({...editForm, email: e.target.value})} />
+          </div>
+          <div className="flex gap-2 mt-6">
+            <button className="btn btn-primary" onClick={handleSave}><FiSave /> Guardar</button>
+            <button className="btn btn-outline" onClick={() => { setEditingId(null); setIsAdding(false) }}>Cancelar</button>
+          </div>
+        </div>
+      )}
+
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {datos.map(item => (
+          <div key={item.id} className={`bg-white rounded-xl border p-4 shadow-sm transition-all ${item.activo ? 'border-blue-500 ring-1 ring-blue-500/20' : 'border-gray-100'}`}>
+            <div className="flex-between mb-3">
+              <div>
+                <p className="font-bold text-gray-900">{item.banco}</p>
+                <p className="text-[10px] text-gray-500 uppercase tracking-widest">{item.tipo_cuenta}</p>
+              </div>
+              <div className="flex gap-1">
+                <button 
+                  className={`p-1.5 rounded-lg border transition-colors ${item.activo ? 'bg-green-50 text-green-600 border-green-200' : 'bg-gray-50 text-gray-400 border-gray-200 hover:text-blue-600 hover:border-blue-200'}`}
+                  onClick={() => toggleActivo(item)}
+                  title={item.activo ? 'Cuenta activa' : 'Activar esta cuenta'}
+                >
+                  <FiCheck size={14} />
+                </button>
+                <button className="p-1.5 bg-gray-50 text-gray-400 border border-gray-200 rounded-lg hover:text-blue-600 hover:border-blue-200 transition-colors" onClick={() => handleEdit(item)}>
+                  <FiEdit2 size={14} />
+                </button>
+                <button className="p-1.5 bg-gray-50 text-gray-400 border border-gray-200 rounded-lg hover:text-red-600 hover:border-red-200 transition-colors" onClick={() => handleDelete(item.id)}>
+                  <FiTrash2 size={14} />
+                </button>
+              </div>
+            </div>
+            <div className="space-y-1.5 text-sm">
+              <div className="flex-between text-gray-500"><span className="text-xs">N° Cuenta</span><span className="font-medium text-gray-900">{item.numero_cuenta}</span></div>
+              <div className="flex-between text-gray-500"><span className="text-xs">Titular</span><span className="font-medium text-gray-900">{item.titular}</span></div>
+              <div className="flex-between text-gray-500"><span className="text-xs">RUT</span><span className="font-medium text-gray-900">{item.rut}</span></div>
+              <div className="pt-1.5 border-t border-gray-50 text-[11px] text-blue-600 truncate">{item.email}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+      {datos.length === 0 && !isAdding && (
+        <div className="p-12 text-center bg-gray-50 rounded-xl border-2 border-dashed border-gray-100 text-gray-400 text-sm">
+          No hay cuentas bancarias registradas.
+        </div>
+      )}
+    </div>
+  )
 }
 
 
