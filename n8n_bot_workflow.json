@@ -116,7 +116,7 @@
       "main": [[{ "node": "Construir Payload", "type": "main", "index": 0 }]]
     },
     "Construir Payload": {
-      "main": [[{ "node": "GPT-4o Mini", "type": "main", "index": 0 }]]
+      "main": [[{ "node": "Groq Llama", "type": "main", "index": 0 }]]
     },
     "Groq Llama": {
       "main": [[{ "node": "Construir Respuesta", "type": "main", "index": 0 }]]
