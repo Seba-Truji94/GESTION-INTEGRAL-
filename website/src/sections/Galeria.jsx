@@ -92,15 +92,7 @@ export default function Galeria({ media = {} }) {
             ) : FOTOS.map((f, i) => (
               <div
                 key={f.id ?? i}
-                className="gal-item"
-                style={{
-                  flexShrink: 0,
-                  position: 'relative',
-                  overflow: 'hidden',
-                  width: i % 3 === 0 ? '42vw' : '30vw',
-                  height: i % 2 === 0 ? '72vh' : '60vh',
-                  borderRadius: 4,
-                }}
+                className={`gal-item ${i % 3 === 0 ? 'featured' : ''}`}
               >
                 {f.tipo === 'video' ? (
                   <video autoPlay muted loop playsInline style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform .7s', display: 'block' }}>
@@ -134,19 +126,19 @@ export default function Galeria({ media = {} }) {
       </div>
 
       {/* ── SECCIÓN VIDEO SHOWCASE ── */}
-      <section ref={videoRef} style={{ background: '#0a0a0a', padding: '100px 0' }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 48px' }}>
-          <div className="gal-video-label" style={{ marginBottom: 40 }}>
-            <p style={{ color: '#C9A84C', fontSize: 10, letterSpacing: '0.4em', textTransform: 'uppercase', marginBottom: 12 }}>
+      <section ref={videoRef} style={{ background: '#0a0a0a', padding: '60px 0' }}>
+        <div style={{ width: '100%', margin: '0 auto', padding: '0' }}>
+          <div className="gal-video-label" style={{ marginBottom: 30, padding: '0 24px', maxWidth: '1400px', margin: '0 auto' }}>
+            <p style={{ color: '#C9A84C', fontSize: 10, letterSpacing: '0.4em', textTransform: 'uppercase', marginBottom: 8 }}>
               En movimiento
             </p>
-            <h2 style={{ fontFamily: 'var(--font-display, serif)', fontSize: 'clamp(2rem,4vw,3rem)', fontWeight: 700, color: '#fff', margin: 0, lineHeight: 1.1 }}>
+            <h2 style={{ fontFamily: 'var(--font-display, serif)', fontSize: 'clamp(1.8rem,5vw,3.5rem)', fontWeight: 700, color: '#fff', margin: 0, lineHeight: 1.1 }}>
               Así vivimos<br />
               <span style={{ fontStyle: 'italic', fontWeight: 300, color: 'rgba(255,255,255,.4)' }}>cada evento</span>
             </h2>
           </div>
 
-          <div className="gal-video-inner" style={{ position: 'relative', borderRadius: 8, overflow: 'hidden', aspectRatio: '16/9', background: '#1a1a1a' }}>
+          <div className="gal-video-inner" style={{ position: 'relative', borderRadius: 0, overflow: 'hidden', aspectRatio: '16/9', background: '#1a1a1a' }}>
             {VIDEO ? (
               <video
                 autoPlay muted loop playsInline

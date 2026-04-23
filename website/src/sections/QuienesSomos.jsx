@@ -52,14 +52,16 @@ export default function QuienesSomos({ media = {}, config = {} }) {
           {media.nosotros_banner?.url && (
             media.nosotros_banner.tipo === 'video' ? (
               <video 
-                src={media.nosotros_banner.url}
+                key={media.nosotros_banner.url}
                 autoPlay 
                 muted 
                 loop 
                 playsInline
                 className="reveal-img w-full h-full object-cover"
                 style={{ clipPath: 'inset(0% 0% 0% 0%)' }}
-              />
+              >
+                <source src={media.nosotros_banner.url} type="video/mp4" />
+              </video>
             ) : (
               <img
                 src={media.nosotros_banner.url}
@@ -105,20 +107,22 @@ export default function QuienesSomos({ media = {}, config = {} }) {
           </div>
         </div>
 
-        <div className="grid grid-rows-2 h-[400px] md:h-[600px]">
+        <div className="grid grid-rows-2 h-[100vh] md:h-[600px]">
           <div className="overflow-hidden relative bg-[#1a1a1a]">
             <div className="parallax-fast absolute inset-0 scale-125">
               {media.nosotros_foto1?.url ? (
                 media.nosotros_foto1.tipo === 'video' ? (
                   <video 
-                    src={media.nosotros_foto1.url}
+                    key={media.nosotros_foto1.url}
                     autoPlay 
                     muted 
                     loop 
                     playsInline
                     className="reveal-img w-full h-full object-cover"
                     style={{ clipPath: 'inset(0% 0% 0% 0%)' }}
-                  />
+                  >
+                    <source src={media.nosotros_foto1.url} type="video/mp4" />
+                  </video>
                 ) : (
                   <img src={media.nosotros_foto1.url} alt="Cocina"
                     className="reveal-img w-full h-full object-cover"
@@ -137,14 +141,16 @@ export default function QuienesSomos({ media = {}, config = {} }) {
               {media.nosotros_foto2?.url ? (
                 media.nosotros_foto2.tipo === 'video' ? (
                   <video 
-                    src={media.nosotros_foto2.url}
+                    key={media.nosotros_foto2.url}
                     autoPlay 
                     muted 
                     loop 
                     playsInline
                     className="reveal-img w-full h-full object-cover"
                     style={{ clipPath: 'inset(0% 0% 0% 0%)' }}
-                  />
+                  >
+                    <source src={media.nosotros_foto2.url} type="video/mp4" />
+                  </video>
                 ) : (
                   <img src={media.nosotros_foto2.url} alt="Tabla"
                     className="reveal-img w-full h-full object-cover"

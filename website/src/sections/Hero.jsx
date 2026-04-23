@@ -76,13 +76,16 @@ export default function Hero({ media = {}, config = {} }) {
       <div ref={bgRef} className="absolute inset-0 w-full h-full">
         {media.hero_video ? (
           <video 
-            src={media.hero_video.url}
+            key={media.hero_video.url}
             autoPlay 
             muted 
             loop 
             playsInline 
+            poster={media.hero_imagen?.url}
             className="w-full h-full object-cover"
-          />
+          >
+            <source src={media.hero_video.url} type="video/mp4" />
+          </video>
         ) : media.hero_imagen ? (
           <img src={media.hero_imagen.url} alt={marca} className="w-full h-full object-cover" />
         ) : (
