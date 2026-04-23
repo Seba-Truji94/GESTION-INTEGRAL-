@@ -14,9 +14,9 @@
     }
 
     # Sistema de gestión en /gestion
-    handle /gestion* {
+    handle_path /gestion* {
         root * /usr/share/caddy/gestion
-        try_files {path} /gestion/index.html
+        try_files {path} /index.html
         file_server
     }
 
