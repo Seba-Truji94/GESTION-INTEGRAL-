@@ -1199,11 +1199,15 @@ select.form-control { cursor: pointer; }
 /* Galería Responsiva */
 .gal-container {
   height: 100vh;
+  display: flex;
+  align-items: center;
 }
 
 @media (max-width: 768px) {
   .gal-container {
-    height: 50vh !important;
+    height: auto !important;
+    min-height: 400px;
+    padding: 50px 0;
   }
 }
 
@@ -1212,19 +1216,23 @@ select.form-control { cursor: pointer; }
   position: relative;
   overflow: hidden;
   border-radius: 4px;
-  width: 35vw;
-  height: 70vh;
 }
 
-.gal-item.featured {
-  width: 45vw;
+@media (min-width: 769px) {
+  .gal-item {
+    width: 35vw;
+    height: 70vh;
+  }
+  .gal-item.featured {
+    width: 45vw;
+  }
 }
 
 @media (max-width: 768px) {
   .gal-item {
-    width: 60vw !important;
-    height: 32vh !important;
-    margin-right: 20px;
+    width: 80vw !important;
+    height: 40vh !important;
+    margin-right: 15px;
   }
   
   /* Ajuste para que el texto de Nosotros no se vea tan apretado */
