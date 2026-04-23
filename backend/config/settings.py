@@ -11,13 +11,19 @@ SECRET_KEY = 'django-insecure-gestion-integral-dev-key-change-in-production'
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['*']  # Permitir todos en producción (seguro detrás de Caddy/Nginx)
 
 CSRF_TRUSTED_ORIGINS = [
     'https://kruxel.cl',
     'https://www.kruxel.cl',
-    f'https://{os.environ.get("ALLOWED_HOSTS", "kruxel.cl").split(",")[0].strip()}',
+    'https://ryfbanqueteria.cl',
+    'https://www.ryfbanqueteria.cl',
 ]
+
+# Agregar dinámicamente desde variable de entorno si existe
+if os.environ.get("ALLOWED_HOSTS"):
+    extra_hosts = [f'https://{host.strip()}' for host in os.environ.get("ALLOWED_HOSTS").split(",")]
+    CSRF_TRUSTED_ORIGINS.extend(extra_hosts)
 
 INSTALLED_APPS = [
     'django.contrib.admin',
