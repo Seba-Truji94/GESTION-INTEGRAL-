@@ -105,9 +105,17 @@ export default function QuienesSomos({ media = {}, config = {} }) {
           <div className="overflow-hidden relative bg-[#1a1a1a]">
             <div className="parallax-fast absolute inset-0 scale-125">
               {media.nosotros_foto1?.url ? (
-                <img src={media.nosotros_foto1.url} alt="Cocina"
-                  className="reveal-img w-full h-full object-cover"
-                  style={{ clipPath: 'inset(0% 0% 0% 0%)' }} />
+                media.nosotros_foto1.tipo === 'video' ? (
+                  <video autoPlay muted loop playsInline
+                    className="reveal-img w-full h-full object-cover"
+                    style={{ clipPath: 'inset(0% 0% 0% 0%)' }}>
+                    <source src={media.nosotros_foto1.url} type="video/mp4" />
+                  </video>
+                ) : (
+                  <img src={media.nosotros_foto1.url} alt="Cocina"
+                    className="reveal-img w-full h-full object-cover"
+                    style={{ clipPath: 'inset(0% 0% 0% 0%)' }} />
+                )
               ) : (
                 <div className="w-full h-full flex items-center justify-center"
                   style={{ background: 'repeating-linear-gradient(45deg,#1a1a1a 0,#1a1a1a 10px,#222 10px,#222 20px)' }}>
@@ -119,9 +127,17 @@ export default function QuienesSomos({ media = {}, config = {} }) {
           <div className="overflow-hidden relative bg-[#111]">
             <div className="parallax-slow absolute inset-0 scale-125">
               {media.nosotros_foto2?.url ? (
-                <img src={media.nosotros_foto2.url} alt="Tabla"
-                  className="reveal-img w-full h-full object-cover"
-                  style={{ clipPath: 'inset(0% 0% 0% 0%)' }} />
+                media.nosotros_foto2.tipo === 'video' ? (
+                  <video autoPlay muted loop playsInline
+                    className="reveal-img w-full h-full object-cover"
+                    style={{ clipPath: 'inset(0% 0% 0% 0%)' }}>
+                    <source src={media.nosotros_foto2.url} type="video/mp4" />
+                  </video>
+                ) : (
+                  <img src={media.nosotros_foto2.url} alt="Tabla"
+                    className="reveal-img w-full h-full object-cover"
+                    style={{ clipPath: 'inset(0% 0% 0% 0%)' }} />
+                )
               ) : (
                 <div className="w-full h-full flex items-center justify-center"
                   style={{ background: 'repeating-linear-gradient(45deg,#111 0,#111 10px,#181818 10px,#181818 20px)' }}>
