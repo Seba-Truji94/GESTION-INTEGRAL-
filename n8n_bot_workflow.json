@@ -1,0 +1,122 @@
+{
+  "name": "RyF Banquetería - Bot IA Instagram",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ryf-bot",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-trigger",
+      "name": "Webhook ManyChat",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://ryfbanqueteria.kruxel.cl/api/public/bot-context/",
+        "options": {}
+      },
+      "id": "get-context",
+      "name": "Obtener Contexto Negocio",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [500, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer TU_OPENAI_API_KEY"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"gpt-4o-mini\",\n  \"max_tokens\": 300,\n  \"temperature\": 0.7,\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Eres el asistente virtual de {{ $node['Obtener Contexto Negocio'].json.negocio.nombre }}, una empresa de banquetería y repostería. Responde en español, de forma amable y concisa (máximo 3 oraciones). Si te preguntan por disponibilidad, consulta las fechas ocupadas. Si te preguntan por productos, menciona opciones relevantes con precio. Siempre ofrece cotizar por este canal.\\n\\nINFO DEL NEGOCIO:\\n{{ JSON.stringify($node['Obtener Contexto Negocio'].json.negocio) }}\\n\\nPRODUCTOS DISPONIBLES:\\n{{ JSON.stringify($node['Obtener Contexto Negocio'].json.productos) }}\\n\\nFECHAS OCUPADAS (próximos 60 días):\\n{{ JSON.stringify($node['Obtener Contexto Negocio'].json.fechas_ocupadas) }}\\n\\nFECHA HOY: {{ $node['Obtener Contexto Negocio'].json.hoy }}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{{ $node['Webhook ManyChat'].json.body.last_input_text }}\"\n    }\n  ]\n}",
+        "options": {}
+      },
+      "id": "openai-call",
+      "name": "GPT-4o Mini",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [750, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.manychat.com/fb/sending/sendContent",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer TU_MANYCHAT_API_KEY"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"subscriber_id\": \"{{ $node['Webhook ManyChat'].json.body.id }}\",\n  \"data\": {\n    \"version\": \"v2\",\n    \"content\": {\n      \"messages\": [\n        {\n          \"type\": \"text\",\n          \"text\": \"{{ $node['GPT-4o Mini'].json.choices[0].message.content }}\"\n        }\n      ]\n    }\n  },\n  \"message_tag\": \"NON_PROMOTIONAL_SUBSCRIPTION\"\n}",
+        "options": {}
+      },
+      "id": "send-manychat",
+      "name": "Responder por ManyChat",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1000, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\"status\": \"ok\"}"
+      },
+      "id": "respond-webhook",
+      "name": "Responder Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1250, 300]
+    }
+  ],
+  "connections": {
+    "Webhook ManyChat": {
+      "main": [
+        [{ "node": "Obtener Contexto Negocio", "type": "main", "index": 0 }]
+      ]
+    },
+    "Obtener Contexto Negocio": {
+      "main": [
+        [{ "node": "GPT-4o Mini", "type": "main", "index": 0 }]
+      ]
+    },
+    "GPT-4o Mini": {
+      "main": [
+        [{ "node": "Responder por ManyChat", "type": "main", "index": 0 }]
+      ]
+    },
+    "Responder por ManyChat": {
+      "main": [
+        [{ "node": "Responder Webhook", "type": "main", "index": 0 }]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

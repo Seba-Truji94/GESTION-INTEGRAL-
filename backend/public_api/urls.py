@@ -14,4 +14,5 @@ urlpatterns = [
     path('solicitudes/', views.SolicitudPedidoListView.as_view(), name='public-solicitudes'),
     path('solicitudes/<int:pk>/', views.SolicitudPedidoDetailView.as_view(), name='public-solicitudes-detail'),
     path('config/', views.ConfiguracionSitioView.as_view(), name='public-config'),
+    path('bot-context/', views.BotContextView.as_view(), name='public-bot-context'),
 ]
