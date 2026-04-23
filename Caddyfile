@@ -3,6 +3,9 @@
 }
 
 {$DOMAIN:localhost}, ryfbanqueteria.kruxel.cl {
+    log {
+        output stdout
+    }
     encode gzip
 
     # Backend API, admin y archivos estáticos
