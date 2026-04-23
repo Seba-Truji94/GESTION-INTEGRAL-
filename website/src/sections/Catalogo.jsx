@@ -180,7 +180,7 @@ export default function Catalogo({ media = {}, seleccion, onToggle }) {
                         onClick={() => setExpanded(expanded === i ? null : i)}
                     >
                         {/* Miniatura */}
-                        <div className="w-16 h-16 md:w-20 md:h-20 rounded-xl overflow-hidden flex-shrink-0 bg-white/5 border border-white/10 group-hover:border-[#C9A84C]/30 transition-colors">
+                        <div className="w-12 h-12 md:w-20 md:h-20 rounded-xl overflow-hidden flex-shrink-0 bg-white/5 border border-white/10 group-hover:border-[#C9A84C]/30 transition-colors">
                             {p.imagen ? (
                                 <img src={p.imagen} alt={p.nombre} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                             ) : (
@@ -200,8 +200,8 @@ export default function Catalogo({ media = {}, seleccion, onToggle }) {
                             </p>
                         </div>
 
-                        <div className="text-right flex flex-col items-end gap-3 pr-1 md:pr-4 flex-shrink-0 min-w-[80px] md:min-w-[120px]">
-                            <span className="font-display text-sm md:text-2xl text-white/80 whitespace-nowrap">{fmt(p.precio_venta)}</span>
+                        <div className="text-right flex flex-col items-end gap-2 flex-shrink-0 w-[88px] md:w-[130px]">
+                            <span className="font-display text-xs md:text-2xl text-white/80 whitespace-nowrap leading-tight">{fmt(p.precio_venta)}</span>
                             <button
                                 onClick={e => { e.stopPropagation(); onToggle(p) }}
                                 className={`w-9 h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all duration-500 flex-shrink-0 ${
