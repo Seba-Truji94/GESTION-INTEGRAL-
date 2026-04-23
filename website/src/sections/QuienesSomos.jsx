@@ -40,7 +40,6 @@ export default function QuienesSomos({ media = {}, config = {} }) {
         yPercent: -25, ease: 'none',
         scrollTrigger: { trigger: section.current, start: 'top bottom', end: 'bottom top', scrub: 2 },
       })
-      ScrollTrigger.refresh()
     }, section)
     return () => ctx.revert()
   }, [media])

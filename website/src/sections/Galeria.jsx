@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
@@ -152,7 +152,7 @@ export default function Galeria({ media = {} }) {
   }, [])
 
   // Desktop only: GSAP horizontal pin (unchanged logic)
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (FOTOS.length === 0 || isMobile) return
 
     const track = trackRef.current

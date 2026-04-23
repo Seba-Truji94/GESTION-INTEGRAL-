@@ -31,7 +31,7 @@ export default function App() {
   // Recalcula posiciones ScrollTrigger tras cargar imágenes
   useEffect(() => {
     if (!loading) {
-      setTimeout(() => ScrollTrigger.refresh(), 200)
+      setTimeout(() => ScrollTrigger.refresh(), 500)
     }
   }, [loading])
 
