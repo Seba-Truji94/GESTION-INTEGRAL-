@@ -27,4 +27,4 @@ EXPOSE 8000
 
 # Comando para correr migraciones y levantar el servidor
 # Comando para correr en producción
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "config.wsgi:application"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--timeout", "120", "--workers", "3", "config.wsgi:application"]
