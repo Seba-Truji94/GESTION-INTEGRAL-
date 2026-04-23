@@ -1194,5 +1194,37 @@ select.form-control { cursor: pointer; }
 }
 .bank-card.active {
   border-top-color: var(--grn);
-  background: #f8fafc;
+}
+
+/* Galería Responsiva */
+.gal-item {
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+  border-radius: 4px;
+  width: 35vw;
+  height: 70vh;
+}
+
+.gal-item.featured {
+  width: 45vw;
+}
+
+@media (max-width: 768px) {
+  .gal-item {
+    width: 75vw !important;
+    height: 45vh !important;
+    margin-right: 15px;
+  }
+  
+  /* Ajuste para que el texto de Nosotros no se vea tan apretado */
+  .qs-text {
+    padding-top: 40px !important;
+    padding-bottom: 40px !important;
+  }
+
+  .gal-track-header {
+    width: 180px !important;
+    padding-left: 16px !important;
+  }
 }
