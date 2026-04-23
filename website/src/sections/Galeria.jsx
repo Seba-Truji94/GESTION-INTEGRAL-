@@ -63,7 +63,7 @@ export default function Galeria({ media = {} }) {
     <>
       {/* ── SECCIÓN PINNED (scroll horizontal) ── */}
       <div ref={pinRef} style={{ background: '#111111', overflow: 'hidden' }}>
-        <div style={{ height: FOTOS.length === 0 ? '40vh' : '100vh', display: 'flex', alignItems: 'center' }}>
+        <div className="gal-container" style={{ display: 'flex', alignItems: 'center' }}>
 
           {/* Track: header + fotos en fila */}
           <div

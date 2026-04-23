@@ -1197,6 +1197,16 @@ select.form-control { cursor: pointer; }
 }
 
 /* Galería Responsiva */
+.gal-container {
+  height: 100vh;
+}
+
+@media (max-width: 768px) {
+  .gal-container {
+    height: 50vh !important;
+  }
+}
+
 .gal-item {
   flex-shrink: 0;
   position: relative;
