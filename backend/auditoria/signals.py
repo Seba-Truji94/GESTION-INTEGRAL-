@@ -3,9 +3,9 @@ from django.dispatch import receiver
 from auditlog.registry import auditlog
 
 from eventos.models import Evento, Presupuesto, ItemPresupuesto
-from cobros.models import Pago, DatosTransferencia
+from cobros.models import Cobro, Pago, DatosTransferencia
 from catalogo.models import ProductoCatalogo
-from inventario.models import ItemInventario
+from inventario.models import Producto, MovimientoStock
 from gastos.models import GastoFijo
 from public_api.models import SolicitudPedido, MediaAsset, ConfiguracionSitio
 
@@ -14,10 +14,12 @@ from public_api.models import SolicitudPedido, MediaAsset, ConfiguracionSitio
 auditlog.register(Evento)
 auditlog.register(Presupuesto)
 auditlog.register(ItemPresupuesto)
+auditlog.register(Cobro)
 auditlog.register(Pago)
 auditlog.register(DatosTransferencia)
 auditlog.register(ProductoCatalogo)
-auditlog.register(ItemInventario)
+auditlog.register(Producto)
+auditlog.register(MovimientoStock)
 auditlog.register(GastoFijo)
 auditlog.register(SolicitudPedido)
 auditlog.register(MediaAsset)
