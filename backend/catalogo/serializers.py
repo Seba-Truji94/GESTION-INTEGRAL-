@@ -11,7 +11,7 @@ class RecetaItemSerializer(serializers.ModelSerializer):
         fields = ['id', 'producto', 'producto_nombre', 'producto_unidad', 'cantidad']
 
 class ProductoCatalogoSerializer(serializers.ModelSerializer):
-    ingredientes = RecetaItemSerializer(many=True)
+    ingredientes = RecetaItemSerializer(many=True, required=False)
     costo_base = serializers.ReadOnlyField()
     margen_estimado = serializers.ReadOnlyField()
 
@@ -31,6 +31,7 @@ class ProductoCatalogoSerializer(serializers.ModelSerializer):
         
         instance.nombre = validated_data.get('nombre', instance.nombre)
         instance.descripcion = validated_data.get('descripcion', instance.descripcion)
+        instance.imagen = validated_data.get('imagen', instance.imagen)
         instance.categoria = validated_data.get('categoria', instance.categoria)
         instance.precio_venta = validated_data.get('precio_venta', instance.precio_venta)
         instance.activo = validated_data.get('activo', instance.activo)
