@@ -70,4 +70,5 @@ class LogEntryAdmin(admin.ModelAdmin):
     changes_short.short_description = 'Cambios'
 
 
+admin.site.unregister(LogEntry)
 admin.site.register(LogEntry, LogEntryAdmin)
