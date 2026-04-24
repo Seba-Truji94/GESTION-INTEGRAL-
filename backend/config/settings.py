@@ -24,19 +24,27 @@ if os.environ.get("ALLOWED_HOSTS"):
     extra_hosts = [f'https://{host.strip()}' for host in os.environ.get("ALLOWED_HOSTS").split(",")]
     CSRF_TRUSTED_ORIGINS.extend(extra_hosts)
 
-INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
+SHARED_APPS = [
+    'django_tenants',
+    'tenants',
+    # Django core (shared)
     'django.contrib.contenttypes',
+    'django.contrib.auth',
+    'django.contrib.admin',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # Third party
+    # Third party (shared)
     'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders',
-    # Local apps
+    # Users shared across tenants
     'usuarios',
+]
+
+TENANT_APPS = [
+    'django.contrib.contenttypes',
+    # Business apps — isolated per tenant
     'eventos',
     'cobros',
     'inventario',
@@ -47,7 +55,16 @@ INSTALLED_APPS = [
     'public_api',
 ]
 
+INSTALLED_APPS = list(SHARED_APPS) + [a for a in TENANT_APPS if a not in SHARED_APPS]
+
+TENANT_MODEL = 'tenants.Client'
+TENANT_DOMAIN_MODEL = 'tenants.Domain'
+
+# Public schema serves tenant management admin only
+PUBLIC_SCHEMA_URLCONF = 'config.urls_public'
+
 MIDDLEWARE = [
+    'django_tenants.middleware.main.TenantMainMiddleware',  # must be first
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
@@ -90,7 +107,7 @@ if DATABASE_URL:
     url = urllib.parse.urlparse(DATABASE_URL)
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.postgresql',
+            'ENGINE': 'django_tenants.postgresql_backend',
             'NAME': url.path[1:],
             'USER': url.username,
             'PASSWORD': url.password,
@@ -98,10 +115,10 @@ if DATABASE_URL:
             'PORT': url.port or '5432',
         }
     }
-elif DB_ENGINE == 'django.db.backends.postgresql':
+elif DB_ENGINE in ('django.db.backends.postgresql', 'django_tenants.postgresql_backend'):
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.postgresql',
+            'ENGINE': 'django_tenants.postgresql_backend',
             'NAME': config('DB_NAME', default='gestion_integral_db'),
             'USER': config('DB_USER', default='postgres'),
             'PASSWORD': config('DB_PASSWORD', default=''),
@@ -110,12 +127,15 @@ elif DB_ENGINE == 'django.db.backends.postgresql':
         }
     }
 else:
+    # SQLite for local dev without tenants (limited — no schema isolation)
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
             'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
+
+DATABASE_ROUTERS = ['django_tenants.routers.TenantSyncRouter']
 
 AUTH_USER_MODEL = 'usuarios.Usuario'
 

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { getCatalogo } from '../services/api'
-import { FiShoppingBag, FiArrowUp } from 'react-icons/fi'
+import { FiArrowUp } from 'react-icons/fi'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -22,6 +22,19 @@ const DEMO_PRODUCTOS = [
   { id: 11, nombre: 'Aguas Saborizadas x6', descripcion: 'Set de 6 botellas de agua saborizada natural: pepino-menta, limón-jengibre y frutos rojos. Sin azúcar.', imagen: U('1548839038-88977e52aa90'), categoria: 'bebidas', precio_venta: 9000, ingredientes: [] },
   { id: 12, nombre: 'Mesa de Dulces', descripcion: 'Montaje decorativo con torta central, cupcakes, galletas decoradas, trufas y candy bar. Para 30 personas.', imagen: U('1565299624946-b28f40a0ae38'), categoria: 'otro', precio_venta: 85000, ingredientes: [] },
 ]
+
+const FALLBACK_IMGS = {
+  reposteria:  [U('1565299543923-37dd37887442'), U('1558326567-6cb58d57c6c0'), U('1571115177098-24ec42ed204d'), U('1565299624946-b28f40a0ae38')],
+  banqueteria: [U('1414235077428-338989a2e8c0'), U('1504674900247-0877df9cc836'), U('1555244162-803834f70033'), U('1467003909585-2f8a72700288')],
+  cocteleria:  [U('1527529482837-4698179dc6ce'), U('1551782450-a2132b4ba21d')],
+  bebidas:     [U('1544145945-f90425340c7e'), U('1548839038-88977e52aa90')],
+  otro:        [U('1565299624946-b28f40a0ae38'), U('1504674900247-0877df9cc836')],
+}
+
+function getFallbackImg(producto) {
+  const pool = FALLBACK_IMGS[producto.categoria] || FALLBACK_IMGS.banqueteria
+  return pool[producto.id % pool.length]
+}
 
 const CATEGORIAS = [
   { key: '', label: 'Todos' },
@@ -145,17 +158,11 @@ export default function Catalogo({ seleccion, onToggle }) {
                 >
                   {/* Imagen */}
                   <div className="relative w-full aspect-[4/3] overflow-hidden bg-white/5 flex-shrink-0">
-                    {p.imagen ? (
-                      <img
-                        src={p.imagen}
-                        alt={p.nombre}
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-white/10">
-                        <FiShoppingBag size={32} />
-                      </div>
-                    )}
+                    <img
+                      src={p.imagen || getFallbackImg(p)}
+                      alt={p.nombre}
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
                     {p.categoria && (
                       <span className="absolute top-3 left-3 text-[8px] tracking-widest uppercase px-2 py-1 bg-black/60 text-white/50 rounded-sm backdrop-blur-sm">
                         {p.categoria}
