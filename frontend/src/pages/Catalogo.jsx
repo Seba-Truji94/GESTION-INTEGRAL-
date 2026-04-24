@@ -108,18 +108,19 @@ export default function Catalogo() {
     if (!form.nombre) return alert('El nombre es obligatorio')
     try {
       let savedItem = null
+      const { imagen, ...payload } = form  // exclude File from JSON payload
       if (editing) {
-        const res = await api.put(`/catalogo/productos/${editing}/`, form)
+        const res = await api.put(`/catalogo/productos/${editing}/`, payload)
         savedItem = res.data
       } else {
-        const res = await api.post('/catalogo/productos/', form)
+        const res = await api.post('/catalogo/productos/', payload)
         savedItem = res.data
       }
 
-      // Upload image if present
-      if (form.imagen && savedItem) {
+      // Upload image via multipart PATCH (separate from JSON payload)
+      if (imagen && savedItem) {
         const formData = new FormData()
-        formData.append('imagen', form.imagen)
+        formData.append('imagen', imagen)
         await api.patch(`/catalogo/productos/${savedItem.id}/`, formData, {
           headers: { 'Content-Type': 'multipart/form-data' }
         })
